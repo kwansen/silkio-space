@@ -30,6 +30,7 @@ const items = computed<Item[]>(() =>
     title: doc.title ?? "未命名标题",
     content: doc.plain_text ?? "",
     meta: metaFormatters[sortDocStore.sortField](doc),
+    docType: doc.doc_type,
   })),
 );
 

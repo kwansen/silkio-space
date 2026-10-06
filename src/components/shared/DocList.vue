@@ -13,7 +13,16 @@ export interface Item {
   title: string;
   content: string;
   meta?: string;
+  docType?: string;
 }
+
+// doc_type 对应的列表图标，未识别的类型回退为普通文件图标
+const typeIcons: Record<string, string> = {
+  richText: "mdi:file-document-outline",
+  mindMap: "mdi:sitemap",
+};
+
+const iconFor = (item: Item) => typeIcons[item.docType ?? ""] ?? "mdi:file-outline";
 
 interface Props {
   list: Item[];
@@ -98,7 +107,7 @@ onClickOutside(
   >
     <div class="w-10 h-full flex items-center">
       <SquareButton
-        icon="mdi:file-outline"
+        :icon="iconFor(item)"
         class="w-8 h-8 rounded-md text-neutral-400 bg-gray-100"
         icon-class="w-5 h-5"
       />
