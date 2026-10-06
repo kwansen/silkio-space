@@ -9,7 +9,7 @@ const goToPage = async (v: number) => {
   if (v <= 0) return;
   if (v === store.currentPage) return;
   // 数据返回后页码与列表一次性更新，避免先设页码导致的高亮闪烁
-  await refreshDocs(v);
+  await refreshDocs({ page: v });
 };
 </script>
 
