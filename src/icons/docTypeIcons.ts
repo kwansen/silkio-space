@@ -6,6 +6,8 @@ export const icons = {
   mindMap: "icon-park-outline:mindmap-map",
   // 流程图
   flowChart: "fluent:flowchart-24-regular",
+  // 归档（文件夹）
+  folder: "mdi:folder-outline",
   // 新建文档
   docCreate: "akar-icons:circle-plus",
 } as const;
