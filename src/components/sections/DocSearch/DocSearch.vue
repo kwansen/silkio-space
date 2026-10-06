@@ -5,11 +5,9 @@ import DocSearchPagination from "./DocSearchPagination.vue";
 </script>
 
 <template>
-  <div>
-    <DocSearchInput />
-    <div class="h-2"></div>
+  <div class="bg-white rounded-2xl p-4 mt-14">
+    <DocSearchInput  />
     <DocSearchList />
-    <div class="h-2"></div>
     <DocSearchPagination />
   </div>
 </template>

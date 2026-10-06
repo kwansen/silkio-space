@@ -2,12 +2,13 @@
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { Icon } from "@iconify/vue";
 import { onClickOutside } from "@vueuse/core";
-import { ref, useTemplateRef } from "vue";
+import { computed, ref, useTemplateRef } from "vue";
 import Popover, { PopoverItem } from "@/components/shared/Popover.vue";
 import { docTypeIcons } from "@/icons";
 import type { SortField } from "@/infrastructure/db/document.ts";
 import { useDoc } from "@/composables/useDocuments.ts";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
+import { useSortDocStore } from "@/stores/sortDoc";
 import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 
 type Sort = '最近浏览'|'最近更新'|'最近创建'|'最多字数'
@@ -20,14 +21,22 @@ const sortFieldMap: Record<Sort, SortField> = {
   最多字数: "word_count",
 };
 
-const currentSort = ref<Sort>('最近浏览')
+// 元函数：获取排序文档 store（排序状态唯一数据源）
+const sortDocStore = useSortDocStore();
+
+// 当前排序文案：由 store 的 sortField 派生，避免重复维护排序状态
+const currentSort = computed(
+  () =>
+    (Object.keys(sortFieldMap) as Sort[]).find(
+      (key) => sortFieldMap[key] === sortDocStore.sortField,
+    ) ?? "最近浏览",
+);
 const sorts: Sort[] = ["最近浏览", "最近更新", "最近创建", "最多字数"];
 const isOpen = ref<boolean>(false);
 
 // 元函数：切换排序方式，数据返回后排序与列表一次性更新（避免 meta 闪烁），并回到第一页
 const handleSortChange = async (sort: Sort) => {
   if (currentSort.value === sort) return;
-  currentSort.value = sort;
   await refreshDocs({ page: 1, sortField: sortFieldMap[sort] });
 };
 // 元函数：组装文档组合式函数
