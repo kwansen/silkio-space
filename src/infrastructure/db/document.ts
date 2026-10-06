@@ -96,13 +96,17 @@ export const useDocDb = () => {
     return { setClause: fields.join(", "), values };
   };
 
-  // 元函数：更新单个文档
+  // 元函数：更新单个文档（仅更新 viewed_at 浏览时间时不刷新 updated_at）
   const update = async (db: Database, id: string, params: UpdateDocParams): Promise<void> => {
     const { setClause, values } = buildUpdateSet(params);
     if (setClause === "") return;
-    values.push(Date.now(), id);
+    // 存在 viewed_at 以外的字段才视为内容变更，刷新 updated_at
+    const touchUpdatedAt = Object.keys(params).some((k) => k !== "viewed_at");
+    const setSql = touchUpdatedAt ? `${setClause}, updated_at = $${values.length + 1}` : setClause;
+    if (touchUpdatedAt) values.push(Date.now());
+    values.push(id);
     await db.execute(
-      `UPDATE documents SET ${setClause}, updated_at = $${values.length - 1} WHERE id = $${values.length}`,
+      `UPDATE documents SET ${setSql} WHERE id = $${values.length}`,
       values,
     );
   };

@@ -5,6 +5,7 @@ import { watch } from "vue";
 import { ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import Popover, { PopoverItem } from "./Popover.vue";
+import { docTypeIcons, type DocTypeIconKey } from "@/icons";
 
 type Key = number | string | null;
 
@@ -16,13 +17,8 @@ export interface Item {
   docType?: string;
 }
 
-// doc_type 对应的列表图标，未识别的类型回退为普通文件图标
-const typeIcons: Record<string, string> = {
-  richText: "mdi:file-document-outline",
-  mindMap: "mdi:sitemap",
-};
-
-const iconFor = (item: Item) => typeIcons[item.docType ?? ""] ?? "mdi:file-outline";
+// 元函数：按 doc_type 从 icons/docTypeIcons 取图标，未识别的类型回退为普通文件图标
+const iconFor = (item: Item) => docTypeIcons[item.docType as DocTypeIconKey] ?? "mdi:file-outline";
 
 interface Props {
   list: Item[];
