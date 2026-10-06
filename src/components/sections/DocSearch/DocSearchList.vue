@@ -1,8 +1,34 @@
 <script setup lang="ts">
 import DocList, { Item } from "@/components/shared/DocList.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
-import { ref } from "vue";
-const list = ref<Item[]>([{ key: 1, title: "测试", content: "内容" }]);
+import { computed, ref } from "vue";
+import { useDocSearchStore } from "@/stores/docSearch";
+
+export type { Item };
+
+interface Emits {
+  onClick: [item: Item];
+}
+
+const emit = defineEmits<Emits>();
+
+const docSearchStore = useDocSearchStore();
+
+// 元函数：将当前页搜索结果转换为 DocList 列表项
+const items = computed<Item[]>(() =>
+  docSearchStore.pageResults.map((r) => ({
+    key: r.id,
+    title: r.title,
+    content: r.content,
+    docType: r.docType,
+  })),
+);
+
+// 转发DocList的onClick事件
+const handleClick = (item: Item) => {
+  emit("onClick", item);
+};
+
 const popoverList = ref<PopoverItem[]>([
   {
     icon: "mdi:file-outline",
@@ -13,5 +39,5 @@ const popoverList = ref<PopoverItem[]>([
 </script>
 
 <template>
-  <DocList :list="list" :popover-list="popoverList" />
+  <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
 </template>
