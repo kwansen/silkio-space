@@ -18,5 +18,8 @@ export const useFolderSvc = async () => {
   // 元函数：更新归档浏览时间（打开归档时调用）
   const touch = (id: string): Promise<void> => folderDb.touch(db, id);
 
-  return { create, getSorted, touch };
+  // 元函数：按传入 id 顺序批量持久化自由排序结果
+  const reorder = (ids: string[]): Promise<void> => folderDb.reorder(db, ids);
+
+  return { create, getSorted, touch, reorder };
 };

@@ -30,5 +30,10 @@ export const useArchiveSort = () => {
     await refreshFolders();
   };
 
-  return { refreshFolders, createFolder, touchFolder };
+  // 元函数：将当前列表顺序持久化为 sort_order（0,1,2...）
+  const reorderFolders = async () => {
+    await folderSvc.reorder(archiveSortStore.folders.map((f) => f.id));
+  };
+
+  return { refreshFolders, createFolder, touchFolder, reorderFolders };
 };

@@ -59,6 +59,16 @@ export const useFolderDb = () => {
     viewed_at: "viewed_at",
   };
 
+  // 元函数：按传入 id 顺序批量重写 sort_order（0,1,2...），用于自由排序持久化
+  const reorder = async (db: Database, ids: string[]): Promise<void> => {
+    for (let i = 0; i < ids.length; i++) {
+      await db.execute("UPDATE folders SET sort_order = $1 WHERE id = $2", [
+        i,
+        ids[i],
+      ]);
+    }
+  };
+
   // 元函数：按指定字段与方向查询排序后的全部归档（数量少，不分页）
   const getSorted = async (
     db: Database,
@@ -70,5 +80,5 @@ export const useFolderDb = () => {
     );
   };
 
-  return { create, remove, touch, getSorted };
+  return { create, remove, touch, getSorted, reorder };
 };

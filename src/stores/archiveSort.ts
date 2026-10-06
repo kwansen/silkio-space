@@ -18,10 +18,17 @@ export const useArchiveSortStore = defineStore("archiveSort", () => {
     sortField.value = v;
   };
 
+  // 元函数：自由排序拖拽结束后调整列表顺序（本地先行，随后由调用方持久化）
+  const moveFolder = (oldIndex: number, newIndex: number) => {
+    const [moved] = folders.value.splice(oldIndex, 1);
+    folders.value.splice(newIndex, 0, moved);
+  };
+
   return {
     folders,
     sortField,
     setFolders,
     setSortField,
+    moveFolder,
   };
 });

@@ -3,6 +3,7 @@ import DocList, { Item } from "@/components/shared/DocList.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed, ref } from "vue";
 import { useArchiveSortStore } from "@/stores/archiveSort";
+import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import type { FolderSortField, Folder } from "@/infrastructure/db/folder.ts";
 
 export type { Item };
@@ -37,6 +38,23 @@ const handleClick = (item: Item) => {
   emit("onClick", item);
 };
 
+// 元函数：组装归档排序组合式函数
+const { refreshFolders, reorderFolders } = useArchiveSort();
+
+// 仅自由排序模式下允许拖拽
+const isFreeSort = computed(() => archiveSortStore.sortField === "sort_order");
+
+// 元函数：拖拽结束后先本地调整顺序，再持久化 sort_order（失败时回滚为数据库顺序）
+const handleDragEnd = async (oldIndex: number, newIndex: number) => {
+  archiveSortStore.moveFolder(oldIndex, newIndex);
+  try {
+    await reorderFolders();
+  } catch (e) {
+    console.error(e);
+    await refreshFolders();
+  }
+};
+
 const popoverList = ref<PopoverItem[]>([
   {
     icon: "mdi:file-outline",
@@ -47,5 +65,11 @@ const popoverList = ref<PopoverItem[]>([
 </script>
 
 <template>
-  <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
+  <DocList
+    :list="items"
+    :popover-list="popoverList"
+    :draggable="isFreeSort"
+    @onClick="handleClick"
+    @onDragEnd="handleDragEnd"
+  />
 </template>
