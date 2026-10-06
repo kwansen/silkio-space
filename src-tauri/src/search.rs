@@ -26,13 +26,26 @@ pub fn init_index(app: &tauri::AppHandle) -> Result<Index, String> {
         .set_indexing_options(text_indexing)
         .set_stored();
 
-    schema_builder.add_text_field("id", STRING);
+    // id 字段必须 STORED，否则搜索取回文档时读不到 id（结果全部为空串）
+    schema_builder.add_text_field("id", STRING | STORED);
     schema_builder.add_text_field("title", text_options.clone());
     schema_builder.add_text_field("content", text_options);
     let schema = schema_builder.build();
-    // 若目录已有索引则打开，否则创建
+    // 若目录已有索引则打开，否则创建；旧索引的 id 字段未存储（搜索取回为空），检测到则删除重建
     let index = if index_path.join("meta.json").exists() {
-        Index::open_in_dir(index_path).map_err(|e| e.to_string())?
+        let opened = Index::open_in_dir(&index_path).map_err(|e| e.to_string())?;
+        let id_stored = opened
+            .schema()
+            .get_field("id")
+            .map(|f| opened.schema().get_field_entry(f).is_stored())
+            .unwrap_or(false);
+        if id_stored {
+            opened
+        } else {
+            std::fs::remove_dir_all(&index_path).map_err(|e| e.to_string())?;
+            std::fs::create_dir_all(&index_path).map_err(|e| e.to_string())?;
+            Index::create_in_dir(&index_path, schema).map_err(|e| e.to_string())?
+        }
     } else {
         Index::create_in_dir(index_path, schema).map_err(|e| e.to_string())?
     };

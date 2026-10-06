@@ -35,15 +35,25 @@ export const useDocSearchStore = defineStore("docSearch", () => {
   };
 
   // 总页数：由结果数量派生
-  const totalPages = computed(() => Math.ceil(results.value.length / PAGE_SIZE));
+  const totalPages = computed(() =>
+    Math.ceil(results.value.length / PAGE_SIZE),
+  );
 
   // 页码列表：由当前页码与总页数派生，自动保持同步
-  const pages = computed(() => generatePages(currentPage.value, totalPages.value));
+  const pages = computed(() =>
+    generatePages(currentPage.value, totalPages.value),
+  );
 
   // 当前页结果：由结果与页码派生（搜索结果一次性返回，客户端分页）
-  const pageResults = computed(() =>
-    results.value.slice((currentPage.value - 1) * PAGE_SIZE, currentPage.value * PAGE_SIZE),
-  );
+  const pageResults = computed(() => {
+    const a = results.value.slice(
+      (currentPage.value - 1) * PAGE_SIZE,
+      currentPage.value * PAGE_SIZE,
+    );
+    console.log(results.value)
+    console.log(a)
+    return a;
+  });
 
   return {
     query,
