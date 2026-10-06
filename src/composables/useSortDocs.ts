@@ -8,12 +8,15 @@ const docSvc = await useDocSvc();
 export const useSortDocs = () => {
   const sortDocStore = useSortDocStore();
 
-  // 元函数：按当前排序方式刷新当前页文档列表与总数
-  const refreshDocs = async () => {
+  // 元函数：按当前排序方式刷新文档列表与总数
+  // 可选传入目标页码：数据返回后将页码、列表、总数一次性更新，避免分页按钮闪烁
+  const refreshDocs = async (page?: number) => {
+    const targetPage = page ?? sortDocStore.currentPage;
     const { list, total } = await docSvc.getSortedInPage(
       sortDocStore.sortField,
-      sortDocStore.currentPage,
+      targetPage,
     );
+    sortDocStore.setCurrentPage(targetPage);
     sortDocStore.setDocs(list);
     sortDocStore.setTotal(total);
   };

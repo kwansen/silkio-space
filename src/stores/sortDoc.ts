@@ -33,8 +33,10 @@ export const useSortDocStore = defineStore("sortDoc", () => {
     currentPage.value = v;
   };
 
+  const totalPages = computed(()=>Math.ceil(total.value / 10))
+
   // 页码列表：由当前页码与总数派生，自动保持同步
-  const pages = computed(() => generatePages(currentPage.value, total.value));
+  const pages = computed(() => generatePages(currentPage.value, totalPages.value));
 
   return {
     docs,
