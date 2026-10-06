@@ -41,6 +41,7 @@ export const useSortDocStore = defineStore("sortDoc", () => {
   return {
     docs,
     total,
+    totalPages,
     pages,
     sortField,
     currentPage,
