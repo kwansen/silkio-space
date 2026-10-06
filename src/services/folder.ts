@@ -21,5 +21,8 @@ export const useFolderSvc = async () => {
   // 元函数：按传入 id 顺序批量持久化自由排序结果
   const reorder = (ids: string[]): Promise<void> => folderDb.reorder(db, ids);
 
-  return { create, getSorted, touch, reorder };
+  // 元函数：删除单个归档
+  const remove = (id: string): Promise<void> => folderDb.remove(db, id);
+
+  return { create, getSorted, touch, reorder, remove };
 };

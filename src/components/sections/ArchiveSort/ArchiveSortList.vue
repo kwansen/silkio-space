@@ -39,7 +39,7 @@ const handleClick = (item: Item) => {
 };
 
 // 元函数：组装归档排序组合式函数
-const { refreshFolders, reorderFolders } = useArchiveSort();
+const { refreshFolders, reorderFolders, removeFolder } = useArchiveSort();
 
 // 仅自由排序模式下允许拖拽
 const isFreeSort = computed(() => archiveSortStore.sortField === "sort_order");
@@ -55,11 +55,15 @@ const handleDragEnd = async (oldIndex: number, newIndex: number) => {
   }
 };
 
+// popover 菜单：删除当前归档（key 由 DocList 注入，为当前归档 id）
 const popoverList = ref<PopoverItem[]>([
   {
-    icon: "mdi:file-outline",
-    name: "xxx",
-    action: () => console.log("xxx"),
+    icon: "mdi:delete-outline",
+    name: "删除",
+    action: async (key) => {
+      if (key === null || key === undefined) return;
+      await removeFolder(String(key));
+    },
   },
 ]);
 </script>

@@ -35,5 +35,11 @@ export const useArchiveSort = () => {
     await folderSvc.reorder(archiveSortStore.folders.map((f) => f.id));
   };
 
-  return { refreshFolders, createFolder, touchFolder, reorderFolders };
+  // 元函数：删除归档并刷新列表
+  const removeFolder = async (id: string) => {
+    await folderSvc.remove(id);
+    await refreshFolders();
+  };
+
+  return { refreshFolders, createFolder, touchFolder, reorderFolders, removeFolder };
 };
