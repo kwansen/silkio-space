@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import type { Doc, SortField } from "@/infrastructure/db/document.ts";
+import { generatePages } from "@zhencai/generate-pages";
 
-export const useSortDocStore = defineStore('sortDoc', () => {
+export const useSortDocStore = defineStore("sortDoc", () => {
   // 当前页文档列表
   const docs = ref<Doc[]>([]);
   // 文档总数（用于计算总页码）
@@ -32,5 +33,18 @@ export const useSortDocStore = defineStore('sortDoc', () => {
     currentPage.value = v;
   };
 
-  return { docs, total, sortField, currentPage, setDocs, setTotal, setSortField, setCurrentPage };
-})
+  // 页码列表：由当前页码与总数派生，自动保持同步
+  const pages = computed(() => generatePages(currentPage.value, total.value));
+
+  return {
+    docs,
+    total,
+    pages,
+    sortField,
+    currentPage,
+    setDocs,
+    setTotal,
+    setSortField,
+    setCurrentPage,
+  };
+});
