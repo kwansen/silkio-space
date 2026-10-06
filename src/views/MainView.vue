@@ -19,7 +19,7 @@ let stopOnRefresh: (() => void) | null = null;
 onMounted(async () => {
   try {
     await refreshDocs();
-    stopOnRefresh = await listen("refresh", refreshDocs);
+    stopOnRefresh = await listen("refresh", () => refreshDocs());
   } catch (e) {
     console.error(e);
   }
