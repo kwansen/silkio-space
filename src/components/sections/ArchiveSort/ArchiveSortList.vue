@@ -69,6 +69,7 @@ const popoverList = ref<PopoverItem[]>([
     :list="items"
     :popover-list="popoverList"
     :draggable="isFreeSort"
+    simple
     @onClick="handleClick"
     @onDragEnd="handleDragEnd"
   />

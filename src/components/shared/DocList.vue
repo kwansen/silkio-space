@@ -26,6 +26,8 @@ interface Props {
   popoverList: PopoverItem[];
   // 是否开启拖拽排序（由调用方按业务场景控制，如自由排序模式）
   draggable?: boolean;
+  // 简洁模式：隐藏图标与内容行，仅展示标题/meta（适用于无内容的列表，如归档）
+  simple?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -120,7 +122,7 @@ onClickOutside(
             : 'bg-white',
         ]"
       >
-        <div class="w-10 h-full flex items-center">
+        <div v-if="!simple" class="w-10 h-full flex items-center">
           <SquareButton
             :icon="iconFor(item)"
             class="w-8 h-8 rounded-md text-neutral-400 bg-gray-100"
@@ -139,6 +141,7 @@ onClickOutside(
             </div>
           </div>
           <div
+            v-if="!simple"
             class="text-xs text-neutral-400 truncate mt-0.5"
             v-html="item.content || '暂无内容'"
           ></div>
