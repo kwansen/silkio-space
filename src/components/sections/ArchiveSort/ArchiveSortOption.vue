@@ -7,12 +7,13 @@ import { docTypeIcons } from "@/icons";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import { useArchiveSortStore } from "@/stores/archiveSort";
 
-type Sort = "最近更新" | "最近创建";
+type Sort = "自由排序" | "名称排序"|"最近打开";
 
 // 排序选项文案 → 数据库排序字段
 const sortFieldMap: Record<Sort, FolderSortField> = {
-  最近更新: "updated_at",
-  最近创建: "created_at",
+  自由排序: "sort_order",
+  名称排序: "name",
+  最近打开: "viewed_at",
 };
 
 // 元函数：获取归档排序 store（排序状态唯一数据源）
@@ -23,19 +24,19 @@ const currentSort = computed(
   () =>
     (Object.keys(sortFieldMap) as Sort[]).find(
       (key) => sortFieldMap[key] === archiveSortStore.sortField,
-    ) ?? "最近更新",
+    ) ?? "自由排序",
 );
-const sorts: Sort[] = ["最近更新", "最近创建"];
+const sorts: Sort[] = ["自由排序", "名称排序", "最近打开"];
 const isOpen = ref<boolean>(false);
 const name = ref<string>("");
 
 // 元函数：组装归档排序组合式函数
 const { refreshFolders, createFolder } = useArchiveSort();
 
-// 元函数：切换排序方式，数据返回后排序与列表一次性更新（避免 meta 闪烁），并回到第一页
+// 元函数：切换排序方式，数据返回后排序与列表一次性更新（避免 meta 闪烁）
 const handleSortChange = async (sort: Sort) => {
   if (currentSort.value === sort) return;
-  await refreshFolders({ page: 1, sortField: sortFieldMap[sort] });
+  await refreshFolders({ sortField: sortFieldMap[sort] });
 };
 
 const inputRef = useTemplateRef<HTMLInputElement>("inputRef");
@@ -67,12 +68,9 @@ const handleCancel = () => {
 
 const wrapperRef = useTemplateRef<HTMLElement>("wrapperRef");
 
-onClickOutside(
-  wrapperRef,
-  () => {
-    if (isOpen.value) handleCancel();
-  },
-);
+onClickOutside(wrapperRef, () => {
+  if (isOpen.value) handleCancel();
+});
 </script>
 
 <template>
@@ -83,7 +81,11 @@ onClickOutside(
     <div
       v-for="sort in sorts"
       :key="sort"
-      :class="currentSort === sort ? 'text-purple-700' : 'text-neutral-500 hover:text-neutral-700'"
+      :class="
+        currentSort === sort
+          ? 'text-purple-700'
+          : 'text-neutral-500 hover:text-neutral-700'
+      "
       @click="handleSortChange(sort)"
     >
       <div>{{ sort }}</div>

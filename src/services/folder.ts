@@ -1,8 +1,5 @@
 import { getDb } from "@/infrastructure/db/index.ts";
-import { useFolderDb, type FolderSortField, type SortedFolderPage } from "@/infrastructure/db/folder.ts";
-
-// 每页归档数量
-const PAGE_SIZE = 10;
+import { useFolderDb, type FolderSortField, type Folder } from "@/infrastructure/db/folder.ts";
 
 // 归档服务层：组装归档数据库元函数提供业务能力
 export const useFolderSvc = async () => {
@@ -14,12 +11,12 @@ export const useFolderSvc = async () => {
   // 元函数：创建归档（默认挂在根目录）并返回新 id
   const create = (name?: string): Promise<string> => folderDb.create(db, { name });
 
-  // 元函数：按排序字段与分页参数查询归档分页（页码从 1 开始），并返回总数用于计算页码
-  const getSortedInPage = (
-    sortField: FolderSortField,
-    page: number,
-  ): Promise<SortedFolderPage> =>
-    folderDb.getSorted(db, sortField, "DESC", PAGE_SIZE, (page - 1) * PAGE_SIZE);
+  // 元函数：按排序字段查询全部归档（数量少，不分页）：最近打开倒序，名称与自由排序升序
+  const getSorted = (sortField: FolderSortField): Promise<Folder[]> =>
+    folderDb.getSorted(db, sortField, sortField === "viewed_at" ? "DESC" : "ASC");
 
-  return { create, getSortedInPage };
+  // 元函数：更新归档浏览时间（打开归档时调用）
+  const touch = (id: string): Promise<void> => folderDb.touch(db, id);
+
+  return { create, getSorted, touch };
 };

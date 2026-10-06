@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS folders (
     name TEXT NOT NULL,
     parent_id TEXT,
     sort_order INTEGER NOT NULL DEFAULT 0,
+    viewed_at INTEGER,
     created_at INTEGER,
     updated_at INTEGER
 );

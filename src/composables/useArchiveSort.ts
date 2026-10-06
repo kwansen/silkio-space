@@ -9,22 +9,13 @@ const folderSvc = await useFolderSvc();
 export const useArchiveSort = () => {
   const archiveSortStore = useArchiveSortStore();
 
-  // 元函数：按排序方式刷新归档列表与总数
-  // 可选传入目标页码/排序字段：数据返回后将排序、页码、列表、总数一次性更新，避免闪烁
-  const refreshFolders = async (options?: {
-    page?: number;
-    sortField?: FolderSortField;
-  }) => {
-    const targetPage = options?.page ?? archiveSortStore.currentPage;
+  // 元函数：按排序方式刷新归档列表（全量，不分页）
+  // 可选传入目标排序字段：数据返回后将排序与列表一次性更新，避免闪烁
+  const refreshFolders = async (options?: { sortField?: FolderSortField }) => {
     const targetSortField = options?.sortField ?? archiveSortStore.sortField;
-    const { list, total } = await folderSvc.getSortedInPage(
-      targetSortField,
-      targetPage,
-    );
+    const list = await folderSvc.getSorted(targetSortField);
     archiveSortStore.setSortField(targetSortField);
-    archiveSortStore.setCurrentPage(targetPage);
     archiveSortStore.setFolders(list);
-    archiveSortStore.setTotal(total);
   };
 
   // 元函数：创建归档并刷新列表
@@ -33,5 +24,11 @@ export const useArchiveSort = () => {
     await refreshFolders();
   };
 
-  return { refreshFolders, createFolder };
+  // 元函数：打开归档（更新浏览时间）并刷新列表
+  const touchFolder = async (id: string) => {
+    await folderSvc.touch(id);
+    await refreshFolders();
+  };
+
+  return { refreshFolders, createFolder, touchFolder };
 };
