@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@import "./scrollbar.css";
+
+.desktop-draggable {
+  -webkit-app-region: drag;
+}
+
+body{
+  color: var(--color-neutral-700);
+  font-size: var(--text-sm);
+}
