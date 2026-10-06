@@ -5,6 +5,9 @@ import DocSearchPagination from "./DocSearchPagination.vue";
 import type { Item } from "@/components/shared/DocList.vue";
 import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
+import { useDocSearchStore } from "@/stores/docSearch";
+
+const docSearchStore = useDocSearchStore();
 
 // 元函数：组装排序文档组合式函数（复用 touchDoc 更新浏览时间）
 const { touchDoc } = useSortDocs();
@@ -21,7 +24,8 @@ const handleClick = (item: Item) => {
   <div class="bg-white rounded-2xl p-4 mt-14">
     <DocSearchInput />
     <DocSearchList @on-click="handleClick" />
-    <DocSearchPagination />
+    <!-- 页码不超过 1 页时不渲染分页 -->
+    <DocSearchPagination v-if="docSearchStore.pages.length > 1" />
   </div>
   <div class="h-14"></div>
 </template>
