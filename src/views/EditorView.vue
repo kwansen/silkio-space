@@ -6,6 +6,7 @@ import { useEditorViewStore } from "@/stores/editorView";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useDocSvc } from "@/services/document.ts";
+import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import { onMounted, onUnmounted } from "vue";
 
 const store = useEditorViewStore();
@@ -13,7 +14,7 @@ const { setKey, setDoc } = store;
 
 let stopOnOpen: (() => void) | null;
 
-// 元函数：取消最小化、显示并聚焦 editor 窗口
+// 元函数：取消最小化、显示并聚焦 editor 窗口，并通知 main 刷新列表（viewed_at 已变化）
 // [日志]
 const show = async () => {
   let t = performance.now();
@@ -21,6 +22,7 @@ const show = async () => {
   await win.unminimize();
   await win.show();
   await win.setFocus();
+  await notifyMainRefresh();
   console.log(
     `[perf] editor 窗口显示完成 +${(performance.now() - t).toFixed(0)}ms`,
   );
