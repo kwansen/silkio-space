@@ -15,11 +15,11 @@ const emit = defineEmits<Emits>();
 
 const sortDocStore = useSortDocStore();
 
-// 各排序字段对应的 meta 展示：时间字段显示日期，字数显示数值
+// 各排序字段对应的 meta 展示：时间字段显示日期和时间，字数显示数值
 const metaFormatters: Record<SortField, (doc: Doc) => string> = {
-  viewed_at: (doc) => new Date(doc.viewed_at).toLocaleDateString(),
-  updated_at: (doc) => new Date(doc.updated_at).toLocaleDateString(),
-  created_at: (doc) => new Date(doc.created_at).toLocaleDateString(),
+  viewed_at: (doc) => new Date(doc.viewed_at).toLocaleString(),
+  updated_at: (doc) => new Date(doc.updated_at).toLocaleString(),
+  created_at: (doc) => new Date(doc.created_at).toLocaleString(),
   word_count: (doc) => `${doc.word_count} 字`,
 };
 
