@@ -2,7 +2,7 @@
 import SquareButton from "@/components/shared/SquareButton.vue";
 import { offset, useFloating, flip, autoUpdate } from "@floating-ui/vue";
 import draggable from "vuedraggable";
-import { watch } from "vue";
+import { watch, computed } from "vue";
 import { ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import Popover, { PopoverItem } from "./Popover.vue";
@@ -79,6 +79,17 @@ const handleDragEnd = (e: { oldIndex?: number; newIndex?: number }) => {
   if (e.oldIndex === e.newIndex) return;
   emit("onDragEnd", e.oldIndex, e.newIndex);
 };
+
+// 元函数：为 popover 动作注入当前打开条目的 key，执行后关闭 popover
+const boundPopoverList = computed<PopoverItem[]>(() =>
+  props.popoverList.map((p) => ({
+    ...p,
+    action: () => {
+      p.action(openKey.value);
+      setOpenKey(null, null);
+    },
+  })),
+);
 
 const { floatingStyles, update } = useFloating(targetRef, floatingRef, {
   placement: "bottom-start",
@@ -171,7 +182,7 @@ onClickOutside(
   </draggable>
   <Popover
     v-if="openKey"
-    :list="popoverList"
+    :list="boundPopoverList"
     ref="floatingRef"
     :style="floatingStyles"
   />

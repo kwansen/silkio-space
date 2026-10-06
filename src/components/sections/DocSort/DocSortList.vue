@@ -3,6 +3,7 @@ import DocList, { Item } from "@/components/shared/DocList.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed, ref } from "vue";
 import { useSortDocStore } from "@/stores/sortDoc";
+import { useSortDocs } from "@/composables/useSortDocs.ts";
 import type { Doc, SortField } from "@/infrastructure/db/document.ts";
 
 export type { Item };
@@ -39,11 +40,18 @@ const handleClick = (item: Item) => {
   emit("onClick", item);
 };
 
+// 元函数：组装排序文档组合式函数
+const { removeDoc } = useSortDocs();
+
+// popover 菜单：删除当前文档（key 由 DocList 注入，为当前文档 id）
 const popoverList = ref<PopoverItem[]>([
   {
-    icon: "mdi:file-outline",
-    name: "xxx",
-    action: () => console.log("xxx"),
+    icon: "mdi:delete-outline",
+    name: "删除",
+    action: async (key) => {
+      if (key === null || key === undefined) return;
+      await removeDoc(String(key));
+    },
   },
 ]);
 </script>

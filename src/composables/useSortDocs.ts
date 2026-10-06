@@ -30,5 +30,14 @@ export const useSortDocs = () => {
   // 元函数：更新文档浏览时间
   const touchDoc = (id: string) => docSvc.update(id, { viewed_at: Date.now() });
 
-  return { refreshDocs, touchDoc };
+  // 元函数：删除文档并刷新列表（当前页删空时回退到上一页）
+  const removeDoc = async (id: string) => {
+    await docSvc.remove(id);
+    await refreshDocs();
+    if (sortDocStore.docs.length === 0 && sortDocStore.currentPage > 1) {
+      await refreshDocs({ page: sortDocStore.currentPage - 1 });
+    }
+  };
+
+  return { refreshDocs, touchDoc, removeDoc };
 };
