@@ -13,6 +13,7 @@ const store = useEditorViewStore();
 const { setKey, setDoc } = store;
 
 let stopOnOpen: (() => void) | null;
+let stopOnClose: (() => void) | null;
 
 // 元函数：取消最小化、显示并聚焦 editor 窗口，并通知 main 刷新列表（viewed_at 已变化）
 // [日志]
@@ -29,6 +30,12 @@ const show = async () => {
 };
 
 onMounted(async () => {
+  // 元函数：阻止窗口关闭，改为隐藏（下次打开更快，无需重新创建窗口）
+  stopOnClose = await getCurrentWindow().onCloseRequested(async (event) => {
+    event.preventDefault();
+    await getCurrentWindow().hide();
+  });
+
   // 元函数：监听 open 事件，根据类型与 id 加载文档
   stopOnOpen = await listen<{ type: string; id: string }>(
     "open",
@@ -64,6 +71,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   stopOnOpen?.();
+  stopOnClose?.();
 });
 </script>
 
