@@ -44,10 +44,10 @@ export const useDocDb = () => {
   // 元函数：生成新文档 id
   const genId = () => crypto.randomUUID();
 
-  // 元函数：组装插入参数
+  // 元函数：组装插入参数（与 9 列一一对应：id, title, content, plain_text, doc_type, word_count, viewed_at, created_at, updated_at）
   const buildParams = (params: CreateDocParams, id: string) => {
     const now = Date.now();
-    return [id, params.title ?? null, params.content ?? null, params.plain_text ?? null, params.doc_type ?? "document", 0, 0, 0, now, now];
+    return [id, params.title ?? null, params.content ?? null, params.plain_text ?? null, params.doc_type ?? "document", 0, now, now, now];
   };
 
   // 元函数：执行文档插入语句
