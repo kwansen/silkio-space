@@ -12,7 +12,7 @@ import { onMounted, onUnmounted } from "vue";
 import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
 
 const store = useEditorViewStore();
-const { setKey, setDoc, setFolder } = store;
+const { setKey, setDoc, setFolder, setSidebarView } = store;
 
 let stopOnOpen: (() => void) | null;
 let stopOnClose: (() => void) | null;
@@ -63,11 +63,13 @@ onMounted(async () => {
         } else if (type === "folder") {
           // 打开归档：加载归档信息并渲染归档下第一个文档（按加入顺序 sort_order 升序）
           // 有文档时由 on-ready 触发显示；无文档时清空当前文档并直接显示窗口
+          // 侧栏默认回到列表视图
           const folderSvc = await useFolderSvc();
           const folder = await folderSvc.getById(id);
           setFolder(folder);
           const doc = await folderSvc.getFirstDoc(id);
           setDoc(doc);
+          setSidebarView("list");
           if (!doc) await show();
         }
       } catch (e) {

@@ -15,18 +15,17 @@ const { setDoc, setKey } = store;
 const iconFor = (d: Doc) =>
   docTypeIcons[d.doc_type as DocTypeIconKey] ?? "mdi:file-outline";
 
-// 元函数：加载侧栏文档列表（有归档时为归档内文档，无归档时为最近浏览文档）
+// 元函数：加载侧栏文档列表（按归档内加入顺序 sort_order 升序，无归档时为空）
 const docs = ref<Doc[]>([]);
 
 const loadDocs = async () => {
+  if (!store.folder) {
+    docs.value = [];
+    return;
+  }
   try {
-    if (store.folder) {
-      const folderSvc = await useFolderSvc();
-      docs.value = await folderSvc.getDocs(store.folder.id);
-    } else {
-      const svc = await useDocSvc();
-      docs.value = (await svc.getSortedInPage("viewed_at", 1)).list;
-    }
+    const folderSvc = await useFolderSvc();
+    docs.value = await folderSvc.getDocs(store.folder.id);
   } catch (e) {
     console.error(e);
   }
