@@ -112,8 +112,11 @@ const scrollToHeading = (index: number) => {
       </div>
     </div>
 
-    <!-- 文档列表（由标题栏切换按钮控制）：归档内文档（无归档时为最近浏览文档），点击切换渲染 -->
-    <div v-if="store.sidebarView === 'list'" class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-0.5">
+    <!-- 文档列表（由标题栏切换按钮控制）：仅打开归档时展示，按 sort_order 升序，点击切换渲染 -->
+    <div
+      v-if="store.folder && store.sidebarView === 'list'"
+      class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-0.5"
+    >
       <div
         v-if="docs.length < 1"
         class="h-20 flex items-center justify-center text-xs text-neutral-400"
@@ -140,7 +143,7 @@ const scrollToHeading = (index: number) => {
       </div>
     </div>
 
-    <!-- 大纲：当前富文本文档的标题层级，点击滚动到对应位置 -->
+    <!-- 大纲：直接打开文档时固定展示；打开归档时由标题栏切换控制。点击滚动到对应标题 -->
     <div v-else class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-0.5">
       <div
         v-if="outline.length < 1"

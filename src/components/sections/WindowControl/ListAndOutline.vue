@@ -11,7 +11,9 @@ const store = useEditorViewStore();
 </script>
 
 <template>
+  <!-- 仅打开归档时显示切换（直接打开文档时侧栏固定为大纲） -->
   <div
+    v-if="store.folder"
     class="h-10 px-2 flex items-center gap-1 select-none"
     style="-webkit-app-region: no-drag"
   >
