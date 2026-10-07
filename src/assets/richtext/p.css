@@ -1,0 +1,4 @@
+/* Paragraph 扩展：正文段落 */
+.ProseMirror p {
+  margin: 0 0 1.2em;
+}

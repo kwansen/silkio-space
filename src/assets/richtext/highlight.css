@@ -1,0 +1,10 @@
+/* Highlight 扩展：高亮（multicolor 时背景色由内联 style 覆盖） */
+/* 低饱和黄，与正文保持柔和对比 */
+.ProseMirror mark {
+  background-color: var(--color-yellow-100);
+  color: inherit;
+  padding: 0.05em 0.15em;
+  border-radius: 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}

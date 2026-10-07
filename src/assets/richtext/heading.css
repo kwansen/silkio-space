@@ -1,0 +1,55 @@
+/* Heading 扩展：h1–h6 标题层级 */
+/* 梯度：字号 + 字重 + 颜色三轴递减，避免非黑即白的强对比 */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* em 边距随字号缩放，形成统一的垂直节奏 */
+.ProseMirror h1 {
+  font-size: 1.5rem;
+  color: var(--color-neutral-900);
+  margin: 2.25em 0 0.75em;
+}
+
+.ProseMirror h2 {
+  font-size: 1.25rem;
+  color: var(--color-neutral-900);
+  margin: 2em 0 0.7em;
+}
+
+.ProseMirror h3 {
+  font-size: 1.0625rem;
+  color: var(--color-neutral-800);
+  margin: 1.75em 0 0.55em;
+}
+
+/* h4 以下与正文同阶梯，靠字重与颜色区分层级 */
+.ProseMirror h4 {
+  font-size: 0.9375rem;
+  color: var(--color-neutral-800);
+  margin: 1.5em 0 0.45em;
+}
+
+.ProseMirror h5 {
+  font-size: 0.875rem;
+  color: var(--color-neutral-700);
+  margin: 1.4em 0 0.4em;
+}
+
+/* h6：弱化的标签式标题 */
+.ProseMirror h6 {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-neutral-500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 1.4em 0 0.4em;
+}

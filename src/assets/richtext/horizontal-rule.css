@@ -1,0 +1,11 @@
+/* HorizontalRule 扩展：分割线 */
+.ProseMirror hr {
+  margin: 2em 0;
+  border: none;
+  border-top: 1px solid var(--color-neutral-200);
+}
+
+/* 选中态（ProseMirror 选中节点标记） */
+.ProseMirror hr.ProseMirror-selectednode {
+  border-top-color: var(--color-blue-500);
+}

@@ -59,6 +59,7 @@
     "@zhencai/generate-pages": "^1.0.0",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
+    "katex": "^0.18.11",
     "leafer-ui": "^2.2.9",
     "overlayscrollbars": "^2.16.0",
     "overlayscrollbars-vue": "^0.5.10",

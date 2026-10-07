@@ -1,0 +1,33 @@
+/* Mathematics 扩展：数学公式（KaTeX 渲染依赖其官方样式） */
+@import "katex/dist/katex.min.css";
+
+/* 行内公式 */
+.ProseMirror span[data-type="inline-math"] {
+  padding: 0 2px;
+  border-radius: 4px;
+}
+
+/* 块级公式 */
+.ProseMirror div[data-type="block-math"] {
+  margin: 1.25em 0;
+  padding: 0.75em 1em;
+  overflow-x: auto;
+  text-align: center;
+  border-radius: 8px;
+  background-color: var(--color-neutral-50);
+  border: 1px solid var(--color-neutral-200);
+}
+
+/* 选中态 */
+.ProseMirror span[data-type="inline-math"].ProseMirror-selectednode,
+.ProseMirror div[data-type="block-math"].ProseMirror-selectednode {
+  outline: 2px solid var(--color-blue-500);
+}
+
+/* 公式语法错误提示 */
+.ProseMirror .inline-math-error,
+.ProseMirror .block-math-error {
+  background-color: var(--color-red-50);
+  color: var(--color-red-600);
+  border-radius: 4px;
+}

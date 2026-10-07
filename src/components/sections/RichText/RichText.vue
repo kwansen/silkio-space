@@ -7,6 +7,7 @@ import { useEditorViewStore } from "@/stores/editorView";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import RichTextTitle from "./RichTextTitle.vue";
 import { createRichtextEditor } from "@/composables/useRichtext.ts";
+import "@/assets/richtext/index.css";
 import "overlayscrollbars/overlayscrollbars.css";
 import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 
@@ -117,17 +118,17 @@ const handleTitleTab = () => {
     <OverlayScrollbarsComponent defer class="w-full h-full">
         <!-- Toolbar：不占用 flex 空间，固定高度 -->
         <RichTextToolbar :editor="editor" class="sticky top-0 z-10" />
-        <div class="w-full max-w-200 mx-auto flex flex-col">
+        <div class="w-full max-w-176 mx-auto flex flex-col">
           <RichTextTitle
             ref="titleRef"
             :editor="editor"
             v-model="title"
-            class="w-full px-4 py-2"
+            class="w-full px-6 py-2"
             @on-change="handleTitleChange"
             @on-enter="handleTitleEnter"
             @on-tab="handleTitleTab"
           />
-          <RichTextEditor :editor="editor" class="px-4 pt-4 outline-none" />
+          <RichTextEditor :editor="editor" class="px-6 pt-6 pb-4 outline-none" />
           <div
             class="flex-1 bg-green-100"
             :style="{ minHeight: minHalfHeight }"
@@ -141,32 +142,5 @@ const handleTitleTab = () => {
 .ProseMirror:focus {
   outline: none !important;
 }
-.ProseMirror ul[data-type="taskList"] {
-  list-style: none;
-  padding-left: 0;
-}
-.ProseMirror ul[data-type="taskList"] > li[data-type="taskItem"] {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-.ProseMirror ul[data-type="taskList"] > li[data-type="taskItem"] > label {
-  flex-shrink: 0;
-  user-select: none;
-}
-.ProseMirror ul[data-type="taskList"] > li[data-type="taskItem"] > div {
-  flex: 1;
-}
-.ProseMirror
-  ul[data-type="taskList"]
-  > li[data-type="taskItem"][data-checked="true"]
-  > div {
-  text-decoration: line-through;
-  opacity: 0.6;
-}
-.ProseMirror mark {
-  background-color: #ffff00;
-  color: inherit;
-  border-radius: 2px;
-}
+/* 高亮、任务列表等扩展样式见 src/assets/richtext/ */
 </style>

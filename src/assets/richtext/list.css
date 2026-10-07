@@ -1,0 +1,48 @@
+/* List 扩展：无序 / 有序列表（Tailwind preflight 会重置列表样式，此处需显式定义） */
+.ProseMirror ul,
+.ProseMirror ol {
+  margin: 0.25em 0 1.2em;
+  padding-left: 1.6em;
+}
+
+.ProseMirror ul {
+  list-style: disc;
+}
+
+.ProseMirror ol {
+  list-style: decimal;
+}
+
+/* 嵌套列表符号层级 */
+.ProseMirror ul ul {
+  list-style: circle;
+}
+
+.ProseMirror ul ul ul {
+  list-style: square;
+}
+
+.ProseMirror ol ol {
+  list-style: lower-alpha;
+}
+
+.ProseMirror ol ol ol {
+  list-style: lower-roman;
+}
+
+/* 项目符号弱化为浅灰，降低与正文的视觉竞争 */
+.ProseMirror li::marker {
+  color: var(--color-neutral-400);
+}
+
+.ProseMirror ol li::marker {
+  font-variant-numeric: tabular-nums;
+}
+
+.ProseMirror li {
+  margin: 0.375em 0;
+}
+
+.ProseMirror li > p {
+  margin: 0;
+}
