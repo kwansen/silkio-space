@@ -4,7 +4,6 @@ import { emitTo } from "@tauri-apps/api/event";
 // 元函数：通知 editor 窗口打开指定类型与 id 的文档
 // [日志]
 export const notifyEditorOpen = (type: string, id: string) => {
-  console.log(`[perf] notifyEditorOpen send t=${performance.now().toFixed(0)} id=${id}`);
   return emitTo("editor", "open", { type, id });
 };
 

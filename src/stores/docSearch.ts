@@ -50,8 +50,6 @@ export const useDocSearchStore = defineStore("docSearch", () => {
       (currentPage.value - 1) * PAGE_SIZE,
       currentPage.value * PAGE_SIZE,
     );
-    console.log(results.value)
-    console.log(a)
     return a;
   });
 

@@ -1,6 +1,16 @@
 import { getDb } from "@/infrastructure/db/index.ts";
-import { useDocDb, type CreateDocParams, type UpdateDocParams, type Doc, type SortField, type SortedPage } from "@/infrastructure/db/document.ts";
-import { useSearchApi, type DocIndexInput } from "@/infrastructure/api/search.ts";
+import {
+  useDocDb,
+  type CreateDocParams,
+  type UpdateDocParams,
+  type Doc,
+  type SortField,
+  type SortedPage,
+} from "@/infrastructure/db/document.ts";
+import {
+  useSearchApi,
+  type DocIndexInput,
+} from "@/infrastructure/api/search.ts";
 
 // 每页文档数量
 const PAGE_SIZE = 10;
@@ -30,9 +40,13 @@ export const useDocSvc = async () => {
   };
 
   // 元函数：批量创建文档并同步批量创建索引
-  const createMany = async (list: CreateDocParams[] = []): Promise<string[]> => {
+  const createMany = async (
+    list: CreateDocParams[] = [],
+  ): Promise<string[]> => {
     const ids = await docDb.createMany(db, list);
-    const docs = (await Promise.all(ids.map((id) => docDb.getById(db, id)))).filter((d): d is Doc => d !== null);
+    const docs = (
+      await Promise.all(ids.map((id) => docDb.getById(db, id)))
+    ).filter((d): d is Doc => d !== null);
     await searchApi.createIndexBatch(docs.map(toIndexInput));
     return ids;
   };
@@ -53,29 +67,26 @@ export const useDocSvc = async () => {
   // [日志]
   // 元函数：更新文档，仅当 title/content 变化时同步重建索引
   const update = async (id: string, params: UpdateDocParams): Promise<void> => {
-    let t = performance.now();
     await docDb.update(db, id, params);
-    let t1 = performance.now();
-    console.log(`[perf] touch: db.update ${(t1 - t).toFixed(0)}ms`);
     // 元函数：判断更新是否涉及索引字段（title/content/plain_text）
-    const needIndex = "title" in params || "content" in params || "plain_text" in params;
+    const needIndex =
+      "title" in params || "content" in params || "plain_text" in params;
     if (!needIndex) return;
     const doc = await docDb.getById(db, id);
-    let t2 = performance.now();
-    console.log(`[perf] touch: db.getById ${(t2 - t1).toFixed(0)}ms`);
     if (doc) {
       await searchApi.deleteIndex(id);
-      let t3 = performance.now();
-      console.log(`[perf] touch: search.deleteIndex ${(t3 - t2).toFixed(0)}ms`);
       await searchApi.createDocIndex(toIndexInput(doc));
-      console.log(`[perf] touch: search.createDocIndex ${(performance.now() - t3).toFixed(0)}ms`);
     }
   };
 
   // 元函数：批量更新文档并同步重建索引
-  const updateMany = async (list: { id: string; params: UpdateDocParams }[] = []): Promise<void> => {
+  const updateMany = async (
+    list: { id: string; params: UpdateDocParams }[] = [],
+  ): Promise<void> => {
     await docDb.updateMany(db, list);
-    const docs = (await Promise.all(list.map(({ id }) => docDb.getById(db, id)))).filter((d): d is Doc => d !== null);
+    const docs = (
+      await Promise.all(list.map(({ id }) => docDb.getById(db, id)))
+    ).filter((d): d is Doc => d !== null);
     await searchApi.deleteIndexBatch(docs.map((d) => d.id));
     await searchApi.createIndexBatch(docs.map(toIndexInput));
   };
@@ -88,7 +99,16 @@ export const useDocSvc = async () => {
     sortField: SortField,
     page: number,
   ): Promise<SortedPage> =>
-    docDb.getSorted(db, sortField, 'DESC', PAGE_SIZE, (page - 1) * PAGE_SIZE);
+    docDb.getSorted(db, sortField, "DESC", PAGE_SIZE, (page - 1) * PAGE_SIZE);
 
-  return { create, createMany, remove, removeMany, update, updateMany, getById, getSortedInPage };
+  return {
+    create,
+    createMany,
+    remove,
+    removeMany,
+    update,
+    updateMany,
+    getById,
+    getSortedInPage,
+  };
 };

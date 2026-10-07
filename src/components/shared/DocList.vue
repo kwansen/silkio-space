@@ -51,7 +51,6 @@ const floatingRef = ref<HTMLElement | null>(null);
 
 const setHoverKey = (v: Key) => {
   hoverKey.value = v;
-  console.log('hoverkey:'+hoverKey.value)
 };
 
 const setHoverIconKey = (v: Key) => {
