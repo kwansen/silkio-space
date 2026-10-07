@@ -11,6 +11,11 @@ import type { Doc } from "@/infrastructure/db/document.ts";
 const store = useEditorViewStore();
 const { setDoc, setKey } = store;
 
+// 元函数：当前是否为大纲视图（直接打开文档时固定大纲，打开归档时由标题栏切换控制）
+const isOutline = computed(() =>
+  store.folder ? store.sidebarView === "outline" : true,
+);
+
 // 元函数：按文档类型取图标，未识别类型回退为普通文件图标
 const iconFor = (d: Doc) =>
   docTypeIcons[d.doc_type as DocTypeIconKey] ?? "mdi:file-outline";
@@ -103,18 +108,23 @@ const scrollToHeading = (index: number) => {
 
 <template>
   <div class="w-65 h-full px-2 flex flex-col">
-    <!-- 头部：当前归档名 + 新建按钮 -->
+    <!-- 头部：大纲视图显示文档标题（隐藏新建按钮），列表视图显示归档名 -->
     <div class="h-9 flex items-center hover:bg-gray-100 px-2 rounded-md">
-      <div class="truncate">{{ store.folder?.name }}</div>
+      <div class="truncate">
+        {{ isOutline ? (store.doc?.title || "未命名标题") : store.folder?.name }}
+      </div>
       <div class="flex-1"></div>
-      <div class="w-7 h-7 rounded-md hover:bg-gray-200 grid place-items-center">
+      <div
+        v-if="!isOutline"
+        class="w-7 h-7 rounded-md hover:bg-gray-200 grid place-items-center"
+      >
         <Icon icon="mdi:add" class="w-5 h-5"/>
       </div>
     </div>
 
     <!-- 文档列表（由标题栏切换按钮控制）：仅打开归档时展示，按 sort_order 升序，点击切换渲染 -->
     <div
-      v-if="store.folder && store.sidebarView === 'list'"
+      v-if="!isOutline"
       class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-0.5"
     >
       <div
