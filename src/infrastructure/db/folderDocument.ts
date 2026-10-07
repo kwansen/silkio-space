@@ -1,4 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
+import type { Doc } from "@/infrastructure/db/document.ts";
 
 // 归档-文档关联（folder_document）数据库元函数集合
 export const useFolderDocumentDb = () => {
@@ -43,5 +44,21 @@ export const useFolderDocumentDb = () => {
     return rows.map((r) => r.folder_id);
   };
 
-  return { add, remove, getFolderIdsByDoc };
+  // 元函数：查询归档下第一个文档（按加入顺序 sort_order 升序，无文档返回 null）
+  const getFirstDoc = async (
+    db: Database,
+    folderId: string,
+  ): Promise<Doc | null> => {
+    const rows = await db.select<Doc[]>(
+      `SELECT d.* FROM folder_document fd
+       JOIN documents d ON d.id = fd.document_id
+       WHERE fd.folder_id = $1
+       ORDER BY fd.sort_order ASC
+       LIMIT 1`,
+      [folderId],
+    );
+    return rows.length > 0 ? rows[0] : null;
+  };
+
+  return { add, remove, getFolderIdsByDoc, getFirstDoc };
 };

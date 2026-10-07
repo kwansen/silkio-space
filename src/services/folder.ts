@@ -1,6 +1,7 @@
 import { getDb } from "@/infrastructure/db/index.ts";
 import { useFolderDb, type FolderSortField, type Folder } from "@/infrastructure/db/folder.ts";
 import { useFolderDocumentDb } from "@/infrastructure/db/folderDocument.ts";
+import type { Doc } from "@/infrastructure/db/document.ts";
 
 // 归档服务层：组装归档数据库元函数提供业务能力
 export const useFolderSvc = async () => {
@@ -42,5 +43,9 @@ export const useFolderSvc = async () => {
   const getFolderIdsByDoc = (docId: string): Promise<string[]> =>
     folderDocumentDb.getFolderIdsByDoc(db, docId);
 
-  return { create, getSorted, getById, touch, reorder, remove, addDoc, removeDoc, getFolderIdsByDoc };
+  // 元函数：查询归档下第一个文档（按加入顺序 sort_order 升序，无文档返回 null）
+  const getFirstDoc = (folderId: string): Promise<Doc | null> =>
+    folderDocumentDb.getFirstDoc(db, folderId);
+
+  return { create, getSorted, getById, touch, reorder, remove, addDoc, removeDoc, getFolderIdsByDoc, getFirstDoc };
 };

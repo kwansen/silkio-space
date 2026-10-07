@@ -61,12 +61,14 @@ onMounted(async () => {
             `[perf] editor setDoc done +${(performance.now() - t).toFixed(0)}ms`,
           );
         } else if (type === "folder") {
-          // 归档暂无可渲染内容：加载归档信息、清空当前文档并直接显示窗口（文档内容由 on-ready 触发显示）
+          // 打开归档：加载归档信息并渲染归档下第一个文档（按加入顺序 sort_order 升序）
+          // 有文档时由 on-ready 触发显示；无文档时清空当前文档并直接显示窗口
           const folderSvc = await useFolderSvc();
           const folder = await folderSvc.getById(id);
           setFolder(folder);
-          setDoc(null);
-          await show();
+          const doc = await folderSvc.getFirstDoc(id);
+          setDoc(doc);
+          if (!doc) await show();
         }
       } catch (e) {
         console.error(e);
