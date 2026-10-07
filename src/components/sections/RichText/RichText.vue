@@ -26,9 +26,6 @@ let resizeObserver: ResizeObserver | null = null;
 const minHalfHeight = computed(() => `${scrollAreaHeight.value / 2}px`);
 
 onMounted(() => {
-  console.log(
-    `[perf] RichText mounted 渲染完成 t=${performance.now().toFixed(0)}`,
-  );
   emit("onReady");
   // 元函数：挂载后回填文档标题
   title.value = store.doc?.title ?? "";
