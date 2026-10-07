@@ -11,3 +11,6 @@ export type { WindowControlIcon, WindowControlIconKey } from "./windowControlIco
 
 export { docTypeIcons } from "./docTypeIcons";
 export type { DocTypeIcon, DocTypeIconKey } from "./docTypeIcons";
+
+export { rightBarIcons } from "./rightBarIcons";
+export type { rightBarIcon, rightBarIconKey } from "./rightBarIcons";
