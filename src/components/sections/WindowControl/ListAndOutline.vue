@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { useEditorViewStore, type SidebarView } from "@/stores/editorView";
 
-type View = "list" | "outline";
-
-const views: { key: View; label: string }[] = [
+// ListAndOutline.vue: 标题栏左侧栏视图切换（列表 / 大纲），状态存于 editorView store 供 LeftBar 消费
+const views: { key: SidebarView; label: string }[] = [
   { key: "list", label: "列表" },
   { key: "outline", label: "大纲" },
 ];
 
-const active = ref<View>("list");
+const store = useEditorViewStore();
 </script>
 
 <template>
@@ -21,11 +20,11 @@ const active = ref<View>("list");
       :key="view.key"
       class="h-7 px-3 flex items-center rounded-md text-xs cursor-pointer transition-colors duration-200"
       :class="
-        active === view.key
+        store.sidebarView === view.key
           ? 'bg-gray-100 text-neutral-700'
           : 'text-gray-400 hover:bg-gray-100 hover:text-neutral-700'
       "
-      @click="active = view.key"
+      @click="store.setSidebarView(view.key)"
     >
       {{ view.label }}
     </div>

@@ -47,5 +47,9 @@ export const useFolderSvc = async () => {
   const getFirstDoc = (folderId: string): Promise<Doc | null> =>
     folderDocumentDb.getFirstDoc(db, folderId);
 
-  return { create, getSorted, getById, touch, reorder, remove, addDoc, removeDoc, getFolderIdsByDoc, getFirstDoc };
+  // 元函数：查询归档下全部文档（按加入顺序 sort_order 升序）
+  const getDocs = (folderId: string): Promise<Doc[]> =>
+    folderDocumentDb.getDocsByFolder(db, folderId);
+
+  return { create, getSorted, getById, touch, reorder, remove, addDoc, removeDoc, getFolderIdsByDoc, getFirstDoc, getDocs };
 };
