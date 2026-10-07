@@ -41,10 +41,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-full h-full flex">
+  <div class="w-full h-full flex rounded-2xl">
     <DocTabs />
-    <div class="flex-1 overflow-hidden">
-      <div class="w-full h-full bg-gray-50 flex justify-center overflow-y-auto">
+    <div class="flex-1 overflow-hidden pr-2 pb-2 ">
+      <div class="w-full h-full bg-gray-50 rounded-lg flex justify-center overflow-y-auto">
         <div class="min-w-0 w-full max-w-200">
           <DocSort v-if="docTabStore.tab === 'docSort'" />
           <DocSearch v-else-if="docTabStore.tab === 'docSearch'" />

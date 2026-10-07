@@ -107,7 +107,7 @@ const handleTitleTab = () => {
 </script>
 
 <template>
-  <div class="flex-1 overflow-hidden">
+  <div class="flex-1 overflow-hidden bg-white">
     <div class="w-full h-full flex flex-col">
       <!-- Toolbar：不占用 flex 空间，固定高度 -->
       <RichTextToolbar :editor="editor" class="shrink-0" />

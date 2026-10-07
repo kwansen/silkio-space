@@ -16,7 +16,7 @@ const handleReset = () => {
 </script>
 
 <template>
-  <div class="w-screen h-screen flex flex-col overflow-hidden">
+  <div class="w-screen h-screen flex flex-col overflow-hidden bg-gray-200">
     <WindowControl v-if="label === 'main' || 'editor'" @on-hide="handleReset" />
     <div class="flex-1 flex overflow-hidden">
       <MainView v-if="label === 'main'" />

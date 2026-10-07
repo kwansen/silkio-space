@@ -2,6 +2,7 @@
 import ArchiveTree from "@/components/sections/ArchiveTree/ArchiveTree.vue";
 import RichText from "@/components/sections/RichText/RichText.vue";
 import MindMapCanvas from "@/components/sections/MindMapCanvas/MindMapCanvas.vue";
+import Empty from "@/components/shared/Empty.vue";
 import { useEditorViewStore } from "@/stores/editorView";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -57,6 +58,10 @@ onMounted(async () => {
           console.log(
             `[perf] editor setDoc done +${(performance.now() - t).toFixed(0)}ms`,
           );
+        } else if (type === "folder") {
+          // 归档暂无可渲染内容：清空当前文档并直接显示窗口（文档内容由 on-ready 触发显示）
+          setDoc(null);
+          await show();
         }
       } catch (e) {
         console.error(e);
@@ -78,14 +83,22 @@ onUnmounted(() => {
 <template>
   <div class="w-full h-full flex">
     <ArchiveTree />
-    <RichText
-      v-if="store.doc?.doc_type === 'richText'"
-      :key="store.key"
-      @on-ready="show" />
-    <MindMapCanvas
-      v-if="store.doc?.doc_type === 'mindMap'"
-      :key="store.key"
-      @on-ready="show" />
-    <!-- <FlowChart /> -->
+    <!-- 无文档时（如打开归档）渲染空状态占位 -->
+    <div class="flex-1 pr-2 pb-2">
+      <div class="w-full h-full bg-white rounded-lg overflow-hidden">
+        <Empty v-if="!store.doc" />
+        <RichText
+          v-if="store.doc?.doc_type === 'richText'"
+          :key="store.key"
+          @on-ready="show"
+        />
+        <MindMapCanvas
+          v-if="store.doc?.doc_type === 'mindMap'"
+          :key="store.key"
+          @on-ready="show"
+        />
+        <!-- <FlowChart /> -->
+      </div>
+    </div>
   </div>
 </template>
