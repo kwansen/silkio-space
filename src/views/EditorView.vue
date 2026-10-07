@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ArchiveTree from "@/components/sections/ArchiveTree/ArchiveTree.vue";
 import RichText from "@/components/sections/RichText/RichText.vue";
 import MindMapCanvas from "@/components/sections/MindMapCanvas/MindMapCanvas.vue";
 import Empty from "@/components/shared/Empty.vue";
@@ -7,11 +6,13 @@ import { useEditorViewStore } from "@/stores/editorView";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useDocSvc } from "@/services/document.ts";
+import { useFolderSvc } from "@/services/folder.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import { onMounted, onUnmounted } from "vue";
+import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
 
 const store = useEditorViewStore();
-const { setKey, setDoc } = store;
+const { setKey, setDoc, setFolder } = store;
 
 let stopOnOpen: (() => void) | null;
 let stopOnClose: (() => void) | null;
@@ -55,11 +56,15 @@ onMounted(async () => {
             `[perf] editor getById done +${(performance.now() - t).toFixed(0)}ms`,
           );
           setDoc(doc);
+          setFolder(null);
           console.log(
             `[perf] editor setDoc done +${(performance.now() - t).toFixed(0)}ms`,
           );
         } else if (type === "folder") {
-          // 归档暂无可渲染内容：清空当前文档并直接显示窗口（文档内容由 on-ready 触发显示）
+          // 归档暂无可渲染内容：加载归档信息、清空当前文档并直接显示窗口（文档内容由 on-ready 触发显示）
+          const folderSvc = await useFolderSvc();
+          const folder = await folderSvc.getById(id);
+          setFolder(folder);
           setDoc(null);
           await show();
         }
@@ -82,7 +87,7 @@ onUnmounted(() => {
 
 <template>
   <div class="w-full h-full flex">
-    <ArchiveTree />
+    <LeftBar />
     <!-- 无文档时（如打开归档）渲染空状态占位 -->
     <div class="flex-1 pr-2 pb-2">
       <div class="w-full h-full bg-white rounded-lg overflow-hidden">

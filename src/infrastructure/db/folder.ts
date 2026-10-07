@@ -69,6 +69,12 @@ export const useFolderDb = () => {
     }
   };
 
+  // 元函数：根据 id 查询单个归档
+  const getById = async (db: Database, id: string): Promise<Folder | null> => {
+    const rows = await db.select<Folder[]>("SELECT * FROM folders WHERE id = $1", [id]);
+    return rows.length > 0 ? rows[0] : null;
+  };
+
   // 元函数：按指定字段与方向查询排序后的全部归档（数量少，不分页）
   const getSorted = async (
     db: Database,
@@ -80,5 +86,5 @@ export const useFolderDb = () => {
     );
   };
 
-  return { create, remove, touch, getSorted, reorder };
+  return { create, remove, touch, getById, getSorted, reorder };
 };

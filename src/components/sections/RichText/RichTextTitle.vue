@@ -29,7 +29,7 @@ defineExpose({ focus: () => titleAreaRef.value?.focus() });
 <template>
   <TitleArea
     ref="titleAreaRef"
-    :class="class"
+    :class="props.class"
     v-model="title"
     placeholder="请输入标题"
     @on-change="emit('onChange')"

@@ -15,6 +15,9 @@ export const useFolderSvc = async () => {
   const getSorted = (sortField: FolderSortField): Promise<Folder[]> =>
     folderDb.getSorted(db, sortField, sortField === "viewed_at" ? "DESC" : "ASC");
 
+  // 元函数：根据 id 查询单个归档
+  const getById = (id: string): Promise<Folder | null> => folderDb.getById(db, id);
+
   // 元函数：更新归档浏览时间（打开归档时调用）
   const touch = (id: string): Promise<void> => folderDb.touch(db, id);
 
@@ -24,5 +27,5 @@ export const useFolderSvc = async () => {
   // 元函数：删除单个归档
   const remove = (id: string): Promise<void> => folderDb.remove(db, id);
 
-  return { create, getSorted, touch, reorder, remove };
+  return { create, getSorted, getById, touch, reorder, remove };
 };

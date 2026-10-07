@@ -3,6 +3,7 @@ import { useWindowControl } from "@/composables/useWindowControl";
 import { useHover } from "@/composables/useHover.ts";
 import SquareButton from "@/components/shared/SquareButton.vue";
 import { windowControlIcons } from "@/icons/windowControlIcons";
+import ListAndOutline from "./ListAndOutline.vue";
 
 interface Emits {
   onHide: [];
@@ -36,7 +37,9 @@ const handleHide = () => {
 
 <template>
   <div class="h-10 flex desktop-draggable">
-    <div class="flex-1"></div>
+    <div class="flex-1 flex items-center">
+      <ListAndOutline></ListAndOutline>
+    </div>
     <SquareButton
       v-minimize-hover
       :class="[isMinimizeHover ? 'bg-gray-100' : '']"
