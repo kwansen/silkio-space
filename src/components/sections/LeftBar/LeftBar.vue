@@ -168,7 +168,7 @@ const scrollToHeading = (index: number) => {
         :style="{ paddingLeft: `calc(${(h.level - 1) * 12}px + 8px)` }"
         @click="scrollToHeading(h.index)"
       >
-        <div class="truncate">{{ h.text || "无标题" }}</div>
+        <div class="truncate">{{ h.text || "未命名标题" }}</div>
       </div>
     </div>
   </div>
