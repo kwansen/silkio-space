@@ -25,9 +25,11 @@ pub fn run() {
         .setup(|app| {
             tray::setup_tray(app)?;
             window_manager::init_editor_window(app)?;
-            // 初始化搜索索引并托管给 tauri 状态
-            let index = search::init_index(app.handle())?;
-            app.manage(index);
+            // 初始化搜索状态（writer 仅启动时创建一次）并托管给 tauri 状态
+            let state = search::init_search_state(app.handle())?;
+            app.manage(state);
+            // 后台预热 jieba 词典（懒加载约1s），避免首个文档创建索引时卡顿，且不阻塞窗口显示
+            std::thread::spawn(search::warmup_tokenizer);
             Ok(())
         })
         .run(tauri::generate_context!())

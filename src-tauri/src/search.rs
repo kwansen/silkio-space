@@ -1,10 +1,27 @@
+use std::sync::Mutex;
+
 use tantivy::collector::TopDocs;
 use tantivy::query::QueryParser;
 use tantivy::schema::*;
-use tantivy::tokenizer::TextAnalyzer;
-use tantivy::{doc, Index, IndexWriter};
+use tantivy::tokenizer::{TextAnalyzer, TokenStream};
+use tantivy::{doc, Index, IndexWriter, TantivyDocument};
 use tantivy_jieba::JiebaTokenizer;
 use tauri::Manager;
+
+// 搜索状态：索引与全局复用的写入器
+// writer 创建成本高（分配内存池 + 启动索引线程），启动时创建一次、全程复用
+pub struct SearchState {
+    pub index: Index,
+    pub writer: Mutex<IndexWriter<TantivyDocument>>,
+}
+
+// 后台预热 jieba 词典：词典为懒加载（首次分词时才加载，约1s），
+// 启动时后台触发一次分词，避免首个文档创建索引时卡顿
+pub fn warmup_tokenizer() {
+    let mut tokenizer = TextAnalyzer::from(JiebaTokenizer::default());
+    let mut stream = tokenizer.token_stream("搜索索引预热");
+    while stream.advance() {}
+}
 
 // 初始化索引，使用 tauri 数据目录持久化索引
 pub fn init_index(app: &tauri::AppHandle) -> Result<Index, String> {
@@ -55,6 +72,16 @@ pub fn init_index(app: &tauri::AppHandle) -> Result<Index, String> {
     Ok(index)
 }
 
+// 初始化搜索状态：打开索引并在启动时一次性创建写入器
+pub fn init_search_state(app: &tauri::AppHandle) -> Result<SearchState, String> {
+    let index = init_index(app)?;
+    let writer = index.writer(50_000_000).map_err(|e| e.to_string())?;
+    Ok(SearchState {
+        index,
+        writer: Mutex::new(writer),
+    })
+}
+
 // 从索引schema中取出id、标题、内容字段
 pub fn get_fields(index: &Index) -> Result<(Field, Field, Field), String> {
     // 获取schema并查询三个字段
@@ -68,7 +95,7 @@ pub fn get_fields(index: &Index) -> Result<(Field, Field, Field), String> {
 // 创建单个文档，委托批量创建实现
 #[tauri::command]
 pub fn create_doc_index(
-    state: tauri::State<Index>,
+    state: tauri::State<SearchState>,
     id: String,
     title: String,
     content: String,
@@ -79,13 +106,13 @@ pub fn create_doc_index(
 // 批量创建文档并一次性提交
 #[tauri::command]
 pub fn create_index_batch(
-    state: tauri::State<Index>,
+    state: tauri::State<SearchState>,
     docs: Vec<(String, String, String)>,
 ) -> Result<(), String> {
-    // 获取索引及字段并构建写入器
-    let index = state.inner();
+    // 获取索引字段并复用全局写入器
+    let index = &state.index;
     let (id_field, title_field, content_field) = get_fields(index)?;
-    let mut writer = index.writer(50_000_000).map_err(|e| e.to_string())?;
+    let mut writer = state.writer.lock().map_err(|e| e.to_string())?;
     // 循环添加所有文档
     for (id, title, content) in docs {
         writer
@@ -102,18 +129,20 @@ pub fn create_index_batch(
 
 // 根据 id 删除单个文档，委托批量删除实现
 #[tauri::command]
-pub fn delete_index(state: tauri::State<Index>, id: String) -> Result<(), String> {
+pub fn delete_index(state: tauri::State<SearchState>, id: String) -> Result<(), String> {
     delete_index_batch(state, vec![id])
 }
 
 // 批量删除索引中的文档并一次性提交
 #[tauri::command]
-pub fn delete_index_batch(state: tauri::State<Index>, ids: Vec<String>) -> Result<(), String> {
-    // 获取索引及id字段并构建写入器
-    let index = state.inner();
+pub fn delete_index_batch(
+    state: tauri::State<SearchState>,
+    ids: Vec<String>,
+) -> Result<(), String> {
+    // 获取索引id字段并复用全局写入器
+    let index = &state.index;
     let (id_field, _, _) = get_fields(index)?;
-    let mut writer: IndexWriter<TantivyDocument> =
-        index.writer(50_000_000).map_err(|e| e.to_string())?;
+    let mut writer = state.writer.lock().map_err(|e| e.to_string())?;
     // 循环删除所有 id
     for id in ids {
         writer.delete_term(Term::from_field_text(id_field, &id));
@@ -134,9 +163,12 @@ pub struct SearchResult {
 
 // 执行全文搜索，返回匹配的文档列表
 #[tauri::command]
-pub fn search(state: tauri::State<Index>, query_str: String) -> Result<Vec<SearchResult>, String> {
+pub fn search(
+    state: tauri::State<SearchState>,
+    query_str: String,
+) -> Result<Vec<SearchResult>, String> {
     // 获取索引及字段并构建搜索器
-    let index = state.inner();
+    let index = &state.index;
     let (id_field, title_field, content_field) = get_fields(index)?;
     let reader = index.reader().map_err(|e| e.to_string())?;
     let searcher = reader.searcher();
