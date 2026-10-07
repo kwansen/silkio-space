@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DocList, { Item } from "@/components/shared/DocList.vue";
+import ArchivePickerDialog from "@/components/shared/ArchivePickerDialog.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed, ref } from "vue";
 import { useSortDocStore } from "@/stores/sortDoc";
@@ -43,8 +44,19 @@ const handleClick = (item: Item) => {
 // 元函数：组装排序文档组合式函数
 const { removeDoc } = useSortDocs();
 
-// popover 菜单：删除当前文档（key 由 DocList 注入，为当前文档 id）
-const popoverList = ref<PopoverItem[]>([
+// 待归档文档 id：非空时渲染归档选择弹窗
+const archiveDocId = ref<string | null>(null);
+
+// popover 菜单：归档（打开独立多选弹窗）与删除（key 由 DocList 注入，为当前文档 id）
+const popoverList = computed<PopoverItem[]>(() => [
+  {
+    icon: "mdi:archive-outline",
+    name: "归档",
+    action: (key) => {
+      if (key === null || key === undefined) return;
+      archiveDocId.value = String(key);
+    },
+  },
   {
     icon: "mdi:delete-outline",
     name: "删除",
@@ -58,6 +70,7 @@ const popoverList = ref<PopoverItem[]>([
 
 <template>
   <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
+  <ArchivePickerDialog :doc-id="archiveDocId" @on-close="archiveDocId = null" />
   <div v-if="items.length<1" class="h-15 flex items-center justify-center border-b border-gray-100">
     暂无文档，新建一个吧！
   </div> 

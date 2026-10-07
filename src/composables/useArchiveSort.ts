@@ -41,5 +41,16 @@ export const useArchiveSort = () => {
     await refreshFolders();
   };
 
-  return { refreshFolders, createFolder, touchFolder, reorderFolders, removeFolder };
+  // 元函数：将文档加入归档（幂等，重复加入自动忽略）
+  const addDocToFolder = (folderId: string, docId: string) =>
+    folderSvc.addDoc(folderId, docId);
+
+  // 元函数：将文档移出归档
+  const removeDocFromFolder = (folderId: string, docId: string) =>
+    folderSvc.removeDoc(folderId, docId);
+
+  // 元函数：查询文档已加入的归档 id 集合
+  const getFolderIdsByDoc = (docId: string) => folderSvc.getFolderIdsByDoc(docId);
+
+  return { refreshFolders, createFolder, touchFolder, reorderFolders, removeFolder, addDocToFolder, removeDocFromFolder, getFolderIdsByDoc };
 };
