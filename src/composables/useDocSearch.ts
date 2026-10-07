@@ -42,5 +42,14 @@ export const useDocSearch = () => {
     docSearchStore.setCurrentPage(page);
   };
 
-  return { searchDocs, goToPage };
+  // 元函数：删除文档并同步移除搜索结果中的对应项（当前页越界时回退到有效页）
+  const removeDoc = async (id: string) => {
+    await docSvc.remove(id);
+    docSearchStore.setResults(docSearchStore.results.filter((r) => r.id !== id));
+    if (docSearchStore.currentPage > docSearchStore.totalPages) {
+      docSearchStore.setCurrentPage(Math.max(docSearchStore.totalPages, 1));
+    }
+  };
+
+  return { searchDocs, goToPage, removeDoc };
 };
