@@ -7,6 +7,8 @@ import { useEditorViewStore } from "@/stores/editorView";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import RichTextTitle from "./RichTextTitle.vue";
 import { createRichtextEditor } from "@/composables/useRichtext.ts";
+import "overlayscrollbars/overlayscrollbars.css";
+import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
 
 interface Emits {
   onReady: [];
@@ -91,9 +93,7 @@ const handleTitleChange = () => {
   if (!doc?.id) return;
   // 元函数：标题变化时同步到编辑视图 store，保持侧栏标题实时更新
   doc.title = title.value;
-  updateTitle(doc.id, title.value)
-    .then(notifyMainRefresh)
-    .catch(console.error);
+  updateTitle(doc.id, title.value).then(notifyMainRefresh).catch(console.error);
 };
 
 // 元函数：标题回车时在编辑器文档开头插入空段落并聚焦开头
@@ -116,15 +116,11 @@ const handleTitleTab = () => {
 </script>
 
 <template>
-  <div class="flex-1 overflow-hidden bg-white">
-    <div class="w-full h-full flex flex-col">
-      <!-- Toolbar：不占用 flex 空间，固定高度 -->
-      <RichTextToolbar :editor="editor" class="shrink-0" />
-
-      <!-- 滚动容器：flex-1 让它占据剩余全部高度 -->
-      <div ref="scrollAreaRef" class="flex-1 min-h-0 overflow-y-auto">
-        <div
-          class="w-full max-w-200 mx-auto min-h-full flex flex-col bg-gray-50">
+  <div class="w-full h-full" ref="scrollAreaRef">
+    <OverlayScrollbarsComponent defer class="w-full h-full">
+        <!-- Toolbar：不占用 flex 空间，固定高度 -->
+        <RichTextToolbar :editor="editor" class="sticky top-0 z-10" />
+        <div class="w-full max-w-200 mx-auto flex flex-col">
           <RichTextTitle
             ref="titleRef"
             :editor="editor"
@@ -132,17 +128,16 @@ const handleTitleTab = () => {
             class="w-full px-4 py-2"
             @on-change="handleTitleChange"
             @on-enter="handleTitleEnter"
-            @on-tab="handleTitleTab" />
-          <RichTextEditor
-            :editor="editor"
-            class="bg-blue-50 px-4 py-2 outline-none" />
+            @on-tab="handleTitleTab"
+          />
+          <RichTextEditor :editor="editor" class="px-4 pt-4 outline-none" />
           <div
             class="flex-1 bg-green-100"
             :style="{ minHeight: minHalfHeight }"
-            @click="handleBlankClick"></div>
+            @click="handleBlankClick"
+          ></div>
         </div>
-      </div>
-    </div>
+    </OverlayScrollbarsComponent>
   </div>
 </template>
 <style>

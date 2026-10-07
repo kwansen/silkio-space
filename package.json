@@ -60,6 +60,8 @@
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
     "leafer-ui": "^2.2.9",
+    "overlayscrollbars": "^2.16.0",
+    "overlayscrollbars-vue": "^0.5.10",
     "pinia": "^4.0.2",
     "simple-mind-map": "0.14.0-fix.3",
     "tailwind-merge": "^3.6.0",
