@@ -41,6 +41,15 @@ export const useArchiveSearch = () => {
     if (archiveSearchStore.query.trim()) searchFolders(archiveSearchStore.query);
   };
 
+  // 元函数：重命名归档并同步更新索引、快照与搜索结果
+  const renameFolder = async (id: string, name: string) => {
+    await folderSvc.rename(id, name);
+    const folder = folderMap.get(id);
+    if (folder) folderMap.set(id, { ...folder, name });
+    index.add(id, name);
+    if (archiveSearchStore.query.trim()) searchFolders(archiveSearchStore.query);
+  };
+
   // 元函数：删除归档并同步移除索引与搜索结果
   const removeFolder = async (id: string) => {
     await folderSvc.remove(id);
@@ -51,5 +60,5 @@ export const useArchiveSearch = () => {
     );
   };
 
-  return { searchFolders, refreshFolders, removeFolder };
+  return { searchFolders, refreshFolders, renameFolder, removeFolder };
 };

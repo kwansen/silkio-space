@@ -52,6 +52,14 @@ export const useFolderDb = () => {
     ]);
   };
 
+  // 元函数：重命名归档并刷新 updated_at
+  const rename = async (db: Database, id: string, name: string): Promise<void> => {
+    await db.execute(
+      "UPDATE folders SET name = $1, updated_at = $2 WHERE id = $3",
+      [name, Date.now(), id],
+    );
+  };
+
   // 排序字段 → SQL ORDER BY 表达式
   const orderByExpr: Record<FolderSortField, string> = {
     sort_order: "sort_order",
@@ -86,5 +94,5 @@ export const useFolderDb = () => {
     );
   };
 
-  return { create, remove, touch, getById, getSorted, reorder };
+  return { create, remove, touch, rename, getById, getSorted, reorder };
 };

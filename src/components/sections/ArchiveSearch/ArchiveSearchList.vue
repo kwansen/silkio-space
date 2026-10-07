@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import DocList, { Item } from "@/components/shared/DocList.vue";
+import ArchiveRenameDialog from "@/components/shared/ArchiveRenameDialog.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed, ref } from "vue";
 import { useArchiveSearchStore } from "@/stores/archiveSearch";
 import { useArchiveSearch } from "@/composables/useArchiveSearch.ts";
+import type { Folder } from "@/infrastructure/db/folder.ts";
 
 export type { Item };
 
@@ -31,10 +33,33 @@ const handleClick = (item: Item) => {
 };
 
 // 元函数：组装归档搜索组合式函数
-const { removeFolder } = useArchiveSearch();
+const { renameFolder, removeFolder } = useArchiveSearch();
 
-// popover 菜单：删除当前归档（key 由 DocList 注入，为当前归档 id）
+// 待编辑归档：非空时渲染重命名弹窗
+const editFolder = ref<Folder | null>(null);
+
+// 元函数：确认编辑后重命名并同步索引，完成后关闭弹窗
+const handleRename = async (name: string) => {
+  if (!editFolder.value) return;
+  try {
+    await renameFolder(editFolder.value.id, name);
+  } catch (e) {
+    console.error(e);
+  }
+  editFolder.value = null;
+};
+
+// popover 菜单：编辑（打开重命名弹窗）与删除（key 由 DocList 注入，为当前归档 id）
 const popoverList = ref<PopoverItem[]>([
+  {
+    icon: "mdi:pencil-outline",
+    name: "编辑",
+    action: (key) => {
+      if (key === null || key === undefined) return;
+      editFolder.value =
+        archiveSearchStore.results.find((f) => f.id === String(key)) ?? null;
+    },
+  },
   {
     icon: "mdi:delete-outline",
     name: "删除",
@@ -48,6 +73,11 @@ const popoverList = ref<PopoverItem[]>([
 
 <template>
   <DocList :list="items" :popover-list="popoverList" simple @onClick="handleClick" />
+  <ArchiveRenameDialog
+    :folder="editFolder"
+    @on-close="editFolder = null"
+    @on-confirm="handleRename"
+  />
   <div
     v-if="items.length < 1 && archiveSearchStore.query"
     class="h-15 flex items-center justify-center border-b border-gray-100"

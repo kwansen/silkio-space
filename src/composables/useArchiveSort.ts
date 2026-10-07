@@ -30,6 +30,12 @@ export const useArchiveSort = () => {
     await refreshFolders();
   };
 
+  // 元函数：重命名归档并刷新列表
+  const renameFolder = async (id: string, name: string) => {
+    await folderSvc.rename(id, name);
+    await refreshFolders();
+  };
+
   // 元函数：将当前列表顺序持久化为 sort_order（0,1,2...）
   const reorderFolders = async () => {
     await folderSvc.reorder(archiveSortStore.folders.map((f) => f.id));
@@ -52,5 +58,5 @@ export const useArchiveSort = () => {
   // 元函数：查询文档已加入的归档 id 集合
   const getFolderIdsByDoc = (docId: string) => folderSvc.getFolderIdsByDoc(docId);
 
-  return { refreshFolders, createFolder, touchFolder, reorderFolders, removeFolder, addDocToFolder, removeDocFromFolder, getFolderIdsByDoc };
+  return { refreshFolders, createFolder, touchFolder, renameFolder, reorderFolders, removeFolder, addDocToFolder, removeDocFromFolder, getFolderIdsByDoc };
 };
