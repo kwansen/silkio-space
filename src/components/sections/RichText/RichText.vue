@@ -71,9 +71,15 @@ const editor = createRichtextEditor({
   content: parseContent(),
   onUpdated() {
     const ed = editor.value;
-    if (!ed || !store.doc?.id) return;
+    const doc = store.doc;
+    if (!ed || !doc?.id) return;
+    const content = JSON.stringify(ed.getJSON());
+    const plainText = ed.getText();
+    // 元函数：内容变化时同步到编辑视图 store，保持侧栏大纲实时更新
+    doc.content = content;
+    doc.plain_text = plainText;
     // 元函数：内容变化时保存 JSON 内容与纯文本，并通知 main 窗口刷新列表
-    updateContent(store.doc.id, JSON.stringify(ed.getJSON()), ed.getText())
+    updateContent(doc.id, content, plainText)
       .then(notifyMainRefresh)
       .catch(console.error);
   },
@@ -81,8 +87,11 @@ const editor = createRichtextEditor({
 
 // 元函数：标题失焦时保存标题，并通知 main 窗口刷新列表
 const handleTitleChange = () => {
-  if (!store.doc?.id) return;
-  updateTitle(store.doc.id, title.value)
+  const doc = store.doc;
+  if (!doc?.id) return;
+  // 元函数：标题变化时同步到编辑视图 store，保持侧栏标题实时更新
+  doc.title = title.value;
+  updateTitle(doc.id, title.value)
     .then(notifyMainRefresh)
     .catch(console.error);
 };
