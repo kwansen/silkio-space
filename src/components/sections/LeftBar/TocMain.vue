@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import EmptyTip from "@/components/shared/EmptyTip.vue";
 import { useEditorViewStore } from "@/stores/editorView";
+import TocEmpty from "./TocEmpty.vue";
+import ScrollArea from "@/components/shared/ScrollArea.vue";
 
 const store = useEditorViewStore();
 
@@ -54,8 +55,8 @@ const scrollToHeading = (index: number) => {
 </script>
 <template>
   <!-- 当前文档大纲：点击滚动到对应标题 -->
-  <div class="flex-1 min-h-0 overflow-y-auto flex flex-col gap-0.5">
-    <EmptyTip v-if="outline.length < 1" text="暂无大纲" />
+  <ScrollArea>
+    <TocEmpty />
     <div
       v-for="h in outline"
       :key="h.index"
@@ -65,5 +66,5 @@ const scrollToHeading = (index: number) => {
     >
       <div class="truncate">{{ h.text || "未命名标题" }}</div>
     </div>
-  </div>
+  </ScrollArea>
 </template>

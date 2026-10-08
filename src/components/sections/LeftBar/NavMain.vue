@@ -3,7 +3,6 @@ import { ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import draggable from "vuedraggable";
 import { useEventListener } from "@vueuse/core";
-import EmptyTip from "@/components/shared/EmptyTip.vue";
 import TextButton from "@/components/shared/TextButton.vue";
 import { useEditorViewStore } from "@/stores/editorView";
 import { useDocSvc } from "@/services/document.ts";
@@ -11,6 +10,7 @@ import { useFolderSvc } from "@/services/folder.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import { docTypeIcons, type DocTypeIconKey } from "@/icons";
 import type { Doc } from "@/infrastructure/db/document.ts";
+import NavEmpty from "./NavEmpty.vue";
 
 const store = useEditorViewStore();
 const { setDoc, setKey } = store;
@@ -111,18 +111,12 @@ const handleRemove = async () => {
 useEventListener(window, "keydown", (e: KeyboardEvent) => {
   if (e.key === "Escape" && removeTarget.value) removeTarget.value = null;
 });
-
 </script>
 <template>
   <!-- 归档文档列表：按 sort_order 升序，支持拖拽排序，点击切换渲染 -->
-  <div class="">
-    <EmptyTip v-if="docs.length < 1" text="暂无文档" />
-    <draggable
-      :list="docs"
-      item-key="id"
-      :animation="150"
-      @end="handleDragEnd"
-    >
+  <div>
+    <NavEmpty v-if="docs.length < 1" />
+    <draggable :list="docs" item-key="id" :animation="150" @end="handleDragEnd">
       <template #item="{ element }">
         <div
           class="h-8 rounded-md mt-0.5 flex items-center gap-2 px-2 select-none shrink-0 group"
@@ -137,7 +131,9 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
             :icon="iconFor(element)"
             class="w-4 h-4 shrink-0"
             :class="
-              element.id === store.doc?.id ? 'text-purple-600' : 'text-neutral-400'
+              element.id === store.doc?.id
+                ? 'text-purple-600'
+                : 'text-neutral-400'
             "
           />
           <div class="truncate flex-1">{{ element.title || "未命名标题" }}</div>

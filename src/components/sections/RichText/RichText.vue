@@ -8,8 +8,7 @@ import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import RichTextTitle from "./RichTextTitle.vue";
 import { createRichtextEditor } from "@/composables/useRichtext.ts";
 import "@/assets/richtext/index.css";
-import "overlayscrollbars/overlayscrollbars.css";
-import { OverlayScrollbarsComponent } from "overlayscrollbars-vue";
+import ScrollArea from "@/components/shared/ScrollArea.vue";
 
 interface Emits {
   onReady: [];
@@ -115,32 +114,30 @@ const handleTitleTab = () => {
 
 <template>
   <div class="w-full h-full" ref="scrollAreaRef">
-    <OverlayScrollbarsComponent defer class="w-full h-full">
-        <!-- Toolbar：不占用 flex 空间，固定高度 -->
-        <RichTextToolbar :editor="editor" class="sticky top-0 z-10" />
-        <div class="w-full max-w-176 mx-auto flex flex-col">
-          <RichTextTitle
-            ref="titleRef"
-            :editor="editor"
-            v-model="title"
-            class="w-full py-2"
-            @on-input="handleTitleChange"
-            @on-enter="handleTitleEnter"
-            @on-tab="handleTitleTab"
-          />
-          <RichTextEditor :editor="editor" class="pt-6 outline-none" />
-          <div
-            class="flex-1"
-            :style="{ minHeight: minHalfHeight }"
-            @click="handleBlankClick"
-          ></div>
-        </div>
-    </OverlayScrollbarsComponent>
+    <ScrollArea>
+      <RichTextToolbar :editor="editor" class="sticky top-0 z-10" />
+      <div class="w-full max-w-176 mx-auto flex flex-col">
+        <RichTextTitle
+          ref="titleRef"
+          :editor="editor"
+          v-model="title"
+          class="w-full py-2"
+          @on-input="handleTitleChange"
+          @on-enter="handleTitleEnter"
+          @on-tab="handleTitleTab"
+        />
+        <RichTextEditor :editor="editor" class="pt-6 outline-none" />
+        <div
+          class="flex-1"
+          :style="{ minHeight: minHalfHeight }"
+          @click="handleBlankClick"
+        ></div>
+      </div>
+    </ScrollArea>
   </div>
 </template>
 <style>
 .ProseMirror:focus {
   outline: none !important;
 }
-/* 高亮、任务列表等扩展样式见 src/assets/richtext/ */
 </style>
