@@ -13,6 +13,7 @@ const props = defineProps<Props>();
 
 interface Emits {
   onChange: [];
+  onInput: [];
   onEnter: [];
   onTab: [];
 }
@@ -33,6 +34,7 @@ defineExpose({ focus: () => titleAreaRef.value?.focus() });
     v-model="title"
     placeholder="请输入标题"
     @on-change="emit('onChange')"
+    @on-input="emit('onInput')"
     @on-enter="emit('onEnter')"
     @on-tab="emit('onTab')" />
 </template>

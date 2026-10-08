@@ -85,7 +85,7 @@ const editor = createRichtextEditor({
   },
 });
 
-// 元函数：标题失焦时保存标题，并通知 main 窗口刷新列表
+// 元函数：标题输入时同步到编辑视图 store（侧栏标题实时更新）并保存，通知 main 窗口刷新列表
 const handleTitleChange = () => {
   const doc = store.doc;
   if (!doc?.id) return;
@@ -124,7 +124,7 @@ const handleTitleTab = () => {
             :editor="editor"
             v-model="title"
             class="w-full py-2"
-            @on-change="handleTitleChange"
+            @on-input="handleTitleChange"
             @on-enter="handleTitleEnter"
             @on-tab="handleTitleTab"
           />

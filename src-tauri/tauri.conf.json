@@ -12,9 +12,19 @@
   "app": {
     "windows": [
       {
-        "title": "keyflow-desktop",
+        "label": "main",
         "width": 800,
         "height": 600,
+        "decorations": false,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "editor",
+        "width": 800,
+        "height": 600,
+        "minWidth": 800,
+        "minHeight": 600,
+        "visible": false,
         "decorations": false,
         "dragDropEnabled": false
       }
@@ -25,10 +35,7 @@
   },
   "plugins": {
     "sql": {
-      "preload": [
-        "sqlite:keyflow.db",
-        "sqlite:keyflowdev.db"
-      ]
+      "preload": ["sqlite:keyflow.db", "sqlite:keyflowdev.db"]
     }
   },
   "bundle": {

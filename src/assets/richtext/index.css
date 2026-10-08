@@ -17,12 +17,8 @@
 /* ===== 编辑器排版基础 ===== */
 /* 字体：系统级无衬线栈，优先原生系统字体，保证中文渲染质量 */
 .ProseMirror {
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC",
-    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue",
-    Arial, sans-serif;
   /* 正文略大于全局 text-sm，配合窄栏形成舒适的阅读密度 */
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.8;
   color: var(--color-neutral-700);
   text-rendering: optimizeLegibility;

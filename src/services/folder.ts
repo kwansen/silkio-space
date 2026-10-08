@@ -55,5 +55,9 @@ export const useFolderSvc = async () => {
   const getDocs = (folderId: string): Promise<Doc[]> =>
     folderDocumentDb.getDocsByFolder(db, folderId);
 
-  return { create, getSorted, getById, touch, rename, reorder, remove, addDoc, removeDoc, getFolderIdsByDoc, getFirstDoc, getDocs };
+  // 元函数：按传入文档 id 顺序批量持久化归档内文档的手动排序结果
+  const reorderDocs = (folderId: string, documentIds: string[]): Promise<void> =>
+    folderDocumentDb.reorder(db, folderId, documentIds);
+
+  return { create, getSorted, getById, touch, rename, reorder, remove, addDoc, removeDoc, getFolderIdsByDoc, getFirstDoc, getDocs, reorderDocs };
 };

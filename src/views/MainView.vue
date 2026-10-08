@@ -9,6 +9,7 @@ import { useSortDocs } from "@/composables/useSortDocs.ts";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { onMounted, onUnmounted } from "vue";
+import DocListView from "@/components/sections/LeftBar/DocListView.vue";
 
 const docTabStore = useDocTabStore();
 // 元函数：组装排序文档组合式函数

@@ -74,5 +74,19 @@ export const useFolderDocumentDb = () => {
     );
   };
 
-  return { add, remove, getFolderIdsByDoc, getFirstDoc, getDocsByFolder };
+  // 元函数：按传入文档 id 顺序批量重写该归档内 sort_order（0,1,2...），用于手动拖拽排序持久化
+  const reorder = async (
+    db: Database,
+    folderId: string,
+    documentIds: string[],
+  ): Promise<void> => {
+    for (let i = 0; i < documentIds.length; i++) {
+      await db.execute(
+        "UPDATE folder_document SET sort_order = $1 WHERE folder_id = $2 AND document_id = $3",
+        [i, folderId, documentIds[i]],
+      );
+    }
+  };
+
+  return { add, remove, getFolderIdsByDoc, getFirstDoc, getDocsByFolder, reorder };
 };
