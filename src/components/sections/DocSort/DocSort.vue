@@ -4,6 +4,7 @@ import DocSortOption from "./DocSortOption.vue";
 import DocSortPagination from "./DocSortPagination.vue";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
 import { useSortDocStore } from "@/stores/sortDoc";
+import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 
 const sortDocStore = useSortDocStore();
 
@@ -14,7 +15,7 @@ const { touchDoc } = useSortDocs();
 // [日志]
 const handleClick = (item: Item) => {
   touchDoc(String(item.key))
-    .then(() => {})
+    .then(() => notifyEditorOpen("doc", String(item.key)))
     .catch(console.error);
 };
 </script>

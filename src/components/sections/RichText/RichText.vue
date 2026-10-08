@@ -123,14 +123,14 @@ const handleTitleTab = () => {
             ref="titleRef"
             :editor="editor"
             v-model="title"
-            class="w-full px-6 py-2"
+            class="w-full py-2"
             @on-change="handleTitleChange"
             @on-enter="handleTitleEnter"
             @on-tab="handleTitleTab"
           />
-          <RichTextEditor :editor="editor" class="px-6 pt-6 pb-4 outline-none" />
+          <RichTextEditor :editor="editor" class="pt-6 outline-none" />
           <div
-            class="flex-1 bg-green-100"
+            class="flex-1"
             :style="{ minHeight: minHalfHeight }"
             @click="handleBlankClick"
           ></div>
