@@ -20,7 +20,7 @@ const store = useEditorViewStore();
     <div
       v-for="view in views"
       :key="view.key"
-      class="h-7 px-3 flex items-center rounded-md text-xs cursor-pointer transition-colors duration-200"
+      class="h-7 px-3 flex items-center rounded-md text-xs transition-colors duration-200"
       :class="
         store.sidebarView === view.key
           ? 'bg-gray-100 text-neutral-700'

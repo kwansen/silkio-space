@@ -1,5 +1,6 @@
 import { useFolderSvc } from "@/services/folder.ts";
 import { useArchiveSearchStore } from "@/stores/archiveSearch";
+import { notifyEditorFolderChange } from "@/infrastructure/api/windowEvent.ts";
 import { TitleInvertedIndex } from "@/utils/invertedIndex.ts";
 import type { Folder } from "@/infrastructure/db/folder.ts";
 
@@ -41,16 +42,17 @@ export const useArchiveSearch = () => {
     if (archiveSearchStore.query.trim()) searchFolders(archiveSearchStore.query);
   };
 
-  // 元函数：重命名归档并同步更新索引、快照与搜索结果
+  // 元函数：重命名归档并同步更新索引、快照与搜索结果（同步通知 editor 更新当前展示的归档名）
   const renameFolder = async (id: string, name: string) => {
     await folderSvc.rename(id, name);
     const folder = folderMap.get(id);
     if (folder) folderMap.set(id, { ...folder, name });
     index.add(id, name);
     if (archiveSearchStore.query.trim()) searchFolders(archiveSearchStore.query);
+    await notifyEditorFolderChange(id);
   };
 
-  // 元函数：删除归档并同步移除索引与搜索结果
+  // 元函数：删除归档并同步移除索引与搜索结果（同步通知 editor 清空已删除归档的展示）
   const removeFolder = async (id: string) => {
     await folderSvc.remove(id);
     index.remove(id);
@@ -58,6 +60,7 @@ export const useArchiveSearch = () => {
     archiveSearchStore.setResults(
       archiveSearchStore.results.filter((r) => r.id !== id),
     );
+    await notifyEditorFolderChange(id);
   };
 
   return { searchFolders, refreshFolders, renameFolder, removeFolder };

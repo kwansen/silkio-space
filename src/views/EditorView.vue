@@ -16,6 +16,7 @@ const { setKey, setDoc, setFolder, setSidebarView } = store;
 
 let stopOnOpen: (() => void) | null;
 let stopOnClose: (() => void) | null;
+let stopOnFolderChange: (() => void) | null;
 
 // 元函数：取消最小化、显示并聚焦 editor 窗口，并通知 main 刷新列表（viewed_at 已变化）
 // [日志]
@@ -63,11 +64,41 @@ onMounted(async () => {
       setKey(Date.now());
     },
   );
+
+  // 元函数：监听 folderChange 事件（main 窗口对归档改名/删除或归档内文档增删时通知）
+  // 仅当变化的归档正是当前展示的归档时同步：刷新归档信息与侧栏列表，
+  // 归档被删除时清空展示，当前文档已不在归档内时切换为归档内第一个文档
+  stopOnFolderChange = await listen<{ folderId: string }>(
+    "folderChange",
+    async (event) => {
+      try {
+        const { folderId } = event.payload;
+        if (store.folder?.id !== folderId) return;
+        const folderSvc = await useFolderSvc();
+        const folder = await folderSvc.getById(folderId);
+        if (!folder) {
+          setFolder(null);
+          setDoc(null);
+          setKey(Date.now());
+          return;
+        }
+        setFolder(folder);
+        const docs = await folderSvc.getDocs(folderId);
+        if (!docs.some((d) => d.id === store.doc?.id)) {
+          setDoc(docs[0] ?? null);
+        }
+        setKey(Date.now());
+      } catch (e) {
+        console.error(e);
+      }
+    },
+  );
 });
 
 onUnmounted(() => {
   stopOnOpen?.();
   stopOnClose?.();
+  stopOnFolderChange?.();
 });
 </script>
 
