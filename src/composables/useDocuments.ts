@@ -19,6 +19,11 @@ export const useDoc = () => {
     return docSvc.create({ title: "", content: data, plain_text: "根节点", doc_type: "mindMap" });
   };
 
+  // 元函数：创建流程图文档并返回文档 id
+  const createFlowChart = async (): Promise<string> => {
+    return docSvc.create({ title: "", content: "", plain_text: "", doc_type: "flowChart" });
+  };
+
   // 元函数：更新富文本文档的内容与纯文本
   const updateContent = async (id: string, content: string, plainText: string): Promise<void> => {
     return docSvc.update(id, { content, plain_text: plainText });
@@ -29,5 +34,5 @@ export const useDoc = () => {
     return docSvc.update(id, { title });
   };
 
-  return { createRichText, createMindMap, updateContent, updateTitle };
+  return { createRichText, createMindMap, createFlowChart, updateContent, updateTitle };
 };

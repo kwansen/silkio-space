@@ -33,9 +33,9 @@ const loadDocs = async () => {
   }
 };
 
-// 元函数：归档变化时刷新文档列表
+// 元函数：归档变化或打开/新建文档（key 变化）时刷新文档列表
 watch(
-  () => store.folder?.id,
+  () => [store.folder?.id, store.key],
   () => loadDocs(),
   { immediate: true },
 );
