@@ -1,0 +1,12 @@
+<script setup lang="ts">
+import { Icon } from "@iconify/vue";
+</script>
+
+<template>
+  <div class="w-full h-full grid place-content-center select-none">
+    <div class="flex flex-col items-center gap-2 text-neutral-300">
+      <Icon icon="mdi:folder-open-outline" class="w-16 h-16" />
+      <div class="text-sm text-neutral-400">打开左侧归档或文档以开始编辑</div>
+    </div>
+  </div>
+</template>

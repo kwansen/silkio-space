@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useEditorViewStore } from "@/stores/editorView";
-import ListHeader from "./ListHeader.vue";
-import OutlineHeader from "./OutlineHeader.vue";
-import DocListView from "./DocListView.vue";
-import OutlineView from "./OutlineView.vue";
+import NavHeader from "./NavHeader.vue";
+import TocHeader from "./TocHeader.vue";
+import NavMain from "./NavMain.vue";
+import TocMain from "./TocMain.vue";
 
 const store = useEditorViewStore();
 
@@ -16,12 +16,13 @@ const isOutline = computed(() =>
 
 <template>
   <div class="w-65 h-full px-2 flex flex-col">
-    <!-- 头部：列表视图显示归档名与新建按钮，大纲视图显示文档标题 -->
-    <ListHeader v-if="!isOutline" />
-    <OutlineHeader v-else />
-
-    <!-- 列表视图：打开归档时展示归档内文档；大纲视图：展示当前文档标题大纲 -->
-    <DocListView v-if="!isOutline" />
-    <OutlineView v-else />
+    <!-- 导航头部 -->
+    <NavHeader v-if="!isOutline" />
+    <!-- 大纲头部 -->
+    <TocHeader v-else />
+    <!-- 导航列表 -->
+    <NavMain v-if="!isOutline" />
+    <!-- 大纲列表 -->
+    <TocMain v-else />
   </div>
 </template>

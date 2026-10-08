@@ -6,6 +6,7 @@ import { computed, ref } from "vue";
 import { useSortDocStore } from "@/stores/sortDoc";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
 import type { Doc, SortField } from "@/infrastructure/db/document.ts";
+import DocSortEmpty from "./DocSortEmpty.vue";
 
 export type { Item };
 
@@ -70,8 +71,6 @@ const popoverList = computed<PopoverItem[]>(() => [
 
 <template>
   <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
+  <DocSortEmpty v-if="items.length < 1" />
   <ArchivePickerDialog :doc-id="archiveDocId" @on-close="archiveDocId = null" />
-  <div v-if="items.length<1" class="h-15 flex items-center justify-center border-b border-gray-100">
-    暂无文档，新建一个吧！
-  </div> 
 </template>

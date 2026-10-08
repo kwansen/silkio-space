@@ -6,6 +6,7 @@ import { computed, ref } from "vue";
 import { useArchiveSortStore } from "@/stores/archiveSort";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import type { FolderSortField, Folder } from "@/infrastructure/db/folder.ts";
+import ArchiveSortEmpty from "./ArchiveSortEmpty.vue";
 
 export type { Item };
 
@@ -18,7 +19,9 @@ const emit = defineEmits<Emits>();
 const archiveSortStore = useArchiveSortStore();
 
 // 各排序字段对应的 meta 展示：最近打开显示日期和时间（从未打开则不显示）；名称/自由排序无对应 meta
-const metaFormatters: Partial<Record<FolderSortField, (folder: Folder) => string>> = {
+const metaFormatters: Partial<
+  Record<FolderSortField, (folder: Folder) => string>
+> = {
   viewed_at: (folder) =>
     folder.viewed_at ? new Date(folder.viewed_at).toLocaleString() : "",
 };
@@ -40,7 +43,8 @@ const handleClick = (item: Item) => {
 };
 
 // 元函数：组装归档排序组合式函数
-const { refreshFolders, reorderFolders, removeFolder, renameFolder } = useArchiveSort();
+const { refreshFolders, reorderFolders, removeFolder, renameFolder } =
+  useArchiveSort();
 
 // 仅自由排序模式下允许拖拽
 const isFreeSort = computed(() => archiveSortStore.sortField === "sort_order");
@@ -101,6 +105,7 @@ const popoverList = ref<PopoverItem[]>([
     @onClick="handleClick"
     @onDragEnd="handleDragEnd"
   />
+  <ArchiveSortEmpty v-if="items.length < 1" />
   <ArchiveRenameDialog
     :folder="editFolder"
     @on-close="editFolder = null"

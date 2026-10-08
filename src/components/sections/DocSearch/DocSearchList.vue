@@ -5,6 +5,7 @@ import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed, ref } from "vue";
 import { useDocSearchStore } from "@/stores/docSearch";
 import { useDocSearch } from "@/composables/useDocSearch.ts";
+import DocSearchEmpty from "./DocSearchEmpty.vue";
 
 export type { Item };
 
@@ -60,11 +61,6 @@ const popoverList = computed<PopoverItem[]>(() => [
 
 <template>
   <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
+  <DocSearchEmpty v-if="items.length < 1 && docSearchStore.query" />
   <ArchivePickerDialog :doc-id="archiveDocId" @on-close="archiveDocId = null" />
-  <div
-    v-if="items.length < 1 && docSearchStore.query"
-    class="h-15 flex items-center justify-center border-b border-gray-100"
-  >
-    未找到匹配的文档，尝试使用其他关键词搜索。
-  </div>
 </template>

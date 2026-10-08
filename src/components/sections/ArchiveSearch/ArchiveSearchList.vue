@@ -6,6 +6,7 @@ import { computed, ref } from "vue";
 import { useArchiveSearchStore } from "@/stores/archiveSearch";
 import { useArchiveSearch } from "@/composables/useArchiveSearch.ts";
 import type { Folder } from "@/infrastructure/db/folder.ts";
+import ArchiveSearchEmpty from "./ArchiveSearchEmpty.vue";
 
 export type { Item };
 
@@ -72,16 +73,16 @@ const popoverList = ref<PopoverItem[]>([
 </script>
 
 <template>
-  <DocList :list="items" :popover-list="popoverList" simple @onClick="handleClick" />
+  <DocList
+    :list="items"
+    :popover-list="popoverList"
+    simple
+    @onClick="handleClick"
+  />
+  <ArchiveSearchEmpty v-if="items.length < 1 && archiveSearchStore.query" />
   <ArchiveRenameDialog
     :folder="editFolder"
     @on-close="editFolder = null"
     @on-confirm="handleRename"
   />
-  <div
-    v-if="items.length < 1 && archiveSearchStore.query"
-    class="h-15 flex items-center justify-center border-b border-gray-100"
-  >
-    未找到匹配的归档，尝试使用其他关键词搜索。
-  </div>
 </template>

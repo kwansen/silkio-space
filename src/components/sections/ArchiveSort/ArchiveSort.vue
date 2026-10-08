@@ -4,6 +4,7 @@ import ArchiveSortOption from "./ArchiveSortOption.vue";
 import { onMounted } from "vue";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
+import ArchiveSortEmpty from "./ArchiveSortEmpty.vue";
 
 // 元函数：组装归档排序组合式函数
 const { touchFolder, refreshFolders } = useArchiveSort();
