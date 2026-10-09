@@ -125,7 +125,7 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
 <template>
   <!-- 归档文档列表：按 sort_order 升序，支持拖拽排序，点击切换渲染 -->
   <div>
-    <NavEmpty v-if="docs.length < 1" />
+    <NavEmpty v-if="docs.length === 0" />
     <draggable :list="docs" item-key="id" :animation="150" @end="handleDragEnd">
       <template #item="{ element }">
         <div

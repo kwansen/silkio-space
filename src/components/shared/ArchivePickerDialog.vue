@@ -100,7 +100,7 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
     <div class="w-80 bg-white rounded-2xl p-4 shadow-xl select-none">
       <div class="text-sm text-neutral-700 mb-2">归档到</div>
       <div
-        v-if="archiveSortStore.folders.length < 1"
+        v-if="archiveSortStore.folders.length === 0"
         class="h-20 flex items-center justify-center text-xs text-neutral-400"
       >
         暂无归档，先在归档页创建一个吧

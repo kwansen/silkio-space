@@ -105,7 +105,7 @@ const popoverList = ref<PopoverItem[]>([
     @onClick="handleClick"
     @onDragEnd="handleDragEnd"
   />
-  <ArchiveSortEmpty v-if="items.length < 1" />
+  <ArchiveSortEmpty v-if="items.length === 0" />
   <ArchiveRenameDialog
     :folder="editFolder"
     @on-close="editFolder = null"

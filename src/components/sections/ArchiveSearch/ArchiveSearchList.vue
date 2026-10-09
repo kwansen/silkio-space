@@ -79,7 +79,7 @@ const popoverList = ref<PopoverItem[]>([
     simple
     @onClick="handleClick"
   />
-  <ArchiveSearchEmpty v-if="items.length < 1 && archiveSearchStore.query" />
+  <ArchiveSearchEmpty v-if="items.length === 0 && archiveSearchStore.query" />
   <ArchiveRenameDialog
     :folder="editFolder"
     @on-close="editFolder = null"

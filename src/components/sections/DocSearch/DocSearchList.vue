@@ -61,6 +61,6 @@ const popoverList = computed<PopoverItem[]>(() => [
 
 <template>
   <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
-  <DocSearchEmpty v-if="items.length < 1 && docSearchStore.query" />
+  <DocSearchEmpty v-if="items.length === 0 && docSearchStore.query" />
   <ArchivePickerDialog :doc-id="archiveDocId" @on-close="archiveDocId = null" />
 </template>
