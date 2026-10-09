@@ -21,9 +21,8 @@ const handleClick = (item: Item) => {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl p-4 mt-14">
+  <div class="bg-white rounded-2xl p-4">
     <ArchiveSortOption />
     <ArchiveSortList @on-click="handleClick" />
   </div>
-  <div class="h-14"></div>
 </template>

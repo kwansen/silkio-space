@@ -21,11 +21,10 @@ const handleClick = (item: Item) => {
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl p-4 mt-14">
+  <div class="bg-white rounded-2xl p-4">
     <DocSearchInput />
     <DocSearchList @on-click="handleClick" />
     <!-- 页码不超过 1 页时不渲染分页 -->
     <DocSearchPagination v-if="docSearchStore.pages.length > 1" />
   </div>
-  <div class="h-14"></div>
 </template>

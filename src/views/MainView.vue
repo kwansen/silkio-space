@@ -9,7 +9,7 @@ import { useSortDocs } from "@/composables/useSortDocs.ts";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { onMounted, onUnmounted } from "vue";
-import DocListView from "@/components/sections/LeftBar/DocListView.vue";
+import ScrollArea from "@/components/shared/ScrollArea.vue";
 
 const docTabStore = useDocTabStore();
 // 元函数：组装排序文档组合式函数
@@ -44,15 +44,15 @@ onUnmounted(() => {
 <template>
   <div class="w-full h-full flex rounded-2xl">
     <DocTabs />
-    <div class="flex-1 overflow-hidden pr-2 pb-2 ">
-      <div class="w-full h-full bg-gray-50 rounded-lg flex justify-center overflow-y-auto">
-        <div class="min-w-0 w-full max-w-200">
+    <div class="flex-1 overflow-hidden pr-2 pb-2">
+      <ScrollArea class="bg-gray-50 rounded-lg">
+        <div class="min-w-0 w-full max-w-200 py-14 mx-auto">
           <DocSort v-if="docTabStore.tab === 'docSort'" />
           <DocSearch v-else-if="docTabStore.tab === 'docSearch'" />
           <ArchiveSort v-else-if="docTabStore.tab === 'archiveSort'" />
           <ArchiveSearch v-else-if="docTabStore.tab === 'archiveSearch'" />
         </div>
-      </div>
+      </ScrollArea>
     </div>
   </div>
 </template>

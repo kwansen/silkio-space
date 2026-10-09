@@ -5,6 +5,7 @@ import { useEventListener } from "@vueuse/core";
 import TextButton from "@/components/shared/TextButton.vue";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import { useArchiveSortStore } from "@/stores/archiveSort";
+import ScrollArea from "./ScrollArea.vue";
 
 interface Props {
   // 待归档文档 id：null 表示弹窗关闭
@@ -22,8 +23,12 @@ const emit = defineEmits<Emits>();
 const archiveSortStore = useArchiveSortStore();
 
 // 元函数：组装归档组合式函数（归档列表与关联读写）
-const { refreshFolders, getFolderIdsByDoc, addDocToFolder, removeDocFromFolder } =
-  useArchiveSort();
+const {
+  refreshFolders,
+  getFolderIdsByDoc,
+  addDocToFolder,
+  removeDocFromFolder,
+} = useArchiveSort();
 
 // 勾选的归档 id 集合与打开时的初始集合（用于确定时计算增删差异）
 const checkedIds = ref<Set<string>>(new Set());
@@ -100,7 +105,7 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
       >
         暂无归档，先在归档页创建一个吧
       </div>
-      <div v-else class="max-h-60 overflow-y-auto flex flex-col gap-0.5">
+      <ScrollArea v-else>
         <div
           v-for="folder in archiveSortStore.folders"
           :key="folder.id"
@@ -114,12 +119,14 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
                 : 'mdi:checkbox-blank-outline'
             "
             class="w-5 h-5"
-            :class="checkedIds.has(folder.id) ? 'text-purple-600' : 'text-neutral-300'"
+            :class="
+              checkedIds.has(folder.id) ? 'text-purple-600' : 'text-neutral-300'
+            "
           />
           <Icon icon="mdi:folder-outline" class="w-5 h-5 text-neutral-500" />
           <div class="truncate">{{ folder.name }}</div>
         </div>
-      </div>
+      </ScrollArea>
       <div class="flex justify-end gap-2 mt-3">
         <TextButton
           class="h-7 px-3 text-xs rounded-md text-neutral-500 hover:bg-gray-100"
