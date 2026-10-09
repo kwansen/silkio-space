@@ -42,6 +42,16 @@ watch(
   { immediate: true },
 );
 
+// 元函数：编辑文档标题时同步更新列表对应项标题
+watch(
+  () => [store.doc?.id, store.doc?.title],
+  ([id, title]) => {
+    if (!id) return;
+    const item = docs.value.find((d) => d.id === id);
+    if (item) item.title = title ?? "";
+  },
+);
+
 // 元函数：点击列表项打开文档（更新浏览时间、通知 main 刷新列表）并刷新自身列表
 const openDoc = async (id: string) => {
   try {

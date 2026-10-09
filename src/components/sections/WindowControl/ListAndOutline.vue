@@ -3,7 +3,7 @@ import { useEditorViewStore, type SidebarView } from "@/stores/editorView";
 
 // ListAndOutline.vue: 标题栏左侧栏视图切换（列表 / 大纲），状态存于 editorView store 供 LeftBar 消费
 const views: { key: SidebarView; label: string }[] = [
-  { key: "list", label: "列表" },
+  { key: "nav", label: "导航" },
   { key: "outline", label: "大纲" },
 ];
 

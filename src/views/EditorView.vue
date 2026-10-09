@@ -63,7 +63,7 @@ onMounted(async () => {
           setFolder(folder);
           const doc = await folderSvc.getFirstDoc(id);
           setDoc(doc);
-          setSidebarView("list");
+          setSidebarView("nav");
           if (!doc) await show();
         }
       } catch (e) {
