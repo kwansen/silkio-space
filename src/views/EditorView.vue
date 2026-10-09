@@ -54,14 +54,14 @@ onMounted(async () => {
           setDoc(doc);
           setFolder(null);
         } else if (type === "folder") {
-          // 打开归档：加载归档信息并渲染归档下第一个文档（按加入顺序 sort_order 升序）
+          // 打开归档：加载归档信息并渲染归档子树内第一篇文档（优先根容器按加入顺序）
           // 有文档时由 on-ready 触发显示；无文档时清空当前文档并直接显示窗口
           // 侧栏默认回到列表视图
           pendingShow = true;
           const folderSvc = await useFolderSvc();
           const folder = await folderSvc.getById(id);
           setFolder(folder);
-          const doc = await folderSvc.getFirstDoc(id);
+          const doc = await folderSvc.getFirstDocInSubtree(id);
           setDoc(doc);
           setSidebarView("nav");
           if (!doc) await show();
@@ -75,7 +75,7 @@ onMounted(async () => {
 
   // 元函数：监听 folderChange 事件（main 窗口对归档改名/删除或归档内文档增删时通知）
   // 仅当变化的归档正是当前展示的归档时同步：刷新归档信息与侧栏列表，
-  // 归档被删除时清空展示，当前文档已不在归档内时切换为归档内第一个文档
+  // 归档被删除时清空展示，当前文档已不在归档子树内时切换为归档子树内第一篇文档
   stopOnFolderChange = await listen<{ folderId: string }>(
     "folderChange",
     async (event) => {
@@ -91,9 +91,11 @@ onMounted(async () => {
           return;
         }
         setFolder(folder);
-        const docs = await folderSvc.getDocs(folderId);
-        if (!docs.some((d) => d.id === store.doc?.id)) {
-          setDoc(docs[0] ?? null);
+        const docInSubtree =
+          store.doc?.id &&
+          (await folderSvc.hasDocInSubtree(folderId, store.doc.id));
+        if (!docInSubtree) {
+          setDoc(await folderSvc.getFirstDocInSubtree(folderId));
         }
         setKey(Date.now());
       } catch (e) {

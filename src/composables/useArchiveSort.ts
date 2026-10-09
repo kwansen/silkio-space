@@ -19,9 +19,9 @@ export const useArchiveSort = () => {
     archiveSortStore.setFolders(list);
   };
 
-  // 元函数：创建归档并刷新列表
+  // 元函数：创建归档（根文件夹）并刷新列表
   const createFolder = async (name?: string) => {
-    await folderSvc.create(name);
+    await folderSvc.create(name ? { name } : {});
     await refreshFolders();
   };
 

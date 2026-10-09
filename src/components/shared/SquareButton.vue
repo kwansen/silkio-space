@@ -13,7 +13,7 @@ interface Props {
   iconClass?: string;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const attrs = useAttrs();
 

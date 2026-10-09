@@ -1,157 +1,112 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { Icon } from "@iconify/vue";
-import draggable from "vuedraggable";
-import DocRemoveDialog from "@/components/shared/DocRemoveDialog.vue";
 import { useEditorViewStore } from "@/stores/editorView";
-import { useDocSvc } from "@/services/document.ts";
+import { useNavTreeStore } from "@/stores/navTree";
 import { useFolderSvc } from "@/services/folder.ts";
+import { useDocSvc } from "@/services/document.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
-import { docTypeIcons, type DocTypeIconKey } from "@/icons";
-import type { Doc } from "@/infrastructure/db/document.ts";
+import NavTree from "./NavTree.vue";
 import NavEmpty from "./NavEmpty.vue";
+import DocRemoveDialog from "@/components/shared/DocRemoveDialog.vue";
+import FolderRemoveDialog from "./FolderRemoveDialog.vue";
+import ArchiveRenameDialog from "@/components/shared/ArchiveRenameDialog.vue";
 
 const store = useEditorViewStore();
-const { setDoc, setKey } = store;
+const navTreeStore = useNavTreeStore();
 
-// 元函数：按文档类型取图标，未识别类型回退为普通文件图标
-const iconFor = (d: Doc) =>
-  docTypeIcons[d.doc_type as DocTypeIconKey] ?? "mdi:file-outline";
-
-// 元函数：加载侧栏文档列表（按归档内加入顺序 sort_order 升序，无归档时为空）
-const docs = ref<Doc[]>([]);
-
-const loadDocs = async () => {
-  if (!store.folder) {
-    docs.value = [];
-    return;
-  }
-  try {
-    const folderSvc = await useFolderSvc();
-    docs.value = await folderSvc.getDocs(store.folder.id);
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-// 元函数：归档变化或打开/新建文档（key 变化）时刷新文档列表
+// 归档切换时重置导航选中/展开状态与弹窗目标（reset 内自增 version，触发根容器重载）
 watch(
-  () => [store.folder?.id, store.key],
-  () => loadDocs(),
-  { immediate: true },
+  () => store.folder?.id,
+  () => navTreeStore.reset(),
 );
 
-// 元函数：编辑文档标题时同步更新列表对应项标题
-watch(
-  () => [store.doc?.id, store.doc?.title],
-  ([id, title]) => {
-    if (!id) return;
-    const item = docs.value.find((d) => d.id === id);
-    if (item) item.title = title ?? "";
-  },
-);
+// 根容器是否为空（文件夹与文档均为空时展示空状态）
+const rootEmpty = ref(true);
 
-// 元函数：点击列表项打开文档（更新浏览时间、通知 main 刷新列表）并刷新自身列表
-const openDoc = async (id: string) => {
-  try {
-    const svc = await useDocSvc();
-    await svc.update(id, { viewed_at: Date.now() });
-    const doc = await svc.getById(id);
-    setDoc(doc);
-    setKey(Date.now());
-    notifyMainRefresh();
-    await loadDocs();
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-// 元函数：拖拽结束后持久化新顺序（vuedraggable 已就地调整 docs，失败时回滚为数据库顺序）
-const handleDragEnd = async () => {
-  if (!store.folder) return;
+// 元函数：删除文档：默认仅从归档子树移除，勾选后永久删除文档并通知 main 刷新列表；
+// 当前展示文档被移除时切换为归档子树内第一篇文档
+const handleRemoveDoc = async (deleteDoc: boolean) => {
+  const doc = navTreeStore.removeDocTarget;
+  navTreeStore.removeDocTarget = null;
+  if (!doc || !store.folder) return;
   try {
     const folderSvc = await useFolderSvc();
-    await folderSvc.reorderDocs(
-      store.folder.id,
-      docs.value.map((d) => d.id),
-    );
-  } catch (e) {
-    console.error(e);
-    await loadDocs();
-  }
-};
-
-// 待删除文档：非空时渲染删除弹窗
-const removeTarget = ref<Doc | null>(null);
-
-// 元函数：打开删除弹窗（是否同时永久删除文档由弹窗勾选决定）
-const openRemove = (doc: Doc) => {
-  removeTarget.value = doc;
-};
-
-// 元函数：确认删除：默认仅移出归档；勾选后永久删除文档并通知 main 刷新列表；
-// 当前展示文档被移除时切换为归档内第一个文档
-const handleRemove = async (deleteDoc: boolean) => {
-  const doc = removeTarget.value;
-  const folderId = store.folder?.id;
-  removeTarget.value = null;
-  if (!doc || !folderId) return;
-  try {
-    const folderSvc = await useFolderSvc();
-    await folderSvc.removeDoc(folderId, doc.id);
+    await folderSvc.removeDocFromSubtree(store.folder.id, doc.id);
     if (deleteDoc) {
       const svc = await useDocSvc();
       await svc.remove(doc.id);
       await notifyMainRefresh();
     }
     if (store.doc?.id === doc.id) {
-      setDoc(await folderSvc.getFirstDoc(folderId));
-      setKey(Date.now());
+      store.setDoc(await folderSvc.getFirstDocInSubtree(store.folder.id));
+      store.setKey(Date.now());
     }
-    await loadDocs();
+    navTreeStore.bump();
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// 元函数：删除文件夹：级联删除该文件夹及其全部子文件夹的关联（文档本体保留）
+const handleRemoveFolder = async () => {
+  const folder = navTreeStore.removeFolderTarget;
+  navTreeStore.removeFolderTarget = null;
+  if (!folder) return;
+  try {
+    const folderSvc = await useFolderSvc();
+    await folderSvc.remove(folder.id);
+    if (navTreeStore.selectedFolderId === folder.id) {
+      navTreeStore.setSelectedFolder(null);
+    }
+    navTreeStore.bump();
+    await notifyMainRefresh();
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// 元函数：重命名文件夹并刷新树
+const handleRenameFolder = async (name: string) => {
+  const folder = navTreeStore.renameTarget;
+  navTreeStore.renameTarget = null;
+  if (!folder) return;
+  try {
+    const folderSvc = await useFolderSvc();
+    await folderSvc.rename(folder.id, name);
+    navTreeStore.bump();
   } catch (e) {
     console.error(e);
   }
 };
 </script>
+
 <template>
-  <!-- 归档文档列表：按 sort_order 升序，支持拖拽排序，点击切换渲染 -->
-  <div>
-    <NavEmpty v-if="docs.length === 0" />
-    <draggable :list="docs" item-key="id" :animation="150" @end="handleDragEnd">
-      <template #item="{ element }">
-        <div
-          class="h-8 mt-0.5 flex items-center gap-2 px-2 select-none shrink-0 group"
-          :class="
-            element.id === store.doc?.id
-              ? 'bg-gray-100 text-neutral-700'
-              : 'text-neutral-600 hover:bg-gray-100'
-          "
-          @click="openDoc(element.id)"
-        >
-          <Icon
-            :icon="iconFor(element)"
-            class="w-4 h-4 shrink-0"
-            :class="
-              element.id === store.doc?.id
-                ? 'text-purple-600'
-                : 'text-neutral-400'
-            "
-          />
-          <div class="truncate flex-1">{{ element.title || "未命名标题" }}</div>
-          <Icon
-            icon="mdi:delete-outline"
-            class="w-4 h-4 shrink-0 text-neutral-400 hover:text-red-500 opacity-0 group-hover:opacity-100"
-            @click.stop="openRemove(element)"
-          />
-        </div>
-      </template>
-    </draggable>
-    <!-- 删除弹窗：默认仅移出归档，可勾选同时永久删除文档 -->
+  <!-- 导航树：以当前归档为根容器，递归展示子文件夹与文档，支持拖拽移动与排序 -->
+  <div class="pb-2 px-1">
+    <!-- 空状态与树独立渲染：树始终挂载以完成加载与空状态上报，为空时叠加展示空提示 -->
+    <NavEmpty v-if="!store.folder || rootEmpty" />
+    <NavTree
+      v-if="store.folder"
+      :container-id="store.folder.id"
+      @on-empty-change="(empty) => (rootEmpty = empty)"
+    />
+    <!-- 文档删除弹窗：默认仅从归档子树移除，可勾选同时永久删除文档 -->
     <DocRemoveDialog
-      :doc="removeTarget"
-      @on-close="removeTarget = null"
-      @on-confirm="handleRemove"
+      :doc="navTreeStore.removeDocTarget"
+      @on-close="navTreeStore.removeDocTarget = null"
+      @on-confirm="handleRemoveDoc"
+    />
+    <!-- 文件夹删除确认弹窗：级联删除，文档本体保留 -->
+    <FolderRemoveDialog
+      :folder="navTreeStore.removeFolderTarget"
+      @on-close="navTreeStore.removeFolderTarget = null"
+      @on-confirm="handleRemoveFolder"
+    />
+    <!-- 文件夹重命名弹窗 -->
+    <ArchiveRenameDialog
+      :folder="navTreeStore.renameTarget"
+      @on-close="navTreeStore.renameTarget = null"
+      @on-confirm="handleRenameFolder"
     />
   </div>
 </template>

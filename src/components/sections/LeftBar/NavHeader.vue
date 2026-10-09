@@ -6,24 +6,31 @@ import { ref, useTemplateRef } from "vue";
 import Popover, { PopoverItem } from "@/components/shared/Popover.vue";
 import { docTypeIcons } from "@/icons";
 import { useEditorViewStore } from "@/stores/editorView";
+import { useNavTreeStore } from "@/stores/navTree";
 import { useDoc } from "@/composables/useDocuments.ts";
 import { useDocSvc } from "@/services/document.ts";
 import { useFolderSvc } from "@/services/folder.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 
 const store = useEditorViewStore();
+const navTreeStore = useNavTreeStore();
 // 元函数：组装文档组合式函数（创建富文本/思维导图/流程图）
 const { createRichText, createMindMap, createFlowChart } = useDoc();
 
 const isOpen = ref<boolean>(false);
 
-// 元函数：创建指定类型文档、加入当前归档并在当前窗口打开，同时通知 main 刷新列表
+// 元函数：当前新建目标容器：选中了导航文件夹时为其，否则为归档根目录
+const createTargetId = () =>
+  navTreeStore.selectedFolderId ?? store.folder?.id ?? null;
+
+// 元函数：创建指定类型文档、加入当前新建目标容器并在当前窗口打开，同时通知 main 刷新列表
 const createDoc = async (create: () => Promise<string>) => {
   try {
     const folderSvc = await useFolderSvc();
     const docSvc = await useDocSvc();
     const id = await create();
-    if (store.folder) await folderSvc.addDoc(store.folder.id, id);
+    const containerId = createTargetId();
+    if (containerId) await folderSvc.addDoc(containerId, id);
     const doc = await docSvc.getById(id);
     store.setDoc(doc);
     store.setKey(Date.now());
@@ -34,13 +41,22 @@ const createDoc = async (create: () => Promise<string>) => {
   }
 };
 
-// 元函数：创建归档（默认挂在根目录，默认名"新建归档"）并通知 main 刷新列表
+// 元函数：新建文件夹：选中了导航文件夹时建在其内（并展开），否则建在归档根目录；
+// 完成后选中新文件夹并刷新导航树
 const handleCreateFolder = async () => {
   try {
+    const containerId = createTargetId();
+    if (!containerId) return;
     const folderSvc = await useFolderSvc();
-    await folderSvc.create();
+    const id = await folderSvc.create({
+      name: "新建文件夹",
+      parent_id: containerId,
+    });
+    navTreeStore.setSelectedFolder(id);
+    navTreeStore.expand(containerId);
+    navTreeStore.expand(id);
+    navTreeStore.bump();
     isOpen.value = false;
-    await notifyMainRefresh();
   } catch (e) {
     console.error(e);
   }

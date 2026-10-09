@@ -2,7 +2,6 @@
 import { computed } from "vue";
 import { useEditorViewStore } from "@/stores/editorView";
 import TocEmpty from "./TocEmpty.vue";
-import ScrollArea from "@/components/shared/ScrollArea.vue";
 
 const store = useEditorViewStore();
 
