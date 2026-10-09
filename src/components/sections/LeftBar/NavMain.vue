@@ -2,8 +2,7 @@
 import { ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
 import draggable from "vuedraggable";
-import { useEventListener } from "@vueuse/core";
-import TextButton from "@/components/shared/TextButton.vue";
+import DocRemoveDialog from "@/components/shared/DocRemoveDialog.vue";
 import { useEditorViewStore } from "@/stores/editorView";
 import { useDocSvc } from "@/services/document.ts";
 import { useFolderSvc } from "@/services/folder.ts";
@@ -82,19 +81,17 @@ const handleDragEnd = async () => {
   }
 };
 
-// 待删除文档：非空时渲染删除弹窗；deleteDoc 为勾选的"同时删除文档"
+// 待删除文档：非空时渲染删除弹窗
 const removeTarget = ref<Doc | null>(null);
-const deleteDoc = ref<boolean>(false);
 
-// 元函数：打开删除弹窗（默认仅移出归档，勾选后同时永久删除文档）
+// 元函数：打开删除弹窗（是否同时永久删除文档由弹窗勾选决定）
 const openRemove = (doc: Doc) => {
-  deleteDoc.value = false;
   removeTarget.value = doc;
 };
 
 // 元函数：确认删除：默认仅移出归档；勾选后永久删除文档并通知 main 刷新列表；
 // 当前展示文档被移除时切换为归档内第一个文档
-const handleRemove = async () => {
+const handleRemove = async (deleteDoc: boolean) => {
   const doc = removeTarget.value;
   const folderId = store.folder?.id;
   removeTarget.value = null;
@@ -102,7 +99,7 @@ const handleRemove = async () => {
   try {
     const folderSvc = await useFolderSvc();
     await folderSvc.removeDoc(folderId, doc.id);
-    if (deleteDoc.value) {
+    if (deleteDoc) {
       const svc = await useDocSvc();
       await svc.remove(doc.id);
       await notifyMainRefresh();
@@ -116,11 +113,6 @@ const handleRemove = async () => {
     console.error(e);
   }
 };
-
-// Esc 关闭删除弹窗（仅打开时）
-useEventListener(window, "keydown", (e: KeyboardEvent) => {
-  if (e.key === "Escape" && removeTarget.value) removeTarget.value = null;
-});
 </script>
 <template>
   <!-- 归档文档列表：按 sort_order 升序，支持拖拽排序，点击切换渲染 -->
@@ -129,7 +121,7 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
     <draggable :list="docs" item-key="id" :animation="150" @end="handleDragEnd">
       <template #item="{ element }">
         <div
-          class="h-8 rounded-md mt-0.5 flex items-center gap-2 px-2 select-none shrink-0 group"
+          class="h-8 mt-0.5 flex items-center gap-2 px-2 select-none shrink-0 group"
           :class="
             element.id === store.doc?.id
               ? 'bg-gray-100 text-neutral-700'
@@ -156,44 +148,10 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
       </template>
     </draggable>
     <!-- 删除弹窗：默认仅移出归档，可勾选同时永久删除文档 -->
-    <div
-      v-if="removeTarget"
-      class="fixed inset-0 bg-black/30 z-50 grid place-items-center"
-      @click.self="removeTarget = null"
-    >
-      <div class="w-80 bg-white rounded-2xl p-4 shadow-xl select-none">
-        <div class="text-sm text-neutral-700 mb-2">删除</div>
-        <div class="text-xs text-neutral-500 mb-3 truncate">
-          将「{{ removeTarget.title || "未命名标题" }}」移出当前归档
-        </div>
-        <div
-          class="h-8 flex items-center gap-2 px-2 rounded-md text-xs cursor-pointer hover:bg-gray-100 mb-3"
-          @click="deleteDoc = !deleteDoc"
-        >
-          <Icon
-            :icon="
-              deleteDoc ? 'mdi:checkbox-marked' : 'mdi:checkbox-blank-outline'
-            "
-            class="w-5 h-5"
-            :class="deleteDoc ? 'text-purple-600' : 'text-neutral-300'"
-          />
-          <div>同时删除文档（不可恢复）</div>
-        </div>
-        <div class="flex justify-end gap-2">
-          <TextButton
-            class="h-7 px-3 text-xs rounded-md text-neutral-500 hover:bg-gray-100"
-            @click="removeTarget = null"
-          >
-            取消
-          </TextButton>
-          <TextButton
-            class="h-7 px-3 text-xs rounded-md text-white bg-purple-600 hover:bg-purple-500"
-            @click="handleRemove"
-          >
-            确定
-          </TextButton>
-        </div>
-      </div>
-    </div>
+    <DocRemoveDialog
+      :doc="removeTarget"
+      @on-close="removeTarget = null"
+      @on-confirm="handleRemove"
+    />
   </div>
 </template>

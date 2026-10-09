@@ -55,7 +55,7 @@ const scrollToHeading = (index: number) => {
 </script>
 <template>
   <!-- 当前文档大纲：点击滚动到对应标题 -->
-  <ScrollArea>
+  <div>
     <TocEmpty v-if="outline.length === 0" />
     <div
       v-for="h in outline"
@@ -66,5 +66,5 @@ const scrollToHeading = (index: number) => {
     >
       <div class="truncate">{{ h.text || "未命名标题" }}</div>
     </div>
-  </ScrollArea>
+  </div>
 </template>

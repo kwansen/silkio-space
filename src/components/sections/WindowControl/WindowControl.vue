@@ -3,7 +3,7 @@ import { useWindowControl } from "@/composables/useWindowControl";
 import { useHover } from "@/composables/useHover.ts";
 import SquareButton from "@/components/shared/SquareButton.vue";
 import { windowControlIcons } from "@/icons/windowControlIcons";
-import ListAndOutline from "./ListAndOutline.vue";
+import NavAndOutline from "./NavAndOutline.vue";
 
 interface Emits {
   onHide: [];
@@ -38,26 +38,29 @@ const handleHide = () => {
 <template>
   <div class="h-10 flex desktop-draggable">
     <div class="flex-1 flex items-center">
-      <ListAndOutline></ListAndOutline>
+      <NavAndOutline />
     </div>
     <SquareButton
       v-minimize-hover
       :class="[isMinimizeHover ? 'bg-gray-100' : '']"
       icon-class="w-5 h-5"
       @click="handleMinimize"
-      :icon="windowControlIcons.minimize" />
+      :icon="windowControlIcons.minimize"
+    />
     <SquareButton
       class="hover:bg-gray-100"
       icon-class="w-5 h-5"
       @click="toggleMaximize"
       :icon="
         isMaximized ? windowControlIcons.restore : windowControlIcons.maximize
-      " />
+      "
+    />
     <SquareButton
       v-close-hover
       :class="[isCloseHover ? 'hover:bg-red-500 hover:text-white' : '']"
       icon-class="w-5 h-5"
       @click="handleHide"
-      :icon="windowControlIcons.close" />
+      :icon="windowControlIcons.close"
+    />
   </div>
 </template>

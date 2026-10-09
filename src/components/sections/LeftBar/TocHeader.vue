@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useEditorViewStore } from "@/stores/editorView";
+import { Icon } from "@iconify/vue";
 
 const store = useEditorViewStore();
 
@@ -8,9 +9,8 @@ const store = useEditorViewStore();
 const title = computed(() => store.doc?.title || "未命名标题");
 </script>
 <template>
-  <!-- 大纲视图头部：显示当前文档标题 -->
-  <div class="h-9 flex items-center hover:bg-gray-100 px-2 rounded-md">
-    <div class="truncate">{{ title }}</div>
-    <div class="flex-1"></div>
+  <div class="h-full flex items-center">
+    <Icon icon="mdi:archive" class="w-4 h-4 mx-2 text-neutral-400" />
+    <div class="truncate text-xs text-neutral-400">{{ title }}</div>
   </div>
 </template>

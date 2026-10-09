@@ -15,7 +15,6 @@ const store = useEditorViewStore();
   <div
     v-if="store.folder"
     class="h-10 px-2 flex items-center gap-1 select-none"
-    style="-webkit-app-region: no-drag"
   >
     <div
       v-for="view in views"

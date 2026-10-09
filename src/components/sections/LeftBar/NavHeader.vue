@@ -47,9 +47,21 @@ const handleCreateFolder = async () => {
 };
 
 const list = ref<PopoverItem[]>([
-  { icon: docTypeIcons.richText, name: "富文本", action: () => createDoc(createRichText) },
-  { icon: docTypeIcons.mindMap, name: "思维导图", action: () => createDoc(createMindMap) },
-  { icon: docTypeIcons.flowChart, name: "流程图", action: () => createDoc(createFlowChart) },
+  {
+    icon: docTypeIcons.richText,
+    name: "富文本",
+    action: () => createDoc(createRichText),
+  },
+  {
+    icon: docTypeIcons.mindMap,
+    name: "思维导图",
+    action: () => createDoc(createMindMap),
+  },
+  {
+    icon: docTypeIcons.flowChart,
+    name: "流程图",
+    action: () => createDoc(createFlowChart),
+  },
   { icon: docTypeIcons.folder, name: "文件夹", action: handleCreateFolder },
 ]);
 
@@ -76,24 +88,25 @@ onClickOutside(
 );
 </script>
 <template>
-  <!-- 列表视图头部：显示归档名与新建按钮 -->
-  <div class="h-9 flex items-center hover:bg-gray-100 px-2 rounded-md select-none">
-    <Icon icon="mdi:archive" class="w-4 h-4 mr-2 text-neutral-400" />
-    <div class="truncate text-xs text-neutral-400">{{ store.folder?.name }}</div>
+  <div class="h-full flex items-center">
+    <Icon icon="mdi:archive" class="w-4 h-4 mx-2 text-neutral-400" />
+    <div class="truncate text-xs text-neutral-400">
+      {{ store.folder?.name }}
+    </div>
     <div class="flex-1"></div>
     <div
       ref="targetRef"
-      class="w-7 h-7 rounded-md hover:bg-gray-200 grid place-items-center"
-      :class="isOpen ? 'bg-gray-200' : ''"
+      class="w-7 h-7 rounded-md grid place-items-center mr-2"
+      :class="isOpen ? 'bg-gray-50' : 'hover:bg-gray-50'"
       @click="toggleOpen"
     >
       <Icon icon="mdi:add" class="w-5 h-5" />
+      <Popover
+        v-if="isOpen"
+        :list="list"
+        ref="floatingRef"
+        :style="floatingStyles"
+      />
     </div>
-    <Popover
-      v-if="isOpen"
-      :list="list"
-      ref="floatingRef"
-      :style="floatingStyles"
-    />
   </div>
 </template>

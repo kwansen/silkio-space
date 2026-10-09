@@ -5,6 +5,7 @@ import NavHeader from "./NavHeader.vue";
 import TocHeader from "./TocHeader.vue";
 import NavMain from "./NavMain.vue";
 import TocMain from "./TocMain.vue";
+import ScrollArea from "@/components/shared/ScrollArea.vue";
 
 const store = useEditorViewStore();
 
@@ -15,14 +16,20 @@ const isOutline = computed(() =>
 </script>
 
 <template>
-  <div class="w-65 h-full px-2 flex flex-col">
-    <!-- 导航头部 -->
-    <NavHeader v-if="!isOutline" />
-    <!-- 大纲头部 -->
-    <TocHeader v-else />
-    <!-- 导航列表 -->
-    <NavMain v-if="!isOutline" />
-    <!-- 大纲列表 -->
-    <TocMain v-else />
+  <div class="w-65 h-full flex flex-col select-none">
+    <header class="h-8">
+      <!-- 导航头部 -->
+      <NavHeader v-if="!isOutline" />
+      <!-- 大纲头部 -->
+      <TocHeader v-else />
+    </header>
+    <main class="flex-1">
+      <ScrollArea>
+        <!-- 导航列表 -->
+        <NavMain v-if="!isOutline" />
+        <!-- 大纲列表 -->
+        <TocMain v-else />
+      </ScrollArea>
+    </main>
   </div>
 </template>
