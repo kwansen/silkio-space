@@ -5,15 +5,15 @@ import DocSortEmpty from "./DocSortEmpty.vue";
 import DocSortPagination from "./DocSortPagination.vue";
 import { useDocSortStore } from "@/stores/docSort.ts";
 
-const docSortStore = useDocSortStore();
+const store = useDocSortStore();
 </script>
 
 <template>
   <div class="bg-white rounded-2xl p-4">
     <DocSortOption />
     <DocSortList />
-    <DocSortEmpty v-if="docSortStore.docs.length === 0" />
+    <DocSortEmpty v-if="store.docs.length === 0" />
     <!-- 页码不超过 1 页时不渲染分页 -->
-    <DocSortPagination v-if="docSortStore.pages.length > 1" />
+    <DocSortPagination v-if="store.pages.length > 1" />
   </div>
 </template>

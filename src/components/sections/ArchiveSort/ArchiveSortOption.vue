@@ -1,43 +1,41 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
-import { computed, nextTick, ref, useTemplateRef } from "vue";
+import { nextTick, ref, useTemplateRef } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import type { FolderSortField } from "@/infrastructure/db/folder.ts";
 import { docTypeIcons } from "@/icons";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import { useArchiveSortStore } from "@/stores/archiveSort";
 
-type Sort = "自由排序" | "名称排序"|"最近打开";
+const sortOptions: { key: FolderSortField; show: string }[] = [
+  {
+    key: "sort_order",
+    show: "自由排序",
+  },
+  {
+    key: "name",
+    show: "名称排序",
+  },
+  {
+    key: "viewed_at",
+    show: "最近打开",
+  },
+];
 
-// 排序选项文案 → 数据库排序字段
-const sortFieldMap: Record<Sort, FolderSortField> = {
-  自由排序: "sort_order",
-  名称排序: "name",
-  最近打开: "viewed_at",
-};
-
-// 元函数：获取归档排序 store（排序状态唯一数据源）
+// 归档排序 store（排序状态唯一数据源）
 const archiveSortStore = useArchiveSortStore();
-
-// 当前排序文案：由 store 的 sortField 派生，避免重复维护排序状态
-const currentSort = computed(
-  () =>
-    (Object.keys(sortFieldMap) as Sort[]).find(
-      (key) => sortFieldMap[key] === archiveSortStore.sortField,
-    ) ?? "自由排序",
-);
-const sorts: Sort[] = ["自由排序", "名称排序", "最近打开"];
-const isOpen = ref<boolean>(false);
-const name = ref<string>("");
 
 // 元函数：组装归档排序组合式函数
 const { refreshFolders, createFolder } = useArchiveSort();
 
-// 元函数：切换排序方式，数据返回后排序与列表一次性更新（避免 meta 闪烁）
-const handleSortChange = async (sort: Sort) => {
-  if (currentSort.value === sort) return;
-  await refreshFolders({ sortField: sortFieldMap[sort] });
+// 元函数：切换排序方式，数据返回后排序与列表一次性更新（避免 meta 闪烁，store 由 refreshFolders 统一更新）
+const handleSortChange = async (sort: FolderSortField) => {
+  if (archiveSortStore.sortField === sort) return;
+  await refreshFolders({ sortField: sort });
 };
+
+const isOpen = ref<boolean>(false);
+const name = ref<string>("");
 
 const inputRef = useTemplateRef<HTMLInputElement>("inputRef");
 
@@ -79,19 +77,23 @@ onClickOutside(wrapperRef, () => {
     class="h-10 flex items-center select-none border-b border-purple-300 gap-4"
   >
     <div
-      v-for="sort in sorts"
-      :key="sort"
+      v-for="option in sortOptions"
+      :key="option.key"
       :class="
-        currentSort === sort
+        archiveSortStore.sortField === option.key
           ? 'text-purple-700'
           : 'text-neutral-500 hover:text-neutral-700'
       "
-      @click="handleSortChange(sort)"
+      @click="handleSortChange(option.key)"
     >
-      <div>{{ sort }}</div>
+      <div>{{ option.show }}</div>
       <div
         class="h-1 rounded-full w-full"
-        :class="currentSort === sort ? 'bg-purple-200' : 'bg-transparent'"
+        :class="
+          archiveSortStore.sortField === option.key
+            ? 'bg-purple-200'
+            : 'bg-transparent'
+        "
       ></div>
     </div>
     <div class="flex-1"></div>
