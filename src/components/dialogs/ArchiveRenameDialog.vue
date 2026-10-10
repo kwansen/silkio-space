@@ -2,30 +2,22 @@
 import { nextTick, ref, useTemplateRef, watch } from "vue";
 import { useEventListener } from "@vueuse/core";
 import TextButton from "@/components/shared/TextButton.vue";
-import type { Folder } from "@/infrastructure/db/folder.ts";
+import { useArchiveRenameStore } from "@/stores/archiveRename";
+import { useArchiveSearch } from "@/composables/useArchiveSearch.ts";
+import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 
-interface Props {
-  // 待编辑归档：null 表示弹窗关闭
-  folder: Folder | null;
-}
-
-const props = defineProps<Props>();
-
-interface Emits {
-  // 关闭弹窗（取消、遮罩点击、Esc 或名称未变化时确认）
-  onClose: [];
-  // 确认重命名，携带校验后的新名称（由调用方执行重命名并关闭弹窗）
-  onConfirm: [name: string];
-}
-
-const emit = defineEmits<Emits>();
+// 元函数：弹窗状态自持（读取全局 archiveRename store，不经由父级传参）
+const archiveRenameStore = useArchiveRenameStore();
+// 元函数：组装归档搜索与排序组合式函数（重命名后同步索引与列表）
+const { renameFolder } = useArchiveSearch();
+const { refreshFolders } = useArchiveSort();
 
 const inputRef = useTemplateRef<HTMLInputElement>("inputRef");
 const name = ref("");
 
 // 元函数：弹窗打开时回填名称并全选聚焦
 watch(
-  () => props.folder,
+  () => archiveRenameStore.folder,
   async (folder) => {
     if (!folder) return;
     name.value = folder.name;
@@ -36,29 +28,36 @@ watch(
   },
 );
 
-// 元函数：确认编辑（名称为空或未变化则直接关闭），重命名委托调用方执行
-const handleConfirm = () => {
-  const folder = props.folder;
+// 元函数：确认编辑（名称为空或未变化则直接关闭），否则执行重命名（db 更新 + 搜索索引同步 + 归档列表刷新）后关闭弹窗
+const handleConfirm = async () => {
+  const folder = archiveRenameStore.folder;
   const v = name.value.trim();
   if (!folder || !v || v === folder.name) {
-    emit("onClose");
+    archiveRenameStore.close();
     return;
   }
-  emit("onConfirm", v);
+  try {
+    await renameFolder(folder.id, v);
+    await refreshFolders();
+  } catch (e) {
+    console.error(e);
+  }
+  archiveRenameStore.close();
 };
 
 // Esc 关闭弹窗（仅打开时）
 useEventListener(window, "keydown", (e: KeyboardEvent) => {
-  if (e.key === "Escape" && props.folder) emit("onClose");
+  if (e.key === "Escape" && archiveRenameStore.folder)
+    archiveRenameStore.close();
 });
 </script>
 
 <template>
   <!-- 独立归档重命名弹窗：遮罩点击关闭 -->
   <div
-    v-if="folder"
+    v-if="archiveRenameStore.folder"
     class="fixed inset-0 bg-black/30 z-50 grid place-items-center"
-    @click.self="emit('onClose')"
+    @click.self="archiveRenameStore.close()"
   >
     <div class="w-80 bg-white rounded-2xl p-4 shadow-xl select-none">
       <div class="text-sm text-neutral-700 mb-2">编辑归档名称</div>
@@ -73,7 +72,7 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
       <div class="flex justify-end gap-2">
         <TextButton
           class="h-7 px-3 text-xs rounded-md text-neutral-500 hover:bg-gray-100"
-          @click="emit('onClose')"
+          @click="archiveRenameStore.close()"
         >
           取消
         </TextButton>

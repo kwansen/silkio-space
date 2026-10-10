@@ -37,6 +37,38 @@ export const useFolderDocumentDb = () => {
     );
   };
 
+  // 元函数：批量将文档加入多个归档（幂等，重复加入自动忽略；逐个归档追加到其统一排序空间末尾）
+  const addMany = async (
+    db: Database,
+    folderIds: string[],
+    documentId: string,
+  ): Promise<void> => {
+    for (const folderId of folderIds) {
+      await add(db, folderId, documentId);
+    }
+  };
+
+  // 元函数：批量将文档移出多个归档（单条 DELETE 按 IN 批量删除关联行）
+  const removeMany = async (
+    db: Database,
+    folderIds: string[],
+    documentId: string,
+  ): Promise<void> => {
+    if (folderIds.length === 0) return;
+    const placeholders = folderIds.map((_, i) => `$${i + 2}`).join(", ");
+    await db.execute(
+      `DELETE FROM folder_document WHERE document_id = $1 AND folder_id IN (${placeholders})`,
+      [documentId, ...folderIds],
+    );
+  };
+
+  // 元函数：删除文档的全部归档关联（文档被永久删除时调用，表无外键级联）
+  const removeByDoc = async (db: Database, documentId: string): Promise<void> => {
+    await db.execute("DELETE FROM folder_document WHERE document_id = $1", [
+      documentId,
+    ]);
+  };
+
   // 元函数：查询文档已加入的归档 id 集合
   const getFolderIdsByDoc = async (
     db: Database,
@@ -93,5 +125,5 @@ export const useFolderDocumentDb = () => {
     }
   };
 
-  return { add, remove, getFolderIdsByDoc, getFirstDoc, getDocsByFolder, reorder };
+  return { add, remove, addMany, removeMany, removeByDoc, getFolderIdsByDoc, getFirstDoc, getDocsByFolder, reorder };
 };

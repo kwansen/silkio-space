@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DocList, { Item } from "@/components/shared/DocList.vue";
+import ArchiveList, { Item } from "@/components/shared/ArchiveList.vue";
 import ArchiveRenameDialog from "@/components/shared/ArchiveRenameDialog.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed, ref } from "vue";
@@ -26,14 +26,12 @@ const metaFormatters: Partial<
     folder.viewed_at ? new Date(folder.viewed_at).toLocaleString() : "",
 };
 
-// 元函数：将归档列表转换为 DocList 列表项，meta 随当前排序字段联动
+// 元函数：将归档列表转换为 ArchiveList 列表项，meta 随当前排序字段联动
 const items = computed<Item[]>(() =>
   archiveSortStore.folders.map((folder) => ({
     key: folder.id,
     title: folder.name,
-    content: "",
     meta: metaFormatters[archiveSortStore.sortField]?.(folder),
-    docType: "folder",
   })),
 );
 
@@ -97,11 +95,10 @@ const popoverList = ref<PopoverItem[]>([
 </script>
 
 <template>
-  <DocList
+  <ArchiveList
     :list="items"
     :popover-list="popoverList"
     :draggable="isFreeSort"
-    simple
     @onClick="handleClick"
     @onDragEnd="handleDragEnd"
   />

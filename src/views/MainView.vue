@@ -6,29 +6,34 @@ import DocSort from "@/components/sections/DocSort/DocSort.vue";
 import DocTabs from "@/components/sections/DocTabs/DocTabs.vue";
 import { useDocTabStore } from "@/stores/docTab";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
+import { useDocSearch } from "@/composables/useDocSearch.ts";
+import { useArchiveSearch } from "@/composables/useArchiveSearch.ts";
+import { useDocSearchStore } from "@/stores/docSearch";
 import { listen } from "@tauri-apps/api/event";
-import { getCurrentWindow } from "@tauri-apps/api/window";
 import { onMounted, onUnmounted } from "vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
 
 const docTabStore = useDocTabStore();
-// 元函数：组装排序文档组合式函数
+// 元函数：组装排序文档与搜索文档组合式函数
 const { refreshDocs } = useSortDocs();
+const { searchDocs } = useDocSearch();
+const docSearchStore = useDocSearchStore();
+// 元函数：组装归档搜索组合式函数
+const { refreshFolders } = useArchiveSearch();
 
 let stopOnRefresh: (() => void) | null = null;
-let stopOnClose: (() => void) | null = null;
 
 // 元函数：挂载时获取当前页文档并监听刷新事件
 onMounted(async () => {
   try {
-    // 元函数：阻止窗口关闭，改为隐藏（下次打开更快，无需重新创建窗口）
-    stopOnClose = await getCurrentWindow().onCloseRequested(async (event) => {
-      event.preventDefault();
-      await getCurrentWindow().hide();
-    });
-
     await refreshDocs();
-    stopOnRefresh = await listen("refresh", () => refreshDocs());
+    // 挂载时加载归档并重建标题倒排索引
+    await refreshFolders();
+    // editor 窗口的文档增删等变化只通过 refresh 事件通知：排序与搜索列表一并刷新
+    stopOnRefresh = await listen("refresh", async () => {
+      await refreshDocs();
+      await searchDocs(docSearchStore.query);
+    });
   } catch (e) {
     console.error(e);
   }
@@ -37,7 +42,6 @@ onMounted(async () => {
 // 元函数：卸载时取消刷新事件监听
 onUnmounted(() => {
   stopOnRefresh?.();
-  stopOnClose?.();
 });
 </script>
 

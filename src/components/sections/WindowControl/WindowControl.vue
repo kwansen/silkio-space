@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { useWindowControl } from "@/composables/useWindowControl";
 import { useHover } from "@/composables/useHover.ts";
+import { useEditorViewStore } from "@/stores/editorView";
 import SquareButton from "@/components/shared/SquareButton.vue";
 import { windowControlIcons } from "@/icons/windowControlIcons";
 import NavAndOutline from "./NavAndOutline.vue";
 
-interface Emits {
-  onHide: [];
-}
-
-const emit = defineEmits<Emits>();
-
+// 元函数：隐藏窗口时重置编辑视图文档（状态与逻辑内聚在组件内，不经由父级）
+const { setDoc } = useEditorViewStore();
 const { isMaximized, minimize, toggleMaximize, hide } = useWindowControl();
 const {
   isHover: isMinimizeHover,
@@ -31,7 +28,7 @@ const handleMinimize = () => {
 const handleHide = () => {
   hide();
   uncloseHover();
-  emit("onHide");
+  setDoc(null);
 };
 </script>
 

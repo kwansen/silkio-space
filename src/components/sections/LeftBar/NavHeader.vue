@@ -9,7 +9,7 @@ import { useEditorViewStore } from "@/stores/editorView";
 import { useNavTreeStore } from "@/stores/navTree";
 import { useDoc } from "@/composables/useDocuments.ts";
 import { useDocSvc } from "@/services/document.ts";
-import { useFolderSvc } from "@/services/folder.ts";
+import { useFdSvc } from "@/services/folder.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 
 const store = useEditorViewStore();
@@ -26,7 +26,7 @@ const createTargetId = () =>
 // 元函数：创建指定类型文档、加入当前新建目标容器并在当前窗口打开，同时通知 main 刷新列表
 const createDoc = async (create: () => Promise<string>) => {
   try {
-    const folderSvc = await useFolderSvc();
+    const folderSvc = await useFdSvc();
     const docSvc = await useDocSvc();
     const id = await create();
     const containerId = createTargetId();

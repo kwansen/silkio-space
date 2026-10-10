@@ -2,6 +2,7 @@
 import RichText from "@/components/sections/RichText/RichText.vue";
 import MindMapCanvas from "@/components/sections/MindMapCanvas/MindMapCanvas.vue";
 import { useEditorViewStore } from "@/stores/editorView";
+import { useNavTreeStore } from "@/stores/navTree";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useDocSvc } from "@/services/document.ts";
@@ -12,11 +13,12 @@ import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
 import EditorViewEmpty from "@/components/sections/EditorViewEmpty/EditorViewEmpty.vue";
 
 const store = useEditorViewStore();
+const navTreeStore = useNavTreeStore();
 const { setKey, setDoc, setFolder, setSidebarView } = store;
 
 let stopOnOpen: (() => void) | null;
-let stopOnClose: (() => void) | null;
 let stopOnFolderChange: (() => void) | null;
+let stopOnDocRemoved: (() => void) | null;
 
 // 窗口显示闸门：仅 open 事件加载完成后（on-ready）允许显示窗口；
 // folderChange 等数据刷新引起的重渲染不唤起（显示/聚焦）窗口
@@ -35,12 +37,6 @@ const show = async () => {
 };
 
 onMounted(async () => {
-  // 元函数：阻止窗口关闭，改为隐藏（下次打开更快，无需重新创建窗口）
-  stopOnClose = await getCurrentWindow().onCloseRequested(async (event) => {
-    event.preventDefault();
-    await getCurrentWindow().hide();
-  });
-
   // 元函数：监听 open 事件，根据类型与 id 加载文档
   stopOnOpen = await listen<{ type: string; id: string }>(
     "open",
@@ -85,9 +81,11 @@ onMounted(async () => {
         const folderSvc = await useFolderSvc();
         const folder = await folderSvc.getById(folderId);
         if (!folder) {
+          // 归档已被删除：清空展示并隐藏窗口（空页面无意义，下次打开时再显示）
           setFolder(null);
           setDoc(null);
           setKey(Date.now());
+          await getCurrentWindow().hide();
           return;
         }
         setFolder(folder);
@@ -103,12 +101,29 @@ onMounted(async () => {
       }
     },
   );
+  // 元函数：监听 docRemoved 事件（main 窗口永久删除文档时通知）：
+  // nav 树重载以移除该文档；当前展示该文档时清空展示（渲染 empty 占位）
+  stopOnDocRemoved = await listen<{ docId: string }>(
+    "docRemoved",
+    async (event) => {
+      try {
+        const { docId } = event.payload;
+        if (store.doc?.id === docId) {
+          setDoc(null);
+          setKey(Date.now());
+        }
+        navTreeStore.bump();
+      } catch (e) {
+        console.error(e);
+      }
+    },
+  );
 });
 
 onUnmounted(() => {
   stopOnOpen?.();
-  stopOnClose?.();
   stopOnFolderChange?.();
+  stopOnDocRemoved?.();
 });
 </script>
 

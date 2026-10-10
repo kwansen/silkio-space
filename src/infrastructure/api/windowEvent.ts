@@ -13,3 +13,7 @@ export const notifyMainRefresh = () => emitTo("main", "refresh");
 // 元函数：通知 editor 窗口同步指定归档的展示（归档改名/删除或归档内文档增删时调用）
 export const notifyEditorFolderChange = (folderId: string) =>
   emitTo("editor", "folderChange", { folderId });
+
+// 元函数：通知 editor 窗口文档已永久删除（nav 重载移除该文档；当前展示该文档时显示 empty）
+export const notifyEditorDocRemoved = (docId: string) =>
+  emitTo("editor", "docRemoved", { docId });

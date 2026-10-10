@@ -4,7 +4,7 @@ import { Icon } from "@iconify/vue";
 import { useEditorViewStore } from "@/stores/editorView";
 import { useNavTreeStore } from "@/stores/navTree";
 import { useNavTree, type DragPayload, type DropZone } from "@/composables/useNavTree";
-import { useFolderSvc } from "@/services/folder.ts";
+import { useFdSvc } from "@/services/folder.ts";
 import { useDocSvc } from "@/services/document.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import { docTypeIcons, type DocTypeIconKey } from "@/icons";

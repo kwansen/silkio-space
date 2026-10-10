@@ -5,21 +5,11 @@ import { useEventListener } from "@vueuse/core";
 import TextButton from "@/components/shared/TextButton.vue";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import { useArchiveSortStore } from "@/stores/archiveSort";
+import { useArchivePickerStore } from "@/stores/archivePicker";
 import ScrollArea from "./ScrollArea.vue";
 
-interface Props {
-  // 待归档文档 id：null 表示弹窗关闭
-  docId: string | null;
-}
-
-const props = defineProps<Props>();
-
-interface Emits {
-  onClose: [];
-}
-
-const emit = defineEmits<Emits>();
-
+// 元函数：弹窗状态自持（读取全局 archivePicker store，不经由父级传参）
+const archivePickerStore = useArchivePickerStore();
 const archiveSortStore = useArchiveSortStore();
 
 // 元函数：组装归档组合式函数（归档列表与关联读写）
@@ -36,7 +26,7 @@ const originalIds = ref<Set<string>>(new Set());
 
 // 元函数：弹窗打开时加载归档列表与文档当前所属归档，初始化勾选状态
 watch(
-  () => props.docId,
+  () => archivePickerStore.docId,
   async (docId) => {
     if (!docId) return;
     try {
@@ -65,7 +55,7 @@ const toggle = (folderId: string) => {
 
 // 元函数：确定应用勾选结果（新勾选的写入关联、取消勾选的移出关联）并关闭弹窗
 const handleConfirm = async () => {
-  const docId = props.docId;
+  const docId = archivePickerStore.docId;
   if (!docId) return;
   try {
     const added = [...checkedIds.value].filter(
@@ -81,21 +71,22 @@ const handleConfirm = async () => {
   } catch (e) {
     console.error(e);
   }
-  emit("onClose");
+  archivePickerStore.close();
 };
 
 // Esc 关闭弹窗（仅打开时）
 useEventListener(window, "keydown", (e: KeyboardEvent) => {
-  if (e.key === "Escape" && props.docId) emit("onClose");
+  if (e.key === "Escape" && archivePickerStore.docId)
+    archivePickerStore.close();
 });
 </script>
 
 <template>
   <!-- 独立归档选择弹窗：多选勾选，遮罩点击关闭 -->
   <div
-    v-if="docId"
+    v-if="archivePickerStore.docId"
     class="fixed inset-0 bg-black/30 z-50 grid place-items-center"
-    @click.self="emit('onClose')"
+    @click.self="archivePickerStore.close()"
   >
     <div class="w-80 bg-white rounded-2xl p-4 shadow-xl select-none">
       <div class="text-sm text-neutral-700 mb-2">归档到</div>
@@ -130,7 +121,7 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
       <div class="flex justify-end gap-2 mt-3">
         <TextButton
           class="h-7 px-3 text-xs rounded-md text-neutral-500 hover:bg-gray-100"
-          @click="emit('onClose')"
+          @click="archivePickerStore.close()"
         >
           取消
         </TextButton>

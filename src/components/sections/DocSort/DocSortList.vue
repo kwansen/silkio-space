@@ -1,20 +1,15 @@
 <script setup lang="ts">
 import DocList, { Item } from "@/components/shared/DocList.vue";
-import ArchivePickerDialog from "@/components/shared/ArchivePickerDialog.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useDocSortStore } from "@/stores/docSort.ts";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
+import { useArchivePickerStore } from "@/stores/archivePicker.ts";
+import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 import type { Doc, SortField } from "@/infrastructure/db/document.ts";
 import DocSortEmpty from "./DocSortEmpty.vue";
 
 export type { Item };
-
-interface Emits {
-  onClick: [item: Item];
-}
-
-const emit = defineEmits<Emits>();
 
 const docSortStore = useDocSortStore();
 
@@ -37,25 +32,27 @@ const items = computed<Item[]>(() =>
   })),
 );
 
-// 转发DocList的onClick事件
+// 元函数：组装排序文档组合式函数
+const { removeDoc, touchDoc } = useSortDocs();
+
+// 元函数：点击文档项时先更新 viewed_at，再通知 editor 窗口打开该文档
+// [日志]
 const handleClick = (item: Item) => {
-  emit("onClick", item);
+  touchDoc(String(item.key))
+    .then(() => notifyEditorOpen("doc", String(item.key)))
+    .catch(console.error);
 };
 
-// 元函数：组装排序文档组合式函数
-const { removeDoc } = useSortDocs();
+const archivePickerStore = useArchivePickerStore();
 
-// 待归档文档 id：非空时渲染归档选择弹窗
-const archiveDocId = ref<string | null>(null);
-
-// popover 菜单：归档（打开独立多选弹窗）与删除（key 由 DocList 注入，为当前文档 id）
+// popover 菜单：归档（唤起 App.vue 挂载的全局归档选择弹窗）与删除（key 由 DocList 注入，为当前文档 id）
 const popoverList = computed<PopoverItem[]>(() => [
   {
     icon: "mdi:archive-outline",
     name: "归档",
     action: (key) => {
       if (key === null || key === undefined) return;
-      archiveDocId.value = String(key);
+      archivePickerStore.open(String(key));
     },
   },
   {
@@ -72,5 +69,4 @@ const popoverList = computed<PopoverItem[]>(() => [
 <template>
   <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
   <DocSortEmpty v-if="items.length === 0" />
-  <ArchivePickerDialog :doc-id="archiveDocId" @on-close="archiveDocId = null" />
 </template>
