@@ -26,11 +26,12 @@ const createTargetId = () =>
 // 元函数：创建指定类型文档、加入当前新建目标容器并在当前窗口打开，同时通知 main 刷新列表
 const createDoc = async (create: () => Promise<string>) => {
   try {
-    const folderSvc = await useFdSvc();
+    const folderSvc = useFdSvc();
     const docSvc = await useDocSvc();
     const id = await create();
     const containerId = createTargetId();
-    if (containerId) await folderSvc.addDoc(containerId, id);
+    if (containerId)
+      await folderSvc.addDocToFolder({ folderId: containerId, docId: id });
     const doc = await docSvc.getById(id);
     store.setDoc(doc);
     store.setKey(Date.now());
@@ -47,10 +48,10 @@ const handleCreateFolder = async () => {
   try {
     const containerId = createTargetId();
     if (!containerId) return;
-    const folderSvc = await useFolderSvc();
-    const id = await folderSvc.create({
+    const folderSvc = useFdSvc();
+    const id = await folderSvc.createFolder({
       name: "新建文件夹",
-      parent_id: containerId,
+      parentId: containerId,
     });
     navTreeStore.setSelectedFolder(id);
     navTreeStore.expand(containerId);

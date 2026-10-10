@@ -14,8 +14,7 @@ export const useNavTreeStore = defineStore("navTree", () => {
   // 版本号：本地操作（新建/移动/删除）后自增，触发各级树容器重载
   const version = ref(0);
 
-  // 弹窗目标：由各级树行设置，弹窗统一挂在 NavMain（null 表示关闭）
-  const renameTarget = ref<Folder | null>(null);
+  // 弹窗目标：由各级树行设置（重命名经 archiveRename store 唤起），弹窗实例由 App.vue 挂载
   const removeFolderTarget = ref<Folder | null>(null);
   const removeDocTarget = ref<Doc | null>(null);
 
@@ -49,7 +48,6 @@ export const useNavTreeStore = defineStore("navTree", () => {
   const reset = () => {
     selectedFolderId.value = null;
     expandedIds.value = new Set<string>();
-    renameTarget.value = null;
     removeFolderTarget.value = null;
     removeDocTarget.value = null;
     version.value += 1;
@@ -59,7 +57,6 @@ export const useNavTreeStore = defineStore("navTree", () => {
     selectedFolderId,
     expandedIds,
     version,
-    renameTarget,
     removeFolderTarget,
     removeDocTarget,
     setSelectedFolder,

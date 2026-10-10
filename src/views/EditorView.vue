@@ -6,7 +6,7 @@ import { useNavTreeStore } from "@/stores/navTree";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useDocSvc } from "@/services/document.ts";
-import { useFolderSvc } from "@/services/folder.ts";
+import { useFdSvc } from "@/services/folder.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import { onMounted, onUnmounted } from "vue";
 import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
@@ -54,10 +54,10 @@ onMounted(async () => {
           // 有文档时由 on-ready 触发显示；无文档时清空当前文档并直接显示窗口
           // 侧栏默认回到列表视图
           pendingShow = true;
-          const folderSvc = await useFolderSvc();
-          const folder = await folderSvc.getById(id);
+          const folderSvc = useFdSvc();
+          const folder = await folderSvc.getFolderById({ id });
           setFolder(folder);
-          const doc = await folderSvc.getFirstDocInSubtree(id);
+          const doc = await folderSvc.getFirstDocInSubtree({ folderId: id });
           setDoc(doc);
           setSidebarView("nav");
           if (!doc) await show();
@@ -78,8 +78,8 @@ onMounted(async () => {
       try {
         const { folderId } = event.payload;
         if (store.folder?.id !== folderId) return;
-        const folderSvc = await useFolderSvc();
-        const folder = await folderSvc.getById(folderId);
+        const folderSvc = useFdSvc();
+        const folder = await folderSvc.getFolderById({ id: folderId });
         if (!folder) {
           // 归档已被删除：清空展示并隐藏窗口（空页面无意义，下次打开时再显示）
           setFolder(null);
@@ -91,9 +91,12 @@ onMounted(async () => {
         setFolder(folder);
         const docInSubtree =
           store.doc?.id &&
-          (await folderSvc.hasDocInSubtree(folderId, store.doc.id));
+          (await folderSvc.hasDocInSubtree({
+            folderId,
+            docId: store.doc.id,
+          }));
         if (!docInSubtree) {
-          setDoc(await folderSvc.getFirstDocInSubtree(folderId));
+          setDoc(await folderSvc.getFirstDocInSubtree({ folderId }));
         }
         setKey(Date.now());
       } catch (e) {

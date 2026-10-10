@@ -5,12 +5,15 @@ import TextButton from "@/components/shared/TextButton.vue";
 import { useArchiveRenameStore } from "@/stores/archiveRename";
 import { useArchiveSearch } from "@/composables/useArchiveSearch.ts";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
+import { useNavTreeStore } from "@/stores/navTree";
 
 // 元函数：弹窗状态自持（读取全局 archiveRename store，不经由父级传参）
 const archiveRenameStore = useArchiveRenameStore();
 // 元函数：组装归档搜索与排序组合式函数（重命名后同步索引与列表）
 const { renameFolder } = useArchiveSearch();
 const { refreshFolders } = useArchiveSort();
+// 导航树版本号：归档名变化后自增触发各级树容器重载（未挂载时自增无副作用）
+const navTreeStore = useNavTreeStore();
 
 const inputRef = useTemplateRef<HTMLInputElement>("inputRef");
 const name = ref("");
@@ -28,7 +31,7 @@ watch(
   },
 );
 
-// 元函数：确认编辑（名称为空或未变化则直接关闭），否则执行重命名（db 更新 + 搜索索引同步 + 归档列表刷新）后关闭弹窗
+// 元函数：确认编辑（名称为空或未变化则直接关闭），否则执行重命名（db 更新 + 搜索索引同步 + 归档列表与导航树刷新）后关闭弹窗
 const handleConfirm = async () => {
   const folder = archiveRenameStore.folder;
   const v = name.value.trim();
@@ -39,6 +42,7 @@ const handleConfirm = async () => {
   try {
     await renameFolder(folder.id, v);
     await refreshFolders();
+    navTreeStore.bump();
   } catch (e) {
     console.error(e);
   }

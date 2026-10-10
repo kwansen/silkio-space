@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import DocList, { Item } from "@/components/shared/DocList.vue";
-import ArchivePickerDialog from "@/components/shared/ArchivePickerDialog.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useDocSearchStore } from "@/stores/docSearch";
 import { useDocSearch } from "@/composables/useDocSearch.ts";
+import { useArchivePickerStore } from "@/stores/archivePicker.ts";
 import DocSearchEmpty from "./DocSearchEmpty.vue";
 
 export type { Item };
@@ -35,17 +35,17 @@ const handleClick = (item: Item) => {
 // 元函数：组装文档搜索组合式函数
 const { removeDoc } = useDocSearch();
 
-// 待归档文档 id：非空时渲染归档选择弹窗
-const archiveDocId = ref<string | null>(null);
+// 元函数：获取归档选择弹窗 store（弹窗状态自持，实例由 App.vue 全局挂载）
+const archivePickerStore = useArchivePickerStore();
 
-// popover 菜单：归档（打开独立多选弹窗）与删除（key 由 DocList 注入，为当前文档 id）
+// popover 菜单：归档（唤起全局多选弹窗）与删除（key 由 DocList 注入，为当前文档 id）
 const popoverList = computed<PopoverItem[]>(() => [
   {
     icon: "mdi:archive-outline",
     name: "归档",
     action: (key) => {
       if (key === null || key === undefined) return;
-      archiveDocId.value = String(key);
+      archivePickerStore.open(String(key));
     },
   },
   {
@@ -62,5 +62,4 @@ const popoverList = computed<PopoverItem[]>(() => [
 <template>
   <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
   <DocSearchEmpty v-if="items.length === 0 && docSearchStore.query" />
-  <ArchivePickerDialog :doc-id="archiveDocId" @on-close="archiveDocId = null" />
 </template>

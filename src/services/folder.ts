@@ -312,5 +312,61 @@ export const useFdSvc = () => {
     return rows[0] ?? null;
   };
   //#endregion
-  return { createFolder, deleteFolder, renameFolder, updateFolderViewedAt, getArchiveChildren, reorderChildren, getArchives, getSortedFolders, moveFolderInto, moveDocInto, removeDocFromFolder, removeDocRelations, addDocToFolder, getFolderIdsByDoc, addDocToFolders, removeDocFromFolders, removeDocFromSubtree, getFirstDocInSubtree };
+
+  //#region CHECKED：根据 id 查询归档
+  /***
+   * @param params.id 必须，归档 id
+   ***/
+  const getFolderById = async (params: { id: string }): Promise<Folder | null> => {
+    const db = await getDb();
+    return folderDb.getById(db, params.id);
+  };
+  //#endregion
+
+  //#region CHECKED：查询归档子树内是否包含指定文档
+  /***
+   * @param params.folderId 必须，归档 id
+   * @param params.docId    必须，文档 id
+   ***/
+  const hasDocInSubtree = async (params: {
+    folderId: string;
+    docId: string;
+  }): Promise<boolean> => {
+    const db = await getDb();
+    return folderDb.hasDocInSubtree(db, params.folderId, params.docId);
+  };
+  //#endregion
+
+  //#region CHECKED：获取后代归档 id 集合
+  /***
+   * @param params.id 必须，归档 id
+   * @returns 全部后代归档 id（不含自身）
+   ***/
+  const getDescendantIds = async (params: { id: string }): Promise<string[]> => {
+    const db = await getDb();
+    return folderDb.getDescendantIds(db, params.id);
+  };
+  //#endregion
+
+  //#region CHECKED：查询归档子树内的全部子文件夹
+  /***
+   * @param params.id 必须，归档 id（不含根自身）
+   ***/
+  const getSubtreeFolders = async (params: { id: string }): Promise<Folder[]> => {
+    const db = await getDb();
+    return folderDb.getSubtreeFolders(db, params.id);
+  };
+  //#endregion
+
+  //#region CHECKED：查询归档子树内的全部文档
+  /***
+   * @param params.id 必须，归档 id
+   * @returns 文档数组，携带所属容器 container_id 与容器内排序 container_order
+   ***/
+  const getSubtreeDocs = async (params: { id: string }) => {
+    const db = await getDb();
+    return folderDb.getSubtreeDocs(db, params.id);
+  };
+  //#endregion
+  return { createFolder, deleteFolder, renameFolder, updateFolderViewedAt, getArchiveChildren, reorderChildren, getArchives, getSortedFolders, moveFolderInto, moveDocInto, removeDocFromFolder, removeDocRelations, addDocToFolder, getFolderIdsByDoc, addDocToFolders, removeDocFromFolders, removeDocFromSubtree, getFirstDocInSubtree, getFolderById, hasDocInSubtree, getDescendantIds, getSubtreeFolders, getSubtreeDocs };
 };

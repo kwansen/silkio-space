@@ -1,7 +1,8 @@
 import { ref } from "vue";
-import { useFolderSvc } from "@/services/folder.ts";
+import { useFdSvc } from "@/services/folder.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
 import { useNavTreeStore } from "@/stores/navTree.ts";
+import type { ChildRef } from "@/infrastructure/db/folder.ts";
 
 // useNavTree.ts: 导航树拖拽组合式函数（原生 HTML5 DnD）
 // 模块级共享拖拽状态：拖拽跨越各级 NavTree 组件边界，状态必须全局唯一
@@ -86,13 +87,14 @@ const isSelfOrDescendant = (folderId: string) => {
   return d.id === folderId || d.descendantIds.includes(folderId);
 };
 
-// 元函数：按 before/after 在同级数组中移动被拖拽项到目标项旁（就地修改数组并返回）
-const insertBeside = (ids: string[], draggedId: string, targetId: string, zone: "before" | "after") => {
-  const at = ids.indexOf(draggedId);
-  if (at >= 0) ids.splice(at, 1);
-  const tIdx = ids.indexOf(targetId);
+// 元函数：按 before/after 在子项数组中移动被拖拽项到目标项旁（就地修改数组并返回）
+const insertBeside = (items: ChildRef[], dragged: ChildRef, targetId: string, zone: "before" | "after") => {
+  const rest = items.filter((c) => c.id !== dragged.id);
+  const tIdx = rest.findIndex((c) => c.id === targetId);
   if (tIdx < 0) return false;
-  ids.splice(tIdx + (zone === "after" ? 1 : 0), 0, draggedId);
+  rest.splice(tIdx + (zone === "after" ? 1 : 0), 0, dragged);
+  items.length = 0;
+  items.push(...rest);
   return true;
 };
 
@@ -105,44 +107,40 @@ const handleDrop = async () => {
   // "into" 命中文件夹行时目标容器为该行 id，命中容器空白区时目标容器为容器自身
   const targetContainerId = t.zone === "into" ? t.id || t.containerId : t.containerId;
   try {
-    const svc = await useFolderSvc();
-    if (d.kind === "doc") {
-      if (t.zone === "into") {
-        // 放入文件夹（追加到末尾）：源容器与目标相同则无需处理
-        if (d.sourceContainerId === targetContainerId) return;
-        await svc.removeDoc(d.sourceContainerId, d.id);
-        await svc.addDoc(targetContainerId, d.id);
+    const svc = useFdSvc();
+    if (t.zone === "into") {
+      // 放入文件夹（追加到统一排序空间末尾）：源容器与目标相同则无需处理
+      if (d.sourceContainerId === targetContainerId) return;
+      if (d.kind === "doc") {
+        await svc.moveDocInto({
+          id: d.id,
+          targetId: targetContainerId,
+          sourceId: d.sourceContainerId,
+        });
       } else {
-        // 同级排序/跨容器插入：以目标容器现有文档顺序为基准插入目标行旁
-        const ids = (await svc.getDocs(targetContainerId)).map((x) => x.id);
-        if (!insertBeside(ids, d.id, t.id, t.zone)) return;
-        if (d.sourceContainerId !== targetContainerId) {
-          await svc.removeDoc(d.sourceContainerId, d.id);
-        }
-        await svc.reorderDocs(targetContainerId, ids);
+        // 环检测：目标容器不得是拖拽文件夹自身或其后代
+        if (isSelfOrDescendant(targetContainerId)) return;
+        await svc.moveFolderInto({ id: d.id, targetId: targetContainerId });
       }
     } else {
-      // 环检测：目标容器不得是拖拽文件夹自身或其后代
-      if (isSelfOrDescendant(targetContainerId)) return;
-      if (t.zone === "into") {
-        // 放入文件夹（追加到末尾）：源容器与目标相同则无需处理
-        if (d.sourceContainerId === targetContainerId) return;
-        await svc.setParent(d.id, targetContainerId);
-        const ids = (await svc.getChildren(targetContainerId)).map((f) => f.id);
-        const at = ids.indexOf(d.id);
-        if (at >= 0) ids.splice(at, 1);
-        ids.push(d.id);
-        await svc.reorder(ids);
-      } else {
-        // 同级排序/跨容器插入
-        if (t.id === d.id) return;
-        const ids = (await svc.getChildren(targetContainerId)).map((f) => f.id);
-        if (!insertBeside(ids, d.id, t.id, t.zone)) return;
-        if (d.sourceContainerId !== targetContainerId) {
-          await svc.setParent(d.id, targetContainerId);
+      // 同级排序/跨容器插入：以目标容器统一排序空间（文件夹与文档穿插）为基准插入目标行旁
+      if (d.kind === "folder" && isSelfOrDescendant(targetContainerId)) return;
+      const children = await svc.getArchiveChildren({ id: targetContainerId });
+      const items: ChildRef[] = children.map((c) => ({ kind: c.kind, id: c.id }));
+      if (!insertBeside(items, { kind: d.kind, id: d.id }, t.id, t.zone)) return;
+      if (d.sourceContainerId !== targetContainerId) {
+        // 跨容器：先建立新容器关联（追加到末尾），随后统一重排覆盖 sort_order
+        if (d.kind === "doc") {
+          await svc.moveDocInto({
+            id: d.id,
+            targetId: targetContainerId,
+            sourceId: d.sourceContainerId,
+          });
+        } else {
+          await svc.moveFolderInto({ id: d.id, targetId: targetContainerId });
         }
-        await svc.reorder(ids);
       }
+      await svc.reorderChildren({ id: targetContainerId, items });
     }
     await notifyMainRefresh();
   } catch (e) {

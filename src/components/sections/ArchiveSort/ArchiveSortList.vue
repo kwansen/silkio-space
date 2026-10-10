@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import ArchiveList, { Item } from "@/components/shared/ArchiveList.vue";
-import ArchiveRenameDialog from "@/components/shared/ArchiveRenameDialog.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed, ref } from "vue";
 import { useArchiveSortStore } from "@/stores/archiveSort";
+import { useArchiveRenameStore } from "@/stores/archiveRename.ts";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import type { FolderSortField, Folder } from "@/infrastructure/db/folder.ts";
 import ArchiveSortEmpty from "./ArchiveSortEmpty.vue";
@@ -41,8 +41,7 @@ const handleClick = (item: Item) => {
 };
 
 // 元函数：组装归档排序组合式函数
-const { refreshFolders, reorderFolders, removeFolder, renameFolder } =
-  useArchiveSort();
+const { refreshFolders, reorderFolders, removeFolder } = useArchiveSort();
 
 // 仅自由排序模式下允许拖拽
 const isFreeSort = computed(() => archiveSortStore.sortField === "sort_order");
@@ -58,29 +57,20 @@ const handleDragEnd = async (oldIndex: number, newIndex: number) => {
   }
 };
 
-// 待编辑归档：非空时渲染重命名弹窗
-const editFolder = ref<Folder | null>(null);
+// 元函数：获取归档重命名弹窗 store（弹窗状态自持，实例由 App.vue 全局挂载）
+const archiveRenameStore = useArchiveRenameStore();
 
-// 元函数：确认编辑后重命名，完成后关闭弹窗
-const handleRename = async (name: string) => {
-  if (!editFolder.value) return;
-  try {
-    await renameFolder(editFolder.value.id, name);
-  } catch (e) {
-    console.error(e);
-  }
-  editFolder.value = null;
-};
-
-// popover 菜单：编辑（打开重命名弹窗）与删除（key 由 DocList 注入，为当前归档 id）
+// popover 菜单：编辑（唤起全局重命名弹窗）与删除（key 由 DocList 注入，为当前归档 id）
 const popoverList = ref<PopoverItem[]>([
   {
     icon: "mdi:pencil-outline",
     name: "编辑",
     action: (key) => {
       if (key === null || key === undefined) return;
-      editFolder.value =
-        archiveSortStore.folders.find((f) => f.id === String(key)) ?? null;
+      const folder = archiveSortStore.folders.find(
+        (f) => f.id === String(key),
+      );
+      if (folder) archiveRenameStore.open(folder);
     },
   },
   {
@@ -103,9 +93,4 @@ const popoverList = ref<PopoverItem[]>([
     @onDragEnd="handleDragEnd"
   />
   <ArchiveSortEmpty v-if="items.length === 0" />
-  <ArchiveRenameDialog
-    :folder="editFolder"
-    @on-close="editFolder = null"
-    @on-confirm="handleRename"
-  />
 </template>

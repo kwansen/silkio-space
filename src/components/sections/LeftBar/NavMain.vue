@@ -11,9 +11,7 @@ import { docTypeIcons, type DocTypeIconKey } from "@/icons";
 import type { Folder } from "@/infrastructure/db/folder.ts";
 import type { Doc } from "@/infrastructure/db/document.ts";
 import NavEmpty from "./NavEmpty.vue";
-import DocRemoveDialog from "@/components/shared/DocRemoveDialog.vue";
-import FolderRemoveDialog from "./FolderRemoveDialog.vue";
-import ArchiveRenameDialog from "@/components/shared/ArchiveRenameDialog.vue";
+import { useArchiveRenameStore } from "@/stores/archiveRename";
 
 defineOptions({ name: "NavMain" });
 
@@ -44,10 +42,10 @@ const load = async () => {
     return;
   }
   try {
-    const folderSvc = await useFolderSvc();
+    const folderSvc = useFdSvc();
     const [folders, docsInContainers] = await Promise.all([
-      folderSvc.getSubtreeFolders(rootId),
-      folderSvc.getSubtreeDocs(rootId),
+      folderSvc.getSubtreeFolders({ id: rootId }),
+      folderSvc.getSubtreeDocs({ id: rootId }),
     ]);
     const map = new Map<string, { folders: Folder[]; docs: Doc[] }>();
     const ensure = (containerId: string) => {
@@ -162,8 +160,8 @@ const onFolderDragStart = (e: DragEvent, folder: Folder, containerId: string) =>
     descendantIds: [],
   };
   startDrag(payload);
-  useFolderSvc()
-    .then((svc) => svc.getDescendantIds(folder.id))
+  useFdSvc()
+    .getDescendantIds({ id: folder.id })
     .then((ids) => {
       payload.descendantIds = ids;
     })
@@ -310,61 +308,8 @@ const rootBlankActive = computed(() => {
   );
 });
 
-// 元函数：删除文档：默认仅从归档子树移除，勾选后永久删除文档并通知 main 刷新列表；
-// 当前展示文档被移除时切换为归档子树内第一篇文档
-const handleRemoveDoc = async (deleteDoc: boolean) => {
-  const doc = navTreeStore.removeDocTarget;
-  navTreeStore.removeDocTarget = null;
-  if (!doc || !store.folder) return;
-  try {
-    const folderSvc = await useFolderSvc();
-    await folderSvc.removeDocFromSubtree(store.folder.id, doc.id);
-    if (deleteDoc) {
-      const svc = await useDocSvc();
-      await svc.remove(doc.id);
-      await notifyMainRefresh();
-    }
-    if (store.doc?.id === doc.id) {
-      store.setDoc(await folderSvc.getFirstDocInSubtree(store.folder.id));
-      store.setKey(Date.now());
-    }
-    navTreeStore.bump();
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-// 元函数：删除文件夹：级联删除该文件夹及其全部子文件夹的关联（文档本体保留）
-const handleRemoveFolder = async () => {
-  const folder = navTreeStore.removeFolderTarget;
-  navTreeStore.removeFolderTarget = null;
-  if (!folder) return;
-  try {
-    const folderSvc = await useFolderSvc();
-    await folderSvc.remove(folder.id);
-    if (navTreeStore.selectedFolderId === folder.id) {
-      navTreeStore.setSelectedFolder(null);
-    }
-    navTreeStore.bump();
-    await notifyMainRefresh();
-  } catch (e) {
-    console.error(e);
-  }
-};
-
-// 元函数：重命名文件夹并刷新树
-const handleRenameFolder = async (name: string) => {
-  const folder = navTreeStore.renameTarget;
-  navTreeStore.renameTarget = null;
-  if (!folder) return;
-  try {
-    const folderSvc = await useFolderSvc();
-    await folderSvc.rename(folder.id, name);
-    navTreeStore.bump();
-  } catch (e) {
-    console.error(e);
-  }
-};
+// 元函数：获取归档重命名弹窗 store（弹窗状态自持，实例由 App.vue 全局挂载）
+const archiveRenameStore = useArchiveRenameStore();
 </script>
 
 <template>
@@ -421,7 +366,7 @@ const handleRenameFolder = async (name: string) => {
           <Icon
             icon="mdi:pencil-outline"
             class="w-4 h-4 shrink-0 text-neutral-400 hover:text-purple-600 opacity-0 group-hover:opacity-100"
-            @click.stop="navTreeStore.renameTarget = row.folder"
+            @click.stop="archiveRenameStore.open(row.folder)"
           />
           <Icon
             icon="mdi:delete-outline"
@@ -464,23 +409,5 @@ const handleRenameFolder = async (name: string) => {
         </div>
       </template>
     </template>
-    <!-- 文档删除弹窗：默认仅从归档子树移除，可勾选同时永久删除文档 -->
-    <DocRemoveDialog
-      :doc="navTreeStore.removeDocTarget"
-      @on-close="navTreeStore.removeDocTarget = null"
-      @on-confirm="handleRemoveDoc"
-    />
-    <!-- 文件夹删除确认弹窗：级联删除，文档本体保留 -->
-    <FolderRemoveDialog
-      :folder="navTreeStore.removeFolderTarget"
-      @on-close="navTreeStore.removeFolderTarget = null"
-      @on-confirm="handleRemoveFolder"
-    />
-    <!-- 文件夹重命名弹窗 -->
-    <ArchiveRenameDialog
-      :folder="navTreeStore.renameTarget"
-      @on-close="navTreeStore.renameTarget = null"
-      @on-confirm="handleRenameFolder"
-    />
   </div>
 </template>
