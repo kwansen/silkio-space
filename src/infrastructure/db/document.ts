@@ -72,15 +72,21 @@ export const useDocDb = () => {
     return ids;
   };
 
-  // 元函数：删除单个文档
+  // 元函数：删除单个文档（先清理 folder_document 多对多关联再删本体，
+  // tauri-plugin-sql 单次仅执行一条语句）
   const remove = async (db: Database, id: string): Promise<void> => {
+    await db.execute("DELETE FROM folder_document WHERE document_id = $1", [id]);
     await db.execute("DELETE FROM documents WHERE id = $1", [id]);
   };
 
-  // 元函数：批量删除文档
+  // 元函数：批量删除文档（同上，先清理关联再删本体）
   const removeMany = async (db: Database, ids: string[] = []): Promise<void> => {
     if (ids.length === 0) return;
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
+    await db.execute(
+      `DELETE FROM folder_document WHERE document_id IN (${placeholders})`,
+      ids,
+    );
     await db.execute(`DELETE FROM documents WHERE id IN (${placeholders})`, ids);
   };
 

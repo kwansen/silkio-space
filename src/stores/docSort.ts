@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import type { Doc, SortField } from "@/infrastructure/db/document.ts";
 import { generatePages } from "@zhencai/generate-pages";
 
-export const useSortDocStore = defineStore("sortDoc", () => {
+export const useDocSortStore = defineStore("sortDoc", () => {
   // 当前页文档列表
   const docs = ref<Doc[]>([]);
   // 文档总数（用于计算总页码）

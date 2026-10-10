@@ -8,7 +8,7 @@ import { docTypeIcons } from "@/icons";
 import type { SortField } from "@/infrastructure/db/document.ts";
 import { useDoc } from "@/composables/useDocuments.ts";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
-import { useSortDocStore } from "@/stores/sortDoc";
+import { useDocSortStore } from "@/stores/docSort";
 import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 
 type Sort = '最近浏览'|'最近更新'|'最近创建'|'最多字数'
@@ -22,13 +22,13 @@ const sortFieldMap: Record<Sort, SortField> = {
 };
 
 // 元函数：获取排序文档 store（排序状态唯一数据源）
-const sortDocStore = useSortDocStore();
+const docSortStore = useDocSortStore();
 
 // 当前排序文案：由 store 的 sortField 派生，避免重复维护排序状态
 const currentSort = computed(
   () =>
     (Object.keys(sortFieldMap) as Sort[]).find(
-      (key) => sortFieldMap[key] === sortDocStore.sortField,
+      (key) => sortFieldMap[key] === docSortStore.sortField,
     ) ?? "最近浏览",
 );
 const sorts: Sort[] = ["最近浏览", "最近更新", "最近创建", "最多字数"];

@@ -1,5 +1,5 @@
 import { useDocSvc } from "@/services/document.ts";
-import { useSortDocStore } from "@/stores/sortDoc";
+import { useDocSortStore } from "@/stores/docSort";
 import type { SortField } from "@/infrastructure/db/document.ts";
 
 // useSortDocs.ts: 排序文档组合式函数，提供按排序方式刷新列表等业务能力
@@ -7,7 +7,7 @@ import type { SortField } from "@/infrastructure/db/document.ts";
 const docSvc = await useDocSvc();
 
 export const useSortDocs = () => {
-  const sortDocStore = useSortDocStore();
+  const docSortStore = useDocSortStore();
 
   // 元函数：按排序方式刷新文档列表与总数
   // 可选传入目标页码/排序字段：数据返回后将排序、页码、列表、总数一次性更新，避免闪烁
@@ -15,16 +15,16 @@ export const useSortDocs = () => {
     page?: number;
     sortField?: SortField;
   }) => {
-    const targetPage = options?.page ?? sortDocStore.currentPage;
-    const targetSortField = options?.sortField ?? sortDocStore.sortField;
+    const targetPage = options?.page ?? docSortStore.currentPage;
+    const targetSortField = options?.sortField ?? docSortStore.sortField;
     const { list, total } = await docSvc.getSortedInPage(
       targetSortField,
       targetPage,
     );
-    sortDocStore.setSortField(targetSortField);
-    sortDocStore.setCurrentPage(targetPage);
-    sortDocStore.setDocs(list);
-    sortDocStore.setTotal(total);
+    docSortStore.setSortField(targetSortField);
+    docSortStore.setCurrentPage(targetPage);
+    docSortStore.setDocs(list);
+    docSortStore.setTotal(total);
   };
 
   // 元函数：更新文档浏览时间
@@ -34,8 +34,8 @@ export const useSortDocs = () => {
   const removeDoc = async (id: string) => {
     await docSvc.remove(id);
     await refreshDocs();
-    if (sortDocStore.docs.length === 0 && sortDocStore.currentPage > 1) {
-      await refreshDocs({ page: sortDocStore.currentPage - 1 });
+    if (docSortStore.docs.length === 0 && docSortStore.currentPage > 1) {
+      await refreshDocs({ page: docSortStore.currentPage - 1 });
     }
   };
 

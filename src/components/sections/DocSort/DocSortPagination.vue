@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useSortDocStore } from "@/stores/sortDoc";
+import { useDocSortStore } from "@/stores/docSort";
 import { useSortDocs } from "@/composables/useSortDocs";
 
-const store = useSortDocStore();
+const store = useDocSortStore();
 const { refreshDocs } = useSortDocs();
 
 const goToPage = async (v: number) => {

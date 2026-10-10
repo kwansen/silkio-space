@@ -3,14 +3,19 @@ import type { Doc } from "@/infrastructure/db/document.ts";
 
 // 归档-文档关联（folder_document）数据库元函数集合
 export const useFolderDocumentDb = () => {
-  // 元函数：将文档加入归档（幂等，重复加入自动忽略），sort_order 追加到该归档末尾
+  // 元函数：将文档加入归档（幂等，重复加入自动忽略）
+  // sort_order 追加到该容器统一排序空间末尾（子文件夹与文档共用一个序列，取两表联合最大值 +1）
   const add = async (
     db: Database,
     folderId: string,
     documentId: string,
   ): Promise<void> => {
     const rows = await db.select<{ max: number | null }[]>(
-      "SELECT MAX(sort_order) AS max FROM folder_document WHERE folder_id = $1",
+      `SELECT MAX(sort_order) AS max FROM (
+         SELECT sort_order FROM folders WHERE parent_id = $1
+         UNION ALL
+         SELECT sort_order FROM folder_document WHERE folder_id = $1
+       )`,
       [folderId],
     );
     await db.execute(

@@ -1,100 +1,190 @@
 import { getDb } from "@/infrastructure/db/index.ts";
 import {
   useFolderDb,
-  type CreateFolderParams,
-  type FolderSortField,
+  type ChildRef,
+  type ContainerChild,
   type Folder,
 } from "@/infrastructure/db/folder.ts";
 import { useFolderDocumentDb } from "@/infrastructure/db/folderDocument.ts";
-import type { Doc } from "@/infrastructure/db/document.ts";
+
+// 归档（文件夹）创建参数（id 与时间字段仅在同步服务端数据时传入，本地创建自动生成/取当前时间）
+export interface CreateFolderParams {
+  id?: string;
+  name: string;
+  sortOrder?: number;
+  parentId?: string;
+  viewedAt?: number;
+  createdAt?: number;
+  updatedAt?: number;
+}
 
 // 归档服务层：组装归档数据库元函数提供业务能力
-export const useFolderSvc = async () => {
-  // 元函数：获取数据库实例（getDb 内部已单例缓存）
-  const db = await getDb();
+export const useFolderSvc2 = () => {
   // 元函数：组装归档数据库元函数集合
   const folderDb = useFolderDb();
   // 元函数：组装归档-文档关联数据库元函数集合
   const folderDocumentDb = useFolderDocumentDb();
 
-  // 元函数：创建归档并返回新 id
-  // 仅根文件夹（parent_id 为空）可作为归档展示于主窗口；
-  // parent_id 非空时为导航内子文件夹（挂在目标容器下末尾）
-  const create = (params: CreateFolderParams = {}): Promise<string> =>
-    folderDb.create(db, params);
+  //#region CKECKED：创建文件夹
+  /***
+   * @param params.id         - 可选，归档 id；仅同步服务端数据时使用（保持与服务端一致），一般无需填写
+   * @param params.name       - 必须，名称
+   * @param params.sortOrder  - 可选，排序值；不传时取同级当前最大值 +1（根归档取根级最大值 +1）
+   * @param params.parentId   - 可选，父节点 id；不传表示根 archive，传了表示 archive 下的文件夹
+   * @param params.viewedAt   - 可选，最近打开时间，仅同步服务端数据时使用，一般无需填写
+   * @param params.createdAt  - 可选，创建时间，仅同步服务端数据时使用，一般无需填写
+   * @param params.updatedAt  - 可选，最近更新时间，仅同步服务端数据时使用，一般无需填写
+   * @returns 新建归档 id
+   ***/
+  const createFolder = async (params: CreateFolderParams): Promise<string> => {
+    const db = await getDb();
+    return folderDb.create(db, {
+      id: params.id,
+      name: params.name,
+      parent_id: params.parentId ?? null,
+      sort_order: params.sortOrder,
+      viewed_at: params.viewedAt,
+      created_at: params.createdAt,
+      updated_at: params.updatedAt,
+    });
+  };
+  //#endregion
 
-  // 元函数：按排序字段查询全部归档（数量少，不分页）：最近打开倒序，名称与自由排序升序
-  const getSorted = (sortField: FolderSortField): Promise<Folder[]> =>
-    folderDb.getSorted(db, sortField, sortField === "viewed_at" ? "DESC" : "ASC");
+  //#region CKECKED：删除文件夹
+  /***
+   * @param params.id - 必须，级联删除其全部后代文件夹及关联的folder_document行，文档本体保留
+   ***/
+  const deleteFolder = async (params: { id: string }): Promise<void> => {
+    const db = await getDb();
+    return folderDb.remove(db, params.id);
+  };
+  //#endregion
 
-  // 元函数：根据 id 查询单个归档
-  const getById = (id: string): Promise<Folder | null> => folderDb.getById(db, id);
+  //#region CKECKED：重命名文件夹
+  /***
+   * @param params.id     必须，文件夹 id
+   * @param params.name   必须，新名称；同时刷新 updated_at
+   ***/
+  const renameFolder = async (params: {
+    id: string;
+    name: string;
+  }): Promise<void> => {
+    const db = await getDb();
+    return folderDb.rename(db, params.id, params.name);
+  };
+  //#endregion
 
-  // 元函数：更新归档浏览时间（打开归档时调用）
-  const touch = (id: string): Promise<void> => folderDb.touch(db, id);
+  //#region CKECKED：修改文件夹最近打开时间
+  /***
+   * @param params.id       必须，文件夹 id
+   * @param params.viewedAt 可选，最近打开时间；不传时取当前时间，仅同步服务端数据时填写
+   ***/
+  const updateFolderViewedAt = async (params: {
+    id: string;
+    viewedAt?: number;
+  }): Promise<void> => {
+    const db = await getDb();
+    return folderDb.touch(db, params.id, params.viewedAt);
+  };
+  //#endregion
+  
+  //#region CKECKED：获取归档子项
+  /***
+   * 获取归档下的文件夹和文档（统一 sort_order 升序穿插排列）
+   * @param params.id 必须，归档id
+   * @returns 子项数组，文件夹与文档可任意穿插（kind 区分类型）
+   ***/
+  const getArchiveChildren = async (params: { id: string }): Promise<ContainerChild[]> => {
+    const db = await getDb();
+    return folderDb.getChildrenMerged(db, params.id);
+  };
+  //#endregion
 
-  // 元函数：重命名归档并刷新 updated_at
-  const rename = (id: string, name: string): Promise<void> =>
-    folderDb.rename(db, id, name);
+  //#region CKECKED：重排序
+  /***
+   * 重排序容器内全部子项：子文件夹与文档共用统一 sort_order 编号空间，按传入顺序写 0,1,2...，
+   * 支持任意穿插（如 文档、文件夹、文档）；文件夹写 folders.sort_order，文档写 folder_document.sort_order
+   * @param params.id     必须，容器归档 id
+   * @param params.items  必须，该容器内全部子项的目标顺序数组（kind 区分文件夹与文档）
+   ***/
+  const reorderChildren = async (params: {
+    id: string;
+    items: ChildRef[];
+  }): Promise<void> => {
+    const db = await getDb();
+    return folderDb.reorderChildren(db, params.id, params.items);
+  };
+  //#endregion
 
-  // 元函数：按传入 id 顺序批量持久化自由排序结果
-  const reorder = (ids: string[]): Promise<void> => folderDb.reorder(db, ids);
-
-  // 元函数：删除单个归档（级联删除其全部子文件夹及关联的 folder_document 行，文档本体保留）
-  const remove = (id: string): Promise<void> => folderDb.remove(db, id);
-
-  // 元函数：查询归档的直接子文件夹（按 sort_order 升序）
-  const getChildren = (parentId: string): Promise<Folder[]> =>
-    folderDb.getChildren(db, parentId);
-
-  // 元函数：查询归档的全部后代 id（不含自身），用于拖拽环检测
-  const getDescendantIds = (id: string): Promise<string[]> =>
-    folderDb.getDescendantIds(db, id);
-
-  // 元函数：移动归档到目标父级（null 表示挂到根目录）
-  const setParent = (id: string, parentId: string | null): Promise<void> =>
-    folderDb.setParent(db, id, parentId);
-
-  // 元函数：查询归档子树内是否包含指定文档
-  const hasDocInSubtree = (folderId: string, docId: string): Promise<boolean> =>
-    folderDb.hasDocInSubtree(db, folderId, docId);
-
-  // 元函数：查询归档子树内第一篇文档（优先根容器第一篇，其次后代层级）
-  const getFirstDocInSubtree = (folderId: string): Promise<Doc | null> =>
-    folderDb.getFirstDocInSubtree(db, folderId);
-
-  // 元函数：将文档从归档子树的所有容器中移除（导航内删除文档时使用）
-  const removeDocFromSubtree = async (
-    folderId: string,
-    docId: string,
-  ): Promise<void> => {
-    const ids = await folderDb.getSubtreeIds(db, folderId);
-    for (const fid of ids) await folderDocumentDb.remove(db, fid, docId);
+  //#region CKECKED：获取归档
+  /***
+   * 获取全部根归档（仅 parent_id 为空的归档展示于主窗口，数量少，不分页，按 sort_order 升序）
+   * @returns 根归档数组
+   ***/
+  const getArchives = async (): Promise<Folder[]> => {
+    const db = await getDb();
+    return folderDb.getSorted(db, "sort_order", "ASC");
+  };
+  //#endregion
+  
+  //#region CKECKED：将文件夹/文档拖拽到其他文件夹
+  /***
+   * 将文件夹拖入目标容器：parent_id 更新为目标容器，并追加到其统一排序空间末尾
+   * @param params.id       必须，被拖拽文件夹 id
+   * @param params.targetId 必须，目标容器归档 id；不得为该文件夹自身或其后代（拖拽成环）
+   ***/
+  const moveFolderInto = async (params: {
+    id: string;
+    targetId: string;
+  }): Promise<void> => {
+    const db = await getDb();
+    if (params.id === params.targetId) {
+      throw new Error("不能将文件夹拖入其自身");
+    }
+    const descendantIds = await folderDb.getDescendantIds(db, params.id);
+    if (descendantIds.includes(params.targetId)) {
+      throw new Error("不能将文件夹拖入其后代文件夹");
+    }
+    await folderDb.setParent(db, params.id, params.targetId);
+    // 追加到目标容器统一排序空间末尾（子文件夹与文档共用一个序列）
+    const maxSort = await folderDb.getMaxChildSortOrder(db, params.targetId);
+    await folderDb.setSortOrder(db, params.id, maxSort + 1);
   };
 
-  // 元函数：将文档加入归档（幂等，重复加入自动忽略）
-  const addDoc = (folderId: string, docId: string): Promise<void> =>
-    folderDocumentDb.add(db, folderId, docId);
+  /***
+   * 将文档拖入目标容器：追加到其统一排序空间末尾；
+   * sourceId 非空且不同于目标容器时，先加入目标再从源容器移除（移动语义，避免中途失败两边都丢）
+   * @param params.id       必须，被拖拽文档 id
+   * @param params.targetId 必须，目标容器归档 id
+   * @param params.sourceId 可选，源容器归档 id；仅加入目标容器（不移动）时不传
+   ***/
+  const moveDocInto = async (params: {
+    id: string;
+    targetId: string;
+    sourceId?: string;
+  }): Promise<void> => {
+    const db = await getDb();
+    if (params.sourceId === params.targetId) return;
+    await folderDocumentDb.add(db, params.targetId, params.id);
+    if (params.sourceId) {
+      await folderDocumentDb.remove(db, params.sourceId, params.id);
+    }
+  };
+  //#endregion
 
-  // 元函数：将文档移出归档
-  const removeDoc = (folderId: string, docId: string): Promise<void> =>
-    folderDocumentDb.remove(db, folderId, docId);
-
-  // 元函数：查询文档已加入的归档 id 集合
-  const getFolderIdsByDoc = (docId: string): Promise<string[]> =>
-    folderDocumentDb.getFolderIdsByDoc(db, docId);
-
-  // 元函数：查询归档下第一个文档（按加入顺序 sort_order 升序，无文档返回 null）
-  const getFirstDoc = (folderId: string): Promise<Doc | null> =>
-    folderDocumentDb.getFirstDoc(db, folderId);
-
-  // 元函数：查询归档下全部文档（按加入顺序 sort_order 升序）
-  const getDocs = (folderId: string): Promise<Doc[]> =>
-    folderDocumentDb.getDocsByFolder(db, folderId);
-
-  // 元函数：按传入文档 id 顺序批量持久化归档内文档的手动排序结果
-  const reorderDocs = (folderId: string, documentIds: string[]): Promise<void> =>
-    folderDocumentDb.reorder(db, folderId, documentIds);
-
-  return { create, getSorted, getById, touch, rename, reorder, remove, getChildren, getDescendantIds, setParent, hasDocInSubtree, getFirstDocInSubtree, removeDocFromSubtree, addDoc, removeDoc, getFolderIdsByDoc, getFirstDoc, getDocs, reorderDocs };
+  //#region CKECKED：删除文件夹内的文档（不是删除文档，只是取消关联）
+  /***
+   * 将文档从文件夹中移除（仅删除 folder_document 关联行，文档本体保留，不影响其与其他文件夹的关联）
+   * @param params.folderId 必须，文件夹 id
+   * @param params.docId    必须，文档 id
+   ***/
+  const removeDocFromFolder = async (params: {
+    folderId: string;
+    docId: string;
+  }): Promise<void> => {
+    const db = await getDb();
+    return folderDocumentDb.remove(db, params.folderId, params.docId);
+  };
+  //#endregion
+  return { createFolder, deleteFolder, renameFolder, updateFolderViewedAt, getArchiveChildren, reorderChildren, getArchives, moveFolderInto, moveDocInto, removeDocFromFolder };
 };

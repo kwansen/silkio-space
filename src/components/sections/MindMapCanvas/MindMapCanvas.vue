@@ -50,7 +50,9 @@ const handleDataChange = (data: { data: MindNode["data"]; children: MindNode[] }
   updateContent(doc.id, content, plainText).then(notifyMainRefresh).catch(console.error);
 };
 
-let mindMap: MindMap | null = null;
+// 思维导图实例（simple-mind-map 类型不完整，此处以 any 收敛，仅用到 on 订阅）
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let mindMap: any = null;
 onMounted(() => {
   if (!mindmapRef.value) return;
   mindMap = new MindMap({

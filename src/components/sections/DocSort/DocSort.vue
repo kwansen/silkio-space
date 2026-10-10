@@ -3,10 +3,10 @@ import DocSortList, { Item } from "./DocSortList.vue";
 import DocSortOption from "./DocSortOption.vue";
 import DocSortPagination from "./DocSortPagination.vue";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
-import { useSortDocStore } from "@/stores/sortDoc";
+import { useDocSortStore } from "@/stores/docSort.ts";
 import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 
-const sortDocStore = useSortDocStore();
+const docSortStore = useDocSortStore();
 
 // 元函数：组装排序文档组合式函数
 const { touchDoc } = useSortDocs();
@@ -25,6 +25,6 @@ const handleClick = (item: Item) => {
     <DocSortOption />
     <DocSortList @on-click="handleClick" />
     <!-- 页码不超过 1 页时不渲染分页 -->
-    <DocSortPagination v-if="sortDocStore.pages.length > 1" />
+    <DocSortPagination v-if="docSortStore.pages.length > 1" />
   </div>
 </template>

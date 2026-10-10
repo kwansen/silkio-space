@@ -3,7 +3,7 @@ import DocList, { Item } from "@/components/shared/DocList.vue";
 import ArchivePickerDialog from "@/components/shared/ArchivePickerDialog.vue";
 import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed, ref } from "vue";
-import { useSortDocStore } from "@/stores/sortDoc";
+import { useDocSortStore } from "@/stores/docSort.ts";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
 import type { Doc, SortField } from "@/infrastructure/db/document.ts";
 import DocSortEmpty from "./DocSortEmpty.vue";
@@ -16,7 +16,7 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-const sortDocStore = useSortDocStore();
+const docSortStore = useDocSortStore();
 
 // 各排序字段对应的 meta 展示：时间字段显示日期和时间，字数显示数值
 const metaFormatters: Record<SortField, (doc: Doc) => string> = {
@@ -28,11 +28,11 @@ const metaFormatters: Record<SortField, (doc: Doc) => string> = {
 
 // 元函数：将文档列表转换为 DocList 列表项，meta 随当前排序字段联动
 const items = computed<Item[]>(() =>
-  sortDocStore.docs.map((doc) => ({
+  docSortStore.docs.map((doc) => ({
     key: doc.id,
     title: doc.title ?? "未命名标题",
     content: doc.plain_text ?? "",
-    meta: metaFormatters[sortDocStore.sortField](doc),
+    meta: metaFormatters[docSortStore.sortField](doc),
     docType: doc.doc_type,
   })),
 );

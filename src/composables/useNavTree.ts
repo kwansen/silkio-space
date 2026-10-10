@@ -22,12 +22,14 @@ export interface DragPayload {
 // 放置命中区：行前/行后（同级排序）、行内（放入文件夹）、容器空白（追加到末尾）
 export type DropZone = "before" | "after" | "into";
 
-// 当前放置指示：id 为空字符串表示容器空白区
+// 当前放置指示：id 为空字符串表示容器空白区；
+// displayId 为可选的展示用行 id（"移入容器"命中行时高亮该行，落库仍指向容器）
 export interface DropIndicator {
   containerId: string;
   kind: DragKind;
   id: string;
   zone: DropZone;
+  displayId?: string;
 }
 
 // 拖拽中的载荷（null 表示未在拖拽）
