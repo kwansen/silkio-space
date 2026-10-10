@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import ArchiveList, { Item } from "@/components/shared/ArchiveList.vue";
-import { PopoverItem } from "@/components/shared/Popover.vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useArchiveSearchStore } from "@/stores/archiveSearch";
-import { useArchiveSearch } from "@/composables/useArchiveSearch.ts";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
-import { useArchiveRenameStore } from "@/stores/archiveRename.ts";
 import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
-import ArchiveSearchEmpty from "./ArchiveSearchEmpty.vue";
-
-export type { Item };
 
 const archiveSearchStore = useArchiveSearchStore();
 
@@ -30,41 +24,8 @@ const handleClick = (item: Item) => {
     .then(() => notifyEditorOpen("folder", String(item.key)))
     .catch(console.error);
 };
-
-// 元函数：组装归档搜索组合式函数
-const { removeFolder } = useArchiveSearch();
-
-const archiveRenameStore = useArchiveRenameStore();
-
-// popover 菜单：编辑（唤起 App.vue 挂载的全局重命名弹窗）与删除（key 由 DocList 注入，为当前归档 id）
-const popoverList = ref<PopoverItem[]>([
-  {
-    icon: "mdi:pencil-outline",
-    name: "编辑",
-    action: (key) => {
-      if (key === null || key === undefined) return;
-      const folder = archiveSearchStore.archives.find(
-        (f) => f.id === String(key),
-      );
-      if (folder) archiveRenameStore.open(folder);
-    },
-  },
-  {
-    icon: "mdi:delete-outline",
-    name: "删除",
-    action: async (key) => {
-      if (key === null || key === undefined) return;
-      await removeFolder(String(key));
-    },
-  },
-]);
 </script>
 
 <template>
-  <ArchiveList
-    :list="items"
-    :popover-list="popoverList"
-    @onClick="handleClick"
-  />
-  <ArchiveSearchEmpty v-if="items.length === 0 && archiveSearchStore.query" />
+  <ArchiveList :list="items" @onClick="handleClick" />
 </template>

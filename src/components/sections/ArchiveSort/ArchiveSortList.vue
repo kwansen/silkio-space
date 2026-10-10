@@ -1,20 +1,10 @@
 <script setup lang="ts">
 import ArchiveList, { Item } from "@/components/shared/ArchiveList.vue";
-import { PopoverItem } from "@/components/shared/Popover.vue";
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useArchiveSortStore } from "@/stores/archiveSort";
-import { useArchiveRenameStore } from "@/stores/archiveRename.ts";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import type { FolderSortField, Folder } from "@/infrastructure/db/folder.ts";
-import ArchiveSortEmpty from "./ArchiveSortEmpty.vue";
-
-export type { Item };
-
-interface Emits {
-  onClick: [item: Item];
-}
-
-const emit = defineEmits<Emits>();
+import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 
 const archiveSortStore = useArchiveSortStore();
 
@@ -35,13 +25,15 @@ const items = computed<Item[]>(() =>
   })),
 );
 
-// 转发DocList的onClick事件
+// 元函数：点击归档项时先更新其浏览时间（最近打开排序依据），再通知 editor 窗口打开该归档
 const handleClick = (item: Item) => {
-  emit("onClick", item);
+  touchFolder(String(item.key))
+    .then(() => notifyEditorOpen("folder", String(item.key)))
+    .catch(console.error);
 };
 
 // 元函数：组装归档排序组合式函数
-const { refreshFolders, reorderFolders, removeFolder } = useArchiveSort();
+const { touchFolder, refreshFolders, reorderFolders } = useArchiveSort();
 
 // 仅自由排序模式下允许拖拽
 const isFreeSort = computed(() => archiveSortStore.sortField === "sort_order");
@@ -56,41 +48,13 @@ const handleDragEnd = async (oldIndex: number, newIndex: number) => {
     await refreshFolders();
   }
 };
-
-// 元函数：获取归档重命名弹窗 store（弹窗状态自持，实例由 App.vue 全局挂载）
-const archiveRenameStore = useArchiveRenameStore();
-
-// popover 菜单：编辑（唤起全局重命名弹窗）与删除（key 由 DocList 注入，为当前归档 id）
-const popoverList = ref<PopoverItem[]>([
-  {
-    icon: "mdi:pencil-outline",
-    name: "编辑",
-    action: (key) => {
-      if (key === null || key === undefined) return;
-      const folder = archiveSortStore.folders.find(
-        (f) => f.id === String(key),
-      );
-      if (folder) archiveRenameStore.open(folder);
-    },
-  },
-  {
-    icon: "mdi:delete-outline",
-    name: "删除",
-    action: async (key) => {
-      if (key === null || key === undefined) return;
-      await removeFolder(String(key));
-    },
-  },
-]);
 </script>
 
 <template>
   <ArchiveList
     :list="items"
-    :popover-list="popoverList"
     :draggable="isFreeSort"
     @onClick="handleClick"
     @onDragEnd="handleDragEnd"
   />
-  <ArchiveSortEmpty v-if="items.length === 0" />
 </template>

@@ -49,9 +49,7 @@ onUnmounted(() => {
     </div>
     <ArchivePickerDialog />
     <ArchiveRenameDialog />
-    <!-- 文档删除弹窗：NavMain 经 navTree store 设置 removeDocTarget 唤起 -->
     <DocRemoveDialog />
-    <!-- 文件夹删除弹窗：NavMain 经 navTree store 设置 removeFolderTarget 唤起 -->
     <FolderRemoveDialog />
     <DocPopover />
     <ArchivePopover />

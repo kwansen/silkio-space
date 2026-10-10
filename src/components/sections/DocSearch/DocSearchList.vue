@@ -1,21 +1,16 @@
 <script setup lang="ts">
 import DocList, { Item } from "@/components/shared/DocList.vue";
-import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed } from "vue";
 import { useDocSearchStore } from "@/stores/docSearch";
-import { useDocSearch } from "@/composables/useDocSearch.ts";
-import { useArchivePickerStore } from "@/stores/archivePicker.ts";
-import DocSearchEmpty from "./DocSearchEmpty.vue";
+import { useSortDocs } from "@/composables/useSortDocs.ts";
+import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 
 export type { Item };
 
-interface Emits {
-  onClick: [item: Item];
-}
-
-const emit = defineEmits<Emits>();
-
 const docSearchStore = useDocSearchStore();
+
+// 元函数：复用 touchDoc 更新浏览时间
+const { touchDoc } = useSortDocs();
 
 // 元函数：将当前页搜索结果转换为 DocList 列表项
 const items = computed<Item[]>(() =>
@@ -27,39 +22,14 @@ const items = computed<Item[]>(() =>
   })),
 );
 
-// 转发DocList的onClick事件
+// 元函数：点击结果项时先更新 viewed_at，再通知 editor 窗口打开该文档
 const handleClick = (item: Item) => {
-  emit("onClick", item);
+  touchDoc(String(item.key))
+    .then(() => notifyEditorOpen("doc", String(item.key)))
+    .catch(console.error);
 };
-
-// 元函数：组装文档搜索组合式函数
-const { removeDoc } = useDocSearch();
-
-// 元函数：获取归档选择弹窗 store（弹窗状态自持，实例由 App.vue 全局挂载）
-const archivePickerStore = useArchivePickerStore();
-
-// popover 菜单：归档（唤起全局多选弹窗）与删除（key 由 DocList 注入，为当前文档 id）
-const popoverList = computed<PopoverItem[]>(() => [
-  {
-    icon: "mdi:archive-outline",
-    name: "归档",
-    action: (key) => {
-      if (key === null || key === undefined) return;
-      archivePickerStore.open(String(key));
-    },
-  },
-  {
-    icon: "mdi:delete-outline",
-    name: "删除",
-    action: async (key) => {
-      if (key === null || key === undefined) return;
-      await removeDoc(String(key));
-    },
-  },
-]);
 </script>
 
 <template>
-  <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
-  <DocSearchEmpty v-if="items.length === 0 && docSearchStore.query" />
+  <DocList :list="items" @onClick="handleClick" />
 </template>

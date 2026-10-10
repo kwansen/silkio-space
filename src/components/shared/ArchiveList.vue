@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import SquareButton from "@/components/shared/SquareButton.vue";
-import { PopoverItem } from "./Popover.vue";
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 import { useArchivePopoverStore } from "@/stores/archivePopover.ts";
 import draggable from "vuedraggable";
 
-// 归档列表：仅展示归档名称与 meta，支持拖拽排序，popover 操作菜单由 App.vue 全局挂载
+// 归档列表：仅展示归档名称与 meta，支持拖拽排序；菜单项由各列表自行向 archivePopover store 注册，弹层由 App.vue 全局挂载
 type Key = number | string | null;
 
 export interface Item {
@@ -16,12 +15,11 @@ export interface Item {
 
 interface Props {
   list: Item[];
-  popoverList: PopoverItem[];
   // 是否开启拖拽排序（由调用方按业务场景控制，如自由排序模式）
   draggable?: boolean;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 interface Emits {
   onClick: [item: Item];
@@ -31,11 +29,6 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const archivePopoverStore = useArchivePopoverStore();
-
-// 元函数：挂载期间向全局菜单注册本列表的菜单项（切换列表时自动替换并关闭旧菜单）
-watchEffect(() => {
-  archivePopoverStore.register(props.popoverList);
-});
 
 const hoverKey = ref<Key>();
 

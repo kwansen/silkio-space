@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import DocList, { Item } from "@/components/shared/DocList.vue";
-import { PopoverItem } from "@/components/shared/Popover.vue";
 import { computed } from "vue";
 import { useDocSortStore } from "@/stores/docSort.ts";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
-import { useArchivePickerStore } from "@/stores/archivePicker.ts";
 import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
 import type { Doc, SortField } from "@/infrastructure/db/document.ts";
-import DocSortEmpty from "./DocSortEmpty.vue";
-
-export type { Item };
 
 const docSortStore = useDocSortStore();
 
@@ -33,7 +28,7 @@ const items = computed<Item[]>(() =>
 );
 
 // 元函数：组装排序文档组合式函数
-const { removeDoc, touchDoc } = useSortDocs();
+const { touchDoc } = useSortDocs();
 
 // 元函数：点击文档项时先更新 viewed_at，再通知 editor 窗口打开该文档
 // [日志]
@@ -42,31 +37,8 @@ const handleClick = (item: Item) => {
     .then(() => notifyEditorOpen("doc", String(item.key)))
     .catch(console.error);
 };
-
-const archivePickerStore = useArchivePickerStore();
-
-// popover 菜单：归档（唤起 App.vue 挂载的全局归档选择弹窗）与删除（key 由 DocList 注入，为当前文档 id）
-const popoverList = computed<PopoverItem[]>(() => [
-  {
-    icon: "mdi:archive-outline",
-    name: "归档",
-    action: (key) => {
-      if (key === null || key === undefined) return;
-      archivePickerStore.open(String(key));
-    },
-  },
-  {
-    icon: "mdi:delete-outline",
-    name: "删除",
-    action: async (key) => {
-      if (key === null || key === undefined) return;
-      await removeDoc(String(key));
-    },
-  },
-]);
 </script>
 
 <template>
-  <DocList :list="items" :popover-list="popoverList" @onClick="handleClick" />
-  <DocSortEmpty v-if="items.length === 0" />
+  <DocList :list="items" @onClick="handleClick" />
 </template>

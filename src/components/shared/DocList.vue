@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import SquareButton from "@/components/shared/SquareButton.vue";
-import { PopoverItem } from "./Popover.vue";
-import { ref, watchEffect } from "vue";
+import { ref } from "vue";
 import { useDocPopoverStore } from "@/stores/docPopover.ts";
 import { docTypeIcons, type DocTypeIconKey } from "@/icons";
 
-// 文档列表：展示文档图标、标题、内容预览与 meta，popover 操作菜单由 App.vue 全局挂载
+// 文档列表：展示文档图标、标题、内容预览与 meta；菜单项由各列表自行向 docPopover store 注册，弹层由 App.vue 全局挂载
 type Key = number | string | null;
 
 export interface Item {
@@ -22,10 +21,9 @@ const iconFor = (item: Item) =>
 
 interface Props {
   list: Item[];
-  popoverList: PopoverItem[];
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 interface Emits {
   onClick: [item: Item];
@@ -34,11 +32,6 @@ interface Emits {
 const emit = defineEmits<Emits>();
 
 const docPopoverStore = useDocPopoverStore();
-
-// 元函数：挂载期间向全局菜单注册本列表的菜单项（切换列表时自动替换并关闭旧菜单）
-watchEffect(() => {
-  docPopoverStore.register(props.popoverList);
-});
 
 const hoverKey = ref<Key>();
 
