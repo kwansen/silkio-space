@@ -3,7 +3,7 @@ import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { computed, ref, useTemplateRef } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import Popover, { PopoverItem } from "@/components/shared/Popover.vue";
+import Popover from "@/components/shared/Popover.vue";
 import Doc from "@/components/icons/Doc.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
 import Flowchart from "@/components/icons/Flowchart.vue";
@@ -87,6 +87,12 @@ const handleCreateFolder = async () => {
     console.error(e);
   }
 };
+
+// 本组件的菜单条目类型：动作无需参数
+interface PopoverItem {
+  name: string;
+  action: () => void | Promise<void>;
+}
 
 const list = ref<PopoverItem[]>([
   { name: "富文本", action: () => createDoc(createRichText) },

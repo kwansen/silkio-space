@@ -3,7 +3,7 @@ import { offset, useFloating, flip, autoUpdate } from "@floating-ui/vue";
 import { storeToRefs } from "pinia";
 import { watch, ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
-import Popover, { PopoverItem } from "@/components/shared/Popover.vue";
+import Popover from "@/components/shared/Popover.vue";
 import Pencil from "@/components/icons/Pencil.vue";
 import Delete from "@/components/icons/Delete.vue";
 import { useArchivePopoverStore } from "@/stores/archivePopover.ts";
@@ -28,6 +28,15 @@ const archiveRenameStore = useArchiveRenameStore();
 // 元函数：组装归档排序与搜索组合式函数（删除后各自刷新所在视图的列表）
 const { removeFolder: removeSortFolder } = useArchiveSort();
 const { removeFolder: removeSearchFolder } = useArchiveSearch();
+
+// 当前打开条目的 key 类型（与 archivePopover store 的 openKey 一致）
+type Key = number | string | null;
+
+// 本组件的菜单条目类型：动作携带当前打开条目的 key
+interface PopoverItem {
+  name: string;
+  action: (key?: Key) => void | Promise<void>;
+}
 
 // popover 菜单：编辑（唤起全局重命名弹窗）与删除（按当前页签分派删除逻辑，key 为当前归档 id）
 const popoverList: PopoverItem[] = [
