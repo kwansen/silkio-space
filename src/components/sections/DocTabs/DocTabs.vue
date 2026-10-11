@@ -5,15 +5,11 @@ import Doc from "@/components/icons/Doc.vue";
 import DocSearch from "@/components/icons/DocSearch.vue";
 import Archive from "@/components/icons/Archive.vue";
 import ArchiveSearch from "@/components/icons/ArchiveSearch.vue";
-import type { DocTabIconKey } from "@/icons";
 import { useDocTabStore } from "@/stores/docTab";
 
-interface Item {
-  name: DocTabIconKey;
-  icon: Component;
-}
+type TabField = "docSort" | "docSearch" | "archiveSort" | "archiveSearch";
 
-const tabs: Item[] = [
+const tabs: { name: TabField; icon: Component }[] = [
   { name: "docSort", icon: Doc },
   { name: "docSearch", icon: DocSearch },
   { name: "archiveSort", icon: Archive },
@@ -23,7 +19,7 @@ const tabs: Item[] = [
 const store = useDocTabStore();
 const { setTab } = store;
 
-const getClass = (v: DocTabIconKey) => {
+const getClass = (v: TabField) => {
   return store.tab === v
     ? "bg-purple-200 text-neutral-700"
     : "hover:bg-gray-100 text-neutral-400";
