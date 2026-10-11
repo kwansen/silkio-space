@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { Icon } from "@iconify/vue";
 import { nextTick, ref, useTemplateRef } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import type { FolderSortField } from "@/infrastructure/db/folder.ts";
-import { docTypeIcons } from "@/icons";
+import Add from "@/components/icons/Add.vue";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import { useArchiveSortStore } from "@/stores/archiveSort";
 
@@ -107,18 +106,14 @@ onClickOutside(wrapperRef, () => {
         @keydown.enter="handleCreate"
         @keydown.esc="handleCancel"
       />
-      <Icon
-        :icon="docTypeIcons.docCreate"
-        class="w-5 h-5 text-neutral-500"
-        @click="handleCreate"
-      />
+      <Add class="w-5 h-5 text-neutral-500" @click="handleCreate" />
     </template>
     <div
       v-else
       class="hover:bg-gray-200 text-sm rounded-md p-1"
       @click="toggleOpen"
     >
-      <Icon :icon="docTypeIcons.docCreate" class="w-5 h-5" />
+      <Add class="w-5 h-5" />
     </div>
   </div>
 </template>

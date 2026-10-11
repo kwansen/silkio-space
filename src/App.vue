@@ -14,6 +14,7 @@ import { onMounted, onUnmounted } from "vue";
 import DocPopover from "./components/popovers/DocPopover.vue";
 import ArchivePopover from "./components/popovers/ArchivePopover.vue";
 import DocAddPopover from "./components/popovers/DocAddPopover.vue";
+import NavAddPopover from "./components/popovers/NavAddPopover.vue";
 
 const label = getCurrentWindow().label;
 
@@ -54,5 +55,6 @@ onUnmounted(() => {
     <DocPopover />
     <ArchivePopover />
     <DocAddPopover />
+    <NavAddPopover />
   </div>
 </template>

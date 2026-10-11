@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import SquareButton from "@/components/shared/SquareButton.vue";
+import More from "@/components/icons/More.vue";
 import { ref } from "vue";
 import { useArchivePopoverStore } from "@/stores/archivePopover.ts";
 import draggable from "vuedraggable";
@@ -97,7 +98,6 @@ const handleDragEnd = (e: { oldIndex?: number; newIndex?: number }) => {
           class="h-full aspect-square bg-gray-100 grid place-content-center absolute right-0 top-0"
         >
           <SquareButton
-            icon="mdi:file-outline"
             class="w-8 h-8 rounded-md text-neutral-400 ignore"
             :class="[
               hoverIconKey === item.key ||
@@ -105,11 +105,12 @@ const handleDragEnd = (e: { oldIndex?: number; newIndex?: number }) => {
                 ? 'bg-gray-200'
                 : '',
             ]"
-            icon-class="w-5 h-5"
             @click.stop="setOpenKey(item.key, $event)"
             @mouseenter="setHoverIconKey(item.key)"
             @mouseleave="setHoverIconKey(null)"
-          />
+          >
+            <More class="w-5 h-5" />
+          </SquareButton>
         </div>
       </div>
     </template>

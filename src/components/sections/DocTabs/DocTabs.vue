@@ -1,18 +1,23 @@
 <script setup lang="ts">
+import type { Component } from "vue";
 import SquareButton from "@/components/shared/SquareButton.vue";
-import { DocTabIcon, DocTabIconKey, docTabIcons } from "@/icons";
+import Doc from "@/components/icons/Doc.vue";
+import DocSearch from "@/components/icons/DocSearch.vue";
+import Archive from "@/components/icons/Archive.vue";
+import ArchiveSearch from "@/components/icons/ArchiveSearch.vue";
+import type { DocTabIconKey } from "@/icons";
 import { useDocTabStore } from "@/stores/docTab";
 
 interface Item {
   name: DocTabIconKey;
-  icon: DocTabIcon;
+  icon: Component;
 }
 
-const List: Item[] = [
-  { name: "docSort", icon: docTabIcons.docSort },
-  { name: "docSearch", icon: docTabIcons.docSearch },
-  { name: "archiveSort", icon: docTabIcons.archiveSort },
-  { name: "archiveSearch", icon: docTabIcons.archiveSearch },
+const tabs: Item[] = [
+  { name: "docSort", icon: Doc },
+  { name: "docSearch", icon: DocSearch },
+  { name: "archiveSort", icon: Archive },
+  { name: "archiveSearch", icon: ArchiveSearch },
 ];
 
 const store = useDocTabStore();
@@ -28,10 +33,12 @@ const getClass = (v: DocTabIconKey) => {
 <template>
   <div class="w-10 h-full">
     <SquareButton
-      v-for="item in List"
-      :class="getClass(item.name)"
-      :icon="item.icon"
-      icon-class="w-5 h-5"
-      @click="setTab(item.name)" />
+      v-for="tab in tabs"
+      :key="tab.name"
+      :class="getClass(tab.name)"
+      @click="setTab(tab.name)"
+    >
+      <component :is="tab.icon" class="w-5 h-5" />
+    </SquareButton>
   </div>
 </template>

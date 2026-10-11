@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { Icon } from "@iconify/vue";
 import { useTemplateRef } from "vue";
-import { docTypeIcons } from "@/icons";
+import Add from "@/components/icons/Add.vue";
 import { useDocAddPopoverStore } from "@/stores/docAddPopover";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
 import type { SortField } from "@/infrastructure/db/document";
@@ -56,7 +55,9 @@ const toggleOpen = () => {
       <div>{{ option.show }}</div>
       <div
         class="h-1 rounded-full w-full"
-        :class="store.sortField === option.key ? 'bg-purple-200' : 'bg-transparent'"
+        :class="
+          store.sortField === option.key ? 'bg-purple-200' : 'bg-transparent'
+        "
       />
     </div>
     <div class="flex-1"></div>
@@ -66,7 +67,7 @@ const toggleOpen = () => {
       :class="[docAddPopoverStore.isOpen ? 'bg-gray-200' : '']"
       @click="toggleOpen"
     >
-      <Icon :icon="docTypeIcons.docCreate" class="w-5 h-5" />
+      <Add class="w-5 h-5" />
     </div>
   </div>
 </template>

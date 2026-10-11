@@ -4,6 +4,8 @@ import { storeToRefs } from "pinia";
 import { watch, ref } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import Popover, { PopoverItem } from "@/components/shared/Popover.vue";
+import Archive from "@/components/icons/Archive.vue";
+import Delete from "@/components/icons/Delete.vue";
 import { useDocPopoverStore } from "@/stores/docPopover.ts";
 import { useDocTabStore } from "@/stores/docTab";
 import { useArchivePickerStore } from "@/stores/archivePicker.ts";
@@ -26,7 +28,6 @@ const { removeDoc: removeSearchDoc } = useDocSearch();
 // popover 菜单：归档（唤起全局归档选择弹窗）与删除（按当前页签分派删除逻辑，key 为当前文档 id）
 const popoverList: PopoverItem[] = [
   {
-    icon: "mdi:archive-outline",
     name: "归档",
     action: (key) => {
       if (key === null || key === undefined) return;
@@ -34,7 +35,6 @@ const popoverList: PopoverItem[] = [
     },
   },
   {
-    icon: "mdi:delete-outline",
     name: "删除",
     action: async (key) => {
       if (key === null || key === undefined) return;
@@ -77,10 +77,16 @@ onClickOutside(
 </script>
 
 <template>
-  <Popover
-    v-if="openKey"
-    :list="boundPopoverList"
-    ref="floatingRef"
-    :style="floatingStyles"
-  />
+  <Popover v-if="openKey" ref="floatingRef" :style="floatingStyles">
+    <div
+      v-for="item in boundPopoverList"
+      :key="item.name"
+      class="w-full py-2 hover:bg-gray-100 flex items-center gap-2 px-4 text-xs"
+      @click="item.action()"
+    >
+      <Archive v-if="item.name === '归档'" class="w-5 h-5 text-neutral-500" />
+      <Delete v-else class="w-5 h-5 text-neutral-500" />
+      <div>{{ item.name }}</div>
+    </div>
+  </Popover>
 </template>

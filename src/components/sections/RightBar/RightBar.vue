@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue';
-
+import Add from "@/components/icons/Add.vue";
 </script>
 
 <template>
@@ -9,7 +8,7 @@ import { Icon } from '@iconify/vue';
       <div>税务知识库</div>
       <div class="flex-1"></div>
       <div class="w-7 h-7 rounded-md hover:bg-gray-200 grid place-items-center">
-        <Icon icon="mdi:add" class="w-5 h-5"/>
+        <Add class="w-5 h-5" />
       </div>
     </div>
   </div>

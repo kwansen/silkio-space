@@ -1,13 +1,23 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import { Icon } from "@iconify/vue";
+import { computed, ref, watch, type Component } from "vue";
+import ArrowDown from "@/components/icons/ArrowDown.vue";
+import ArrowRight from "@/components/icons/ArrowRight.vue";
+import FolderIcon from "@/components/icons/Folder.vue";
+import Pencil from "@/components/icons/Pencil.vue";
+import Delete from "@/components/icons/Delete.vue";
+import DocIcon from "@/components/icons/Doc.vue";
+import MindmapIcon from "@/components/icons/Mindmap.vue";
+import FlowchartIcon from "@/components/icons/Flowchart.vue";
 import { useEditorViewStore } from "@/stores/editorView";
 import { useNavTreeStore } from "@/stores/navTree";
-import { useNavTree, type DragPayload, type DropZone } from "@/composables/useNavTree";
+import {
+  useNavTree,
+  type DragPayload,
+  type DropZone,
+} from "@/composables/useNavTree";
 import { useFdSvc } from "@/services/folder.ts";
 import { useDocSvc } from "@/services/document.ts";
 import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
-import { docTypeIcons, type DocTypeIconKey } from "@/icons";
 import type { Folder } from "@/infrastructure/db/folder.ts";
 import type { Doc } from "@/infrastructure/db/document.ts";
 import NavEmpty from "./NavEmpty.vue";
@@ -121,8 +131,12 @@ const rowsEmpty = computed(() => rows.value.length === 0);
 const rowIndent = (depth: number) => ({ paddingLeft: `${8 + depth * 16}px` });
 
 // 元函数：按文档类型取图标，未识别类型回退为普通文档图标
-const iconFor = (d: Doc) =>
-  docTypeIcons[d.doc_type as DocTypeIconKey] ?? "mdi:file-outline";
+const iconFor = (d: Doc): Component =>
+  d.doc_type === "mindMap"
+    ? MindmapIcon
+    : d.doc_type === "flowChart"
+      ? FlowchartIcon
+      : DocIcon;
 
 // 元函数：文档行标题：编辑中的文档实时取 store 标题（状态驱动，无需手动同步列表）
 const docTitle = (d: Doc) =>
@@ -150,7 +164,11 @@ const onFolderClick = (folder: Folder) => {
 };
 
 // 元函数：拖拽开始（文件夹行）：快照载荷，后代 id 异步补齐用于环检测
-const onFolderDragStart = (e: DragEvent, folder: Folder, containerId: string) => {
+const onFolderDragStart = (
+  e: DragEvent,
+  folder: Folder,
+  containerId: string,
+) => {
   e.dataTransfer?.setData("text/plain", folder.name);
   if (e.dataTransfer) e.dataTransfer.effectAllowed = "move";
   const payload: DragPayload = {
@@ -198,7 +216,12 @@ const onFolderDragOver = (e: DragEvent, row: NavFolderRow) => {
         : ratio > 0.75
           ? "after"
           : "into";
-  setIndicator({ containerId: row.containerId, kind: d.kind, id: row.id, zone });
+  setIndicator({
+    containerId: row.containerId,
+    kind: d.kind,
+    id: row.id,
+    zone,
+  });
   // 悬停折叠文件夹 600ms 后自动展开
   if (zone === "into" && !navTreeStore.expandedIds.has(row.id)) {
     scheduleExpand(row.id);
@@ -219,7 +242,12 @@ const onDocDragOver = (e: DragEvent, row: NavDocRow) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const zone: DropZone =
       (e.clientY - rect.top) / rect.height < 0.5 ? "before" : "after";
-    setIndicator({ containerId: row.containerId, kind: d.kind, id: row.id, zone });
+    setIndicator({
+      containerId: row.containerId,
+      kind: d.kind,
+      id: row.id,
+      zone,
+    });
   } else {
     if (isSelfOrDescendant(row.containerId)) return;
     setIndicator({
@@ -345,16 +373,12 @@ const archiveRenameStore = useArchiveRenameStore();
           @dragleave="onRowDragLeave"
           @drop="onRowDrop"
         >
-          <Icon
-            :icon="
-              navTreeStore.expandedIds.has(row.id)
-                ? 'mdi:chevron-down'
-                : 'mdi:chevron-right'
-            "
+          <ArrowDown
+            v-if="navTreeStore.expandedIds.has(row.id)"
             class="w-4 h-4 shrink-0 text-neutral-400"
           />
-          <Icon
-            :icon="docTypeIcons.folder"
+          <ArrowRight v-else class="w-4 h-4 shrink-0 text-neutral-400" />
+          <FolderIcon
             class="w-4 h-4 shrink-0"
             :class="
               navTreeStore.selectedFolderId === row.id
@@ -363,13 +387,11 @@ const archiveRenameStore = useArchiveRenameStore();
             "
           />
           <div class="truncate flex-1">{{ row.folder.name }}</div>
-          <Icon
-            icon="mdi:pencil-outline"
+          <Pencil
             class="w-4 h-4 shrink-0 text-neutral-400 hover:text-purple-600 opacity-0 group-hover:opacity-100"
             @click.stop="archiveRenameStore.open(row.folder)"
           />
-          <Icon
-            icon="mdi:delete-outline"
+          <Delete
             class="w-4 h-4 shrink-0 text-neutral-400 hover:text-red-500 opacity-0 group-hover:opacity-100"
             @click.stop="navTreeStore.removeFolderTarget = row.folder"
           />
@@ -395,14 +417,17 @@ const archiveRenameStore = useArchiveRenameStore();
           @dragleave="onRowDragLeave"
           @drop="onRowDrop"
         >
-          <Icon
-            :icon="iconFor(row.doc)"
+          <component
+            :is="iconFor(row.doc)"
             class="w-4 h-4 shrink-0"
-            :class="row.doc.id === store.doc?.id ? 'text-purple-600' : 'text-neutral-400'"
+            :class="
+              row.doc.id === store.doc?.id
+                ? 'text-purple-600'
+                : 'text-neutral-400'
+            "
           />
           <div class="truncate flex-1">{{ docTitle(row.doc) }}</div>
-          <Icon
-            icon="mdi:delete-outline"
+          <Delete
             class="w-4 h-4 shrink-0 text-neutral-400 hover:text-red-500 opacity-0 group-hover:opacity-100"
             @click.stop="navTreeStore.removeDocTarget = row.doc"
           />

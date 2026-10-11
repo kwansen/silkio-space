@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useEventListener } from "@vueuse/core";
-import { Icon } from "@iconify/vue";
 import TextButton from "@/components/shared/TextButton.vue";
+import CheckBoxMian from "@/components/icons/CheckBoxMian.vue";
+import CheckBoxEmpty from "@/components/icons/CheckBoxEmpty.vue";
 import { useNavTreeStore } from "@/stores/navTree";
 import { useEditorViewStore } from "@/stores/editorView";
 import { useFdSvc } from "@/services/folder.ts";
@@ -87,13 +88,8 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
         class="h-8 flex items-center gap-2 px-2 rounded-md text-xs cursor-pointer hover:bg-gray-100 mb-3"
         @click="deleteDoc = !deleteDoc"
       >
-        <Icon
-          :icon="
-            deleteDoc ? 'mdi:checkbox-marked' : 'mdi:checkbox-blank-outline'
-          "
-          class="w-5 h-5"
-          :class="deleteDoc ? 'text-purple-600' : 'text-neutral-300'"
-        />
+        <CheckBoxMian v-if="deleteDoc" class="w-5 h-5 text-purple-600" />
+        <CheckBoxEmpty v-else class="w-5 h-5 text-neutral-300" />
         <div>同时删除文档（不可恢复）</div>
       </div>
       <div class="flex justify-end gap-2">

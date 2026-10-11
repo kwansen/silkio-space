@@ -15,6 +15,7 @@
         "label": "main",
         "width": 800,
         "height": 600,
+        "backgroundColor": "#e5e7eb",
         "decorations": false,
         "dragDropEnabled": false
       },
@@ -25,6 +26,7 @@
         "minWidth": 800,
         "minHeight": 600,
         "visible": false,
+        "backgroundColor": "#e5e7eb",
         "decorations": false,
         "dragDropEnabled": false
       }

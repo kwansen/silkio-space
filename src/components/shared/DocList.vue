@@ -2,7 +2,10 @@
 import SquareButton from "@/components/shared/SquareButton.vue";
 import { ref } from "vue";
 import { useDocPopoverStore } from "@/stores/docPopover.ts";
-import { docTypeIcons, type DocTypeIconKey } from "@/icons";
+import Doc from "../icons/Doc.vue";
+import Mindmap from "../icons/Mindmap.vue";
+import Flowchart from "../icons/Flowchart.vue";
+import More from "../icons/More.vue";
 
 // 文档列表：展示文档图标、标题、内容预览与 meta；菜单项由各列表自行向 docPopover store 注册，弹层由 App.vue 全局挂载
 type Key = number | string | null;
@@ -14,10 +17,6 @@ export interface Item {
   meta?: string;
   docType?: string;
 }
-
-// 元函数：按 doc_type 从 icons/docTypeIcons 取图标，未识别的类型回退为普通文件图标
-const iconFor = (item: Item) =>
-  docTypeIcons[item.docType as DocTypeIconKey] ?? "mdi:file-outline";
 
 interface Props {
   list: Item[];
@@ -71,11 +70,11 @@ const handleItemClick = (item: Item) => {
     ]"
   >
     <div class="w-10 h-full flex items-center">
-      <SquareButton
-        :icon="iconFor(item)"
-        class="w-8 h-8 rounded-md text-neutral-400 bg-gray-100"
-        icon-class="w-5 h-5"
-      />
+      <SquareButton class="w-8 h-8 rounded-md text-neutral-400 bg-gray-100">
+        <Doc v-if="item.docType === 'richText'" />
+        <Mindmap v-else-if="item.docType === 'mindMap'" />
+        <Flowchart v-else-if="item.docType === 'flowChart'" />
+      </SquareButton>
     </div>
 
     <div class="flex-1 overflow-hidden flex flex-col justify-center">
@@ -97,18 +96,17 @@ const handleItemClick = (item: Item) => {
       class="h-full aspect-square bg-gray-100 grid place-content-center absolute right-0 top-0"
     >
       <SquareButton
-        icon="mdi:file-outline"
         class="w-8 h-8 rounded-md text-neutral-400 ignore"
         :class="[
           hoverIconKey === item.key || docPopoverStore.openKey === item.key
             ? 'bg-gray-200'
             : '',
         ]"
-        icon-class="w-5 h-5"
         @click.stop="setOpenKey(item.key, $event)"
         @mouseenter="setHoverIconKey(item.key)"
         @mouseleave="setHoverIconKey(null)"
-      />
+        ><More
+      /></SquareButton>
     </div>
   </div>
 </template>

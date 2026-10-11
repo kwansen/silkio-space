@@ -4,7 +4,9 @@ import { computed, ref, useTemplateRef } from "vue";
 import { onClickOutside } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import Popover, { PopoverItem } from "@/components/shared/Popover.vue";
-import { docTypeIcons } from "@/icons";
+import Doc from "@/components/icons/Doc.vue";
+import Mindmap from "@/components/icons/Mindmap.vue";
+import Flowchart from "@/components/icons/Flowchart.vue";
 import { useDoc } from "@/composables/useDocuments.ts";
 import { useSortDocs } from "@/composables/useSortDocs.ts";
 import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
@@ -60,17 +62,14 @@ const handleCreateMindMap = async () => {
 };
 const list = ref<PopoverItem[]>([
   {
-    icon: docTypeIcons.richText,
     name: "富文本",
     action: handleCreateRichText,
   },
   {
-    icon: docTypeIcons.mindMap,
     name: "思维导图",
     action: handleCreateMindMap,
   },
   {
-    icon: docTypeIcons.flowChart,
     name: "流程图",
     action: () => console.log(),
   },
@@ -78,10 +77,20 @@ const list = ref<PopoverItem[]>([
 </script>
 
 <template>
-  <Popover
-    v-if="isOpen"
-    :list="list"
-    ref="floatingRef"
-    :style="floatingStyles"
-  />
+  <Popover v-if="isOpen" ref="floatingRef" :style="floatingStyles">
+    <div
+      v-for="item in list"
+      :key="item.name"
+      class="w-full py-2 hover:bg-gray-100 flex items-center gap-2 px-4 text-xs"
+      @click="item.action()"
+    >
+      <Doc v-if="item.name === '富文本'" class="w-5 h-5 text-neutral-500" />
+      <Mindmap
+        v-else-if="item.name === '思维导图'"
+        class="w-5 h-5 text-neutral-500"
+      />
+      <Flowchart v-else class="w-5 h-5 text-neutral-500" />
+      <div>{{ item.name }}</div>
+    </div>
+  </Popover>
 </template>

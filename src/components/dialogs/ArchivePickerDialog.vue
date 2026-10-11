@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import { Icon } from "@iconify/vue";
 import { useEventListener } from "@vueuse/core";
 import TextButton from "@/components/shared/TextButton.vue";
+import CheckBoxMian from "@/components/icons/CheckBoxMian.vue";
+import CheckBoxEmpty from "@/components/icons/CheckBoxEmpty.vue";
+import Folder from "@/components/icons/Folder.vue";
 import { useArchiveSort } from "@/composables/useArchiveSort.ts";
 import { useArchiveSortStore } from "@/stores/archiveSort";
 import { useArchivePickerStore } from "@/stores/archivePicker";
-import ScrollArea from "./ScrollArea.vue";
+import ScrollArea from "../shared/ScrollArea.vue";
 
 // 元函数：弹窗状态自持（读取全局 archivePicker store，不经由父级传参）
 const archivePickerStore = useArchivePickerStore();
@@ -103,18 +105,12 @@ useEventListener(window, "keydown", (e: KeyboardEvent) => {
           class="h-9 flex items-center gap-2 px-2 rounded-md text-xs cursor-pointer hover:bg-gray-100"
           @click="toggle(folder.id)"
         >
-          <Icon
-            :icon="
-              checkedIds.has(folder.id)
-                ? 'mdi:checkbox-marked'
-                : 'mdi:checkbox-blank-outline'
-            "
-            class="w-5 h-5"
-            :class="
-              checkedIds.has(folder.id) ? 'text-purple-600' : 'text-neutral-300'
-            "
+          <CheckBoxMian
+            v-if="checkedIds.has(folder.id)"
+            class="w-5 h-5 text-purple-600"
           />
-          <Icon icon="mdi:folder-outline" class="w-5 h-5 text-neutral-500" />
+          <CheckBoxEmpty v-else class="w-5 h-5 text-neutral-300" />
+          <Folder class="w-5 h-5 text-neutral-500" />
           <div class="truncate">{{ folder.name }}</div>
         </div>
       </ScrollArea>

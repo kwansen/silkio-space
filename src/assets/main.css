@@ -5,7 +5,17 @@
   -webkit-app-region: drag;
 }
 
-body{
+.desktop-non-draggable {
+  -webkit-app-region: no-drag;
+}
+
+/* 与应用根节点 bg-gray-200 保持一致，避免窗口 resize（最大化/还原）时 WebView2 未重绘区域闪白 */
+html,
+body {
+  background-color:var(--color-gray-200);
+}
+
+body {
   color: var(--color-neutral-700);
   font-size: var(--text-sm);
 }
