@@ -7,7 +7,6 @@ import {
   type FolderSortField,
 } from "@/infrastructure/db/folder.ts";
 import { useFolderDocumentDb } from "@/infrastructure/db/folderDocument.ts";
-import type { Doc } from "@/infrastructure/db/document.ts";
 
 // 归档（文件夹）创建参数（id 与时间字段仅在同步服务端数据时传入，本地创建自动生成/取当前时间）
 export interface CreateFolderParams {
@@ -89,14 +88,16 @@ export const useFdSvc = () => {
     return folderDb.touch(db, params.id, params.viewedAt);
   };
   //#endregion
-  
+
   //#region CKECKED：获取归档子项
   /***
    * 获取归档下的文件夹和文档（统一 sort_order 升序穿插排列）
    * @param params.id 必须，归档id
    * @returns 子项数组，文件夹与文档可任意穿插（kind 区分类型）
    ***/
-  const getArchiveChildren = async (params: { id: string }): Promise<ContainerChild[]> => {
+  const getArchiveChildren = async (params: {
+    id: string;
+  }): Promise<ContainerChild[]> => {
     const db = await getDb();
     return folderDb.getChildrenMerged(db, params.id);
   };
@@ -141,7 +142,7 @@ export const useFdSvc = () => {
     return folderDb.getSorted(db, params.sortField ?? "sort_order", "ASC");
   };
   //#endregion
-  
+
   //#region CKECKED：将文件夹/文档拖拽到其他文件夹
   /***
    * 将文件夹拖入目标容器：parent_id 更新为目标容器，并追加到其统一排序空间末尾
@@ -207,7 +208,9 @@ export const useFdSvc = () => {
    * 文档被永久删除时调用：删除该文档在所有归档中的 folder_document 关联行
    * @param params.docId 必须，文档 id
    ***/
-  const removeDocRelations = async (params: { docId: string }): Promise<void> => {
+  const removeDocRelations = async (params: {
+    docId: string;
+  }): Promise<void> => {
     const db = await getDb();
     return folderDocumentDb.removeByDoc(db, params.docId);
   };
@@ -233,7 +236,9 @@ export const useFdSvc = () => {
    * @param params.docId 必须，文档 id
    * @returns 归档 id 数组
    ***/
-  const getFolderIdsByDoc = async (params: { docId: string }): Promise<string[]> => {
+  const getFolderIdsByDoc = async (params: {
+    docId: string;
+  }): Promise<string[]> => {
     const db = await getDb();
     return folderDocumentDb.getFolderIdsByDoc(db, params.docId);
   };
@@ -281,7 +286,10 @@ export const useFdSvc = () => {
   }): Promise<void> => {
     const db = await getDb();
     const descendantIds = await folderDb.getDescendantIds(db, params.folderId);
-    const folderIds = await folderDocumentDb.getFolderIdsByDoc(db, params.docId);
+    const folderIds = await folderDocumentDb.getFolderIdsByDoc(
+      db,
+      params.docId,
+    );
     const inSubtree = folderIds.filter(
       (id) => id === params.folderId || descendantIds.includes(id),
     );
@@ -317,7 +325,9 @@ export const useFdSvc = () => {
   /***
    * @param params.id 必须，归档 id
    ***/
-  const getFolderById = async (params: { id: string }): Promise<Folder | null> => {
+  const getFolderById = async (params: {
+    id: string;
+  }): Promise<Folder | null> => {
     const db = await getDb();
     return folderDb.getById(db, params.id);
   };
@@ -342,7 +352,9 @@ export const useFdSvc = () => {
    * @param params.id 必须，归档 id
    * @returns 全部后代归档 id（不含自身）
    ***/
-  const getDescendantIds = async (params: { id: string }): Promise<string[]> => {
+  const getDescendantIds = async (params: {
+    id: string;
+  }): Promise<string[]> => {
     const db = await getDb();
     return folderDb.getDescendantIds(db, params.id);
   };
@@ -352,7 +364,9 @@ export const useFdSvc = () => {
   /***
    * @param params.id 必须，归档 id（不含根自身）
    ***/
-  const getSubtreeFolders = async (params: { id: string }): Promise<Folder[]> => {
+  const getSubtreeFolders = async (params: {
+    id: string;
+  }): Promise<Folder[]> => {
     const db = await getDb();
     return folderDb.getSubtreeFolders(db, params.id);
   };
@@ -368,5 +382,29 @@ export const useFdSvc = () => {
     return folderDb.getSubtreeDocs(db, params.id);
   };
   //#endregion
-  return { createFolder, deleteFolder, renameFolder, updateFolderViewedAt, getArchiveChildren, reorderChildren, getArchives, getSortedFolders, moveFolderInto, moveDocInto, removeDocFromFolder, removeDocRelations, addDocToFolder, getFolderIdsByDoc, addDocToFolders, removeDocFromFolders, removeDocFromSubtree, getFirstDocInSubtree, getFolderById, hasDocInSubtree, getDescendantIds, getSubtreeFolders, getSubtreeDocs };
+  return {
+    createFolder,
+    deleteFolder,
+    renameFolder,
+    updateFolderViewedAt,
+    getArchiveChildren,
+    reorderChildren,
+    getArchives,
+    getSortedFolders,
+    moveFolderInto,
+    moveDocInto,
+    removeDocFromFolder,
+    removeDocRelations,
+    addDocToFolder,
+    getFolderIdsByDoc,
+    addDocToFolders,
+    removeDocFromFolders,
+    removeDocFromSubtree,
+    getFirstDocInSubtree,
+    getFolderById,
+    hasDocInSubtree,
+    getDescendantIds,
+    getSubtreeFolders,
+    getSubtreeDocs,
+  };
 };

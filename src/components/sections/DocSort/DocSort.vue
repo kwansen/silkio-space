@@ -1,19 +1,19 @@
 <script setup lang="ts">
+import { useDocSortStore } from "@/stores/docSortStore.ts";
+import DocSortEmpty from "./DocSortEmpty.vue";
 import DocSortList from "./DocSortList.vue";
 import DocSortOption from "./DocSortOption.vue";
-import DocSortEmpty from "./DocSortEmpty.vue";
 import DocSortPagination from "./DocSortPagination.vue";
-import { useDocSortStore } from "@/stores/docSort.ts";
-
+import { storeToRefs } from "pinia";
 const store = useDocSortStore();
+const { sortedDocs: docs, totalPages } = storeToRefs(store);
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl p-4">
+  <div>
     <DocSortOption />
+    <DocSortEmpty v-if="docs.length === 0" />
     <DocSortList />
-    <DocSortEmpty v-if="store.docs.length === 0" />
-    <!-- 页码不超过 1 页时不渲染分页 -->
-    <DocSortPagination v-if="store.pages.length > 1" />
+    <DocSortPagination v-if="totalPages > 1" />
   </div>
 </template>

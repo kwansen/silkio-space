@@ -3,8 +3,6 @@ import {
   useDocDb,
   type CreateDocParams,
   type UpdateDocParams,
-  type Doc,
-  type SortField,
   type SortedPage,
 } from "@/infrastructure/db/document.ts";
 import {
@@ -16,9 +14,9 @@ import {
 const PAGE_SIZE = 10;
 
 // 文档服务层：组装文档数据库元函数提供业务能力，并同步维护搜索索引
-export const useDocSvc = async () => {
+export const useDocSvc = () => {
   // 元函数：获取数据库实例（getDb 内部已单例缓存）
-  const db = await getDb();
+  const db = getDb();
   // 元函数：组装文档数据库元函数集合
   const docDb = useDocDb();
   // 元函数：组装搜索索引元函数集合

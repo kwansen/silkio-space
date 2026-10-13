@@ -1,40 +1,33 @@
 <script setup lang="ts">
-import type { Component } from "vue";
-import SquareButton from "@/components/shared/SquareButton.vue";
 import Doc from "@/components/icons/Doc.vue";
-import DocSearch from "@/components/icons/DocSearch.vue";
 import Archive from "@/components/icons/Archive.vue";
+import DocSearch from "@/components/icons/DocSearch.vue";
 import ArchiveSearch from "@/components/icons/ArchiveSearch.vue";
-import { useDocTabStore } from "@/stores/docTab";
+import { useUiStore } from "@/stores/uiStore.ts";
+import { storeToRefs } from "pinia";
+import type { Component } from "vue";
 
-type TabField = "docSort" | "docSearch" | "archiveSort" | "archiveSearch";
+const store = useUiStore();
+const { setDocTab } = store;
+const { currentDocTab: tab } = storeToRefs(store);
 
-const tabs: { name: TabField; icon: Component }[] = [
-  { name: "docSort", icon: Doc },
-  { name: "docSearch", icon: DocSearch },
-  { name: "archiveSort", icon: Archive },
-  { name: "archiveSearch", icon: ArchiveSearch },
+const options: { key: DocTabOption; icon: Component }[] = [
+  { key: "docSort", icon: Doc },
+  { key: "docSearch", icon: DocSearch },
+  { key: "archiveSort", icon: Archive },
+  { key: "archiveSearch", icon: ArchiveSearch },
 ];
-
-const store = useDocTabStore();
-const { setTab } = store;
-
-const getClass = (v: TabField) => {
-  return store.tab === v
-    ? "bg-purple-200 text-neutral-700"
-    : "hover:bg-gray-100 text-neutral-400";
-};
 </script>
 
 <template>
-  <div class="w-10 h-full">
-    <SquareButton
-      v-for="tab in tabs"
-      :key="tab.name"
-      :class="getClass(tab.name)"
-      @click="setTab(tab.name)"
+  <div>
+    <div
+      v-for="option in options"
+      class="w-full aspect-square grid place-items-center"
+      :class="tab === option.key ? 'bg-purple-200' : 'hover:bg-gray-100'"
+      @click="setDocTab(option.key)"
     >
-      <component :is="tab.icon" class="w-5 h-5" />
-    </SquareButton>
+      <component :is="option.icon" />
+    </div>
   </div>
 </template>

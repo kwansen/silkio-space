@@ -1,34 +1,26 @@
 <script setup lang="ts">
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import MainView from "./views/MainView.vue";
-import EditorView from "./views/EditorView.vue";
-import SearchView from "./views/SearchView.vue";
-import InsertView from "./views/InsertView.vue";
-import ToolView from "./views/ToolView.vue";
 import WindowControl from "./components/sections/WindowControl/WindowControl.vue";
-import ArchivePickerDialog from "@/components/dialogs/ArchivePickerDialog.vue";
-import ArchiveRenameDialog from "@/components/dialogs/ArchiveRenameDialog.vue";
-import DocRemoveDialog from "@/components/dialogs/DocRemoveDialog.vue";
-import FolderRemoveDialog from "@/components/dialogs/FolderRemoveDialog.vue";
 import { onMounted, onUnmounted } from "vue";
-import DocPopover from "./components/popovers/DocPopover.vue";
-import ArchivePopover from "./components/popovers/ArchivePopover.vue";
-import DocAddPopover from "./components/popovers/DocAddPopover.vue";
-import NavAddPopover from "./components/popovers/NavAddPopover.vue";
+import MainView from "./views/MainView.vue";
+import { useDocSortAction } from "./actions/docSort.ts";
 
 const label = getCurrentWindow().label;
-
+const action = useDocSortAction();
 let stopOnClose: (() => void) | null = null;
 
-// 元函数：挂载时阻止窗口关闭，改为隐藏（下次打开更快，无需重新创建窗口）
 onMounted(async () => {
   try {
+    // 挂载时获取文档
+    await action.getSortedDocs("viewedAt", 1);
+    // 挂载时获取归档
+    // 挂载时阻止窗口关闭，改为隐藏
     stopOnClose = await getCurrentWindow().onCloseRequested(async (event) => {
       event.preventDefault();
       await getCurrentWindow().hide();
     });
-  } catch (e) {
-    console.error(e);
+  } catch {
+    console.error;
   }
 });
 
@@ -41,20 +33,20 @@ onUnmounted(() => {
 <template>
   <div class="w-screen h-screen flex flex-col overflow-hidden bg-gray-200">
     <WindowControl v-if="label === 'main' || label === 'editor'" />
-    <div class="flex-1 flex overflow-hidden">
+    <div class="flex-1 overflow-hidden">
       <MainView v-if="label === 'main'" />
-      <EditorView v-else-if="label === 'editor'" />
+      <!-- <EditorView v-else-if="label === 'editor'" />
       <SearchView v-else-if="label === 'search'" />
       <InsertView v-else-if="label === 'insert'" />
-      <ToolView v-else-if="label === 'tool'" />
+      <ToolView v-else-if="label === 'tool'" /> -->
     </div>
-    <ArchivePickerDialog />
+    <!-- <ArchivePickerDialog />
     <ArchiveRenameDialog />
     <DocRemoveDialog />
     <FolderRemoveDialog />
     <DocPopover />
     <ArchivePopover />
     <DocAddPopover />
-    <NavAddPopover />
+    <NavAddPopover /> -->
   </div>
 </template>
