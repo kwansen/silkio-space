@@ -1,4 +1,8 @@
 import Database from "@tauri-apps/plugin-sql";
+import type { Doc, SortField } from "@/types/doc";
+
+// 供其他模块从 db 层转引类型
+export type { Doc, SortField };
 
 // 文档创建参数
 export interface CreateDocParams {

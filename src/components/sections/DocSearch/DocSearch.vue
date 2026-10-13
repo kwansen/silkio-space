@@ -1,18 +1,20 @@
 <script setup lang="ts">
+import { useDocSearchStore } from "@/stores/docSearchStore.ts";
+import DocSearchEmpty from "./DocSearchEmpty.vue";
 import DocSearchInput from "./DocSearchInput.vue";
 import DocSearchList from "./DocSearchList.vue";
-import DocSearchEmpty from "./DocSearchEmpty.vue";
 import DocSearchPagination from "./DocSearchPagination.vue";
-import { useDocSearchStore } from "@/stores/docSearch";
+import { storeToRefs } from "pinia";
 
 const store = useDocSearchStore();
+const { docsThisPage: docs, totalPages, query } = storeToRefs(store);
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl p-4">
+  <div>
     <DocSearchInput />
-    <DocSearchEmpty v-if="store.pageResults.length === 0 && store.query" />
+    <DocSearchEmpty v-if="docs.length === 0 && query" />
     <DocSearchList />
-    <DocSearchPagination v-if="store.pages.length > 1" />
+    <DocSearchPagination v-if="totalPages > 1" />
   </div>
 </template>

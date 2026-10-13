@@ -1,3 +1,4 @@
+import { Doc } from "@/types/doc";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 

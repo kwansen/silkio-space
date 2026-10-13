@@ -4,11 +4,14 @@ import {
   type CreateDocParams,
   type UpdateDocParams,
   type SortedPage,
+  type SortField,
 } from "@/infrastructure/db/document.ts";
 import {
   useSearchApi,
   type DocIndexInput,
+  type SearchResult,
 } from "@/infrastructure/api/search.ts";
+import { Doc, ScoredDoc } from "@/types/doc";
 
 // 每页文档数量
 const PAGE_SIZE = 10;
@@ -92,6 +95,18 @@ export const useDocSvc = () => {
   // 元函数：根据 id 查询文档
   const getById = (id: string): Promise<Doc | null> => docDb.getById(db, id);
 
+  // 元函数：根据关键词全文搜索文档，回查数据库补全文档信息并附带相关性得分
+  const search = async (query: string): Promise<ScoredDoc[]> => {
+    const results = await searchApi.search(query);
+    const hits = await Promise.all(
+      results.map(async ({ id, score }) => {
+        const doc = await docDb.getById(db, id);
+        return doc ? { ...doc, score } : null;
+      }),
+    );
+    return hits.filter((d): d is ScoredDoc => d !== null);
+  };
+
   // 元函数：按排序字段与分页参数查询文档分页（页码从 1 开始），并返回总数用于计算页码
   const getSortedInPage = (
     sortField: SortField,
@@ -108,5 +123,6 @@ export const useDocSvc = () => {
     updateMany,
     getById,
     getSortedInPage,
+    search,
   };
 };

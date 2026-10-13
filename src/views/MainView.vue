@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import Doc from "@/components/icons/Doc.vue";
+import DocSearch from "@/components/sections/DocSearch/DocSearch.vue";
 import DocSort from "@/components/sections/DocSort/DocSort.vue";
-import DocSortEmpty from "@/components/sections/DocSort/DocSortEmpty.vue";
-import DocSortList from "@/components/sections/DocSort/DocSortList.vue";
-import DocSortOption from "@/components/sections/DocSort/DocSortOption.vue";
 import DocTabs from "@/components/sections/DocTabs/DocTabs.vue";
-import DocList from "@/components/shared/DocList.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
+import { useUiStore } from "@/stores/uiStore";
+import { storeToRefs } from "pinia";
+
+const store = useUiStore();
+const { setDocTab } = store;
+const { currentDocTab: tab } = storeToRefs(store);
 </script>
 
 <template>
@@ -18,7 +20,8 @@ import ScrollArea from "@/components/shared/ScrollArea.vue";
       <ScrollArea class="bg-gray-50 rounded-lg">
         <div class="py-14 w-full max-w-176 mx-auto h-1000">
           <div class="p-10 bg-white rounded-lg">
-            <DocSort />
+            <DocSort v-if="tab === 'docSort'" />
+            <DocSearch v-if="tab === 'docSearch'" />
           </div>
         </div>
       </ScrollArea>

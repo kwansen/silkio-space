@@ -1,6 +1,7 @@
 import { useDocSvc } from "@/services/document";
 import { useDocSortStore } from "@/stores/docSortStore";
 import { useUiStore } from "@/stores/uiStore";
+import { SortField } from "@/types/doc";
 import { storeToRefs } from "pinia";
 
 const SORT_MAP: Record<DocSortOption, SortField> = {

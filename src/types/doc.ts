@@ -1,8 +1,12 @@
-type DocType = "richText" | "mindMap" | "flowChart";
+export type DocType = "richText" | "mindMap" | "flowChart";
 // 可排序字段：仅字数与三种时间
-type SortField = "word_count" | "viewed_at" | "updated_at" | "created_at";
+export type SortField =
+  | "word_count"
+  | "viewed_at"
+  | "updated_at"
+  | "created_at";
 
-interface Doc {
+export interface Doc {
   id: string;
   title: string | null;
   content: string | null;
@@ -12,4 +16,8 @@ interface Doc {
   viewed_at: number;
   created_at: number;
   updated_at: number;
+}
+
+export interface ScoredDoc extends Doc {
+  score: number;
 }
