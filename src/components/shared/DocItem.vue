@@ -128,7 +128,7 @@ const list: ListItem[] = [
   >
     <div
       v-for="i in list"
-      class="pl-4 pr-8 py-1 flex items-center gap-2 rounded-md"
+      class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md"
       :class="i.class"
     >
       <component :is="i.icon" class="w-5 h-5" />
