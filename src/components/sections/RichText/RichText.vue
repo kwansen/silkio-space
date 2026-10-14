@@ -1,143 +1,83 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, useTemplateRef, computed } from "vue";
-import RichTextToolbar from "./RichTextToolbar.vue";
-import { EditorContent as RichTextEditor } from "@tiptap/vue-3";
-import { useDoc } from "@/composables/useDocuments.ts";
-import { useEditorViewStore } from "@/stores/editorView";
-import { notifyMainRefresh } from "@/infrastructure/api/windowEvent.ts";
-import RichTextTitle from "./RichTextTitle.vue";
-import { createRichtextEditor } from "@/composables/useRichtext.ts";
-import "@/assets/richtext/index.css";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
+import Blockquote from "@tiptap/extension-blockquote";
+import Bold from "@tiptap/extension-bold";
+import Code from "@tiptap/extension-code";
+import CodeBlock from "@tiptap/extension-code-block";
+import Document from "@tiptap/extension-document";
+import HardBreak from "@tiptap/extension-hard-break";
+import Heading from "@tiptap/extension-heading";
+import Highlight from "@tiptap/extension-highlight";
+import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import Image from "@tiptap/extension-image";
+import Italic from "@tiptap/extension-italic";
+import Link from "@tiptap/extension-link";
+import {
+  BulletList,
+  ListItem,
+  ListKeymap,
+  OrderedList,
+  TaskItem,
+  TaskList,
+} from "@tiptap/extension-list";
+import Mathematics from "@tiptap/extension-mathematics";
+import Paragraph from "@tiptap/extension-paragraph";
+import Strike from "@tiptap/extension-strike";
+import Subscript from "@tiptap/extension-subscript";
+import Superscript from "@tiptap/extension-superscript";
+import Text from "@tiptap/extension-text";
+import TextAlign from "@tiptap/extension-text-align";
+import Underline from "@tiptap/extension-underline";
+import { UndoRedo } from "@tiptap/extensions";
+import { Editor, EditorContent, useEditor } from "@tiptap/vue-3";
+import "@/assets/richtext/index.css";
+import RichTextToolbar from "./RichTextToolbar.vue";
 
-interface Emits {
-  onReady: [];
-}
-
-const emit = defineEmits<Emits>();
-
-const scrollAreaRef = useTemplateRef<HTMLDivElement>("scrollAreaRef");
-const titleRef = useTemplateRef<HTMLElement>("titleRef");
-const scrollAreaHeight = ref(0);
-
-let resizeObserver: ResizeObserver | null = null;
-
-// 计算滚动区域高度的一半作为最后一个div的最小高度
-const minHalfHeight = computed(() => `${scrollAreaHeight.value / 2}px`);
-
-onMounted(() => {
-  emit("onReady");
-  // 元函数：挂载后回填文档标题
-  title.value = store.doc?.title ?? "";
-  // 元函数：挂载后聚焦标题输入框
-  titleRef.value?.focus();
-  if (scrollAreaRef.value) {
-    scrollAreaHeight.value = scrollAreaRef.value.clientHeight;
-    resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        scrollAreaHeight.value = entry.contentRect.height;
-      }
-    });
-    resizeObserver.observe(scrollAreaRef.value);
-  }
+const editor = useEditor({
+  extensions: [
+    Document,
+    Paragraph,
+    Text,
+    Bold,
+    Italic,
+    Underline,
+    Strike,
+    Code,
+    Heading.configure({ levels: [1, 2, 3, 4, 5, 6] }),
+    Blockquote,
+    CodeBlock,
+    HorizontalRule,
+    HardBreak,
+    Link.configure({ openOnClick: false }),
+    TextAlign.configure({ types: ["heading", "paragraph"] }),
+    Highlight.configure({ multicolor: true }),
+    Image,
+    Subscript,
+    Superscript,
+    BulletList,
+    OrderedList,
+    ListItem,
+    TaskList,
+    TaskItem,
+    ListKeymap.configure({
+      listTypes: [
+        { itemName: "listItem", wrapperNames: ["bulletList", "orderedList"] },
+        { itemName: "taskItem", wrapperNames: ["taskList"] },
+      ],
+    }),
+    UndoRedo,
+    Mathematics,
+  ],
 });
-
-onBeforeUnmount(() => {
-  resizeObserver?.disconnect();
-});
-
-// 点击空白区域聚焦编辑器
-const handleBlankClick = () => editor?.value?.commands.focus();
-
-const title = ref<string>("");
-
-const store = useEditorViewStore();
-// 元函数：组装文档组合式函数
-const { updateContent, updateTitle } = useDoc();
-
-// 元函数：解析文档存储的 JSON 内容，空或非法时回退为空字符串
-const parseContent = () => {
-  const raw = store.doc?.content;
-  if (!raw) return "";
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return "";
-  }
-};
-
-const editor = createRichtextEditor({
-  content: parseContent(),
-  onUpdated() {
-    const ed = editor.value;
-    const doc = store.doc;
-    if (!ed || !doc?.id) return;
-    const content = JSON.stringify(ed.getJSON());
-    const plainText = ed.getText();
-    // 元函数：内容变化时同步到编辑视图 store，保持侧栏大纲实时更新
-    doc.content = content;
-    doc.plain_text = plainText;
-    // 元函数：内容变化时保存 JSON 内容与纯文本，并通知 main 窗口刷新列表
-    updateContent(doc.id, content, plainText)
-      .then(notifyMainRefresh)
-      .catch(console.error);
-  },
-});
-
-// 元函数：标题输入时同步到编辑视图 store（侧栏标题实时更新）并保存，通知 main 窗口刷新列表
-const handleTitleChange = () => {
-  const doc = store.doc;
-  if (!doc?.id) return;
-  // 元函数：标题变化时同步到编辑视图 store，保持侧栏标题实时更新
-  doc.title = title.value;
-  updateTitle(doc.id, title.value).then(notifyMainRefresh).catch(console.error);
-};
-
-// 元函数：标题回车时在编辑器文档开头插入空段落并聚焦开头
-const handleTitleEnter = () => {
-  const ed = editor.value;
-  if (!ed) return;
-  ed.commands.insertContentAt(0, { type: "paragraph" });
-  ed.commands.focus("start");
-};
-
-// 元函数：标题 tab 时聚焦编辑器首行末尾
-const handleTitleTab = () => {
-  const ed = editor.value;
-  if (!ed) return;
-  const first = ed.state.doc.content.firstChild;
-  if (!first) return;
-  ed.commands.setTextSelection(first.nodeSize);
-  ed.commands.focus();
-};
 </script>
 
 <template>
-  <div class="w-full h-full" ref="scrollAreaRef">
-    <ScrollArea>
-      <RichTextToolbar :editor="editor" class="sticky top-0 z-10" />
-      <div class="w-full max-w-176 mx-auto flex flex-col">
-        <RichTextTitle
-          ref="titleRef"
-          :editor="editor"
-          v-model="title"
-          class="w-full py-2"
-          @on-input="handleTitleChange"
-          @on-enter="handleTitleEnter"
-          @on-tab="handleTitleTab"
-        />
-        <RichTextEditor :editor="editor" class="pt-6 outline-none" />
-        <div
-          class="flex-1"
-          :style="{ minHeight: minHalfHeight }"
-          @click="handleBlankClick"
-        ></div>
-      </div>
-    </ScrollArea>
-  </div>
+  <ScrollArea>
+    <RichTextToolbar />
+    <div class="w-full max-w-176 mx-auto">
+      <input class="h-10 w-full outline-none" />
+      <EditorContent :editor="editor" />
+      <div class="h-screen bg-red-200"></div>
+    </div>
+  </ScrollArea>
 </template>
-<style>
-.ProseMirror:focus {
-  outline: none !important;
-}
-</style>

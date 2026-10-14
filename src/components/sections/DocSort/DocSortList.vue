@@ -5,6 +5,7 @@ import Mindmap from "@/components/icons/Mindmap.vue";
 import DocItem from "@/components/shared/DocItem.vue";
 import { useDocSortStore } from "@/stores/docSortStore";
 import { useUiStore } from "@/stores/uiStore";
+import { Doc, DocType } from "@/types/doc";
 import { storeToRefs } from "pinia";
 import { Component } from "vue";
 const docSortStore = useDocSortStore();

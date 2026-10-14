@@ -1,7 +1,4 @@
-/* TipTap 富文本编辑器内容样式：按扩展拆分，一个扩展一个文件 */
-/* 无需样式的扩展：Document / Text / Bold / Italic / Underline / Strike / HardBreak / Subscript / Superscript（原生标签渲染），TextAlign（内联 style），UndoRedo */
-
-@import "./p.css";
+/* @import "./p.css";
 @import "./heading.css";
 @import "./blockquote.css";
 @import "./code.css";
@@ -12,28 +9,10 @@
 @import "./image.css";
 @import "./list.css";
 @import "./task-list.css";
-@import "./mathematics.css";
+@import "./mathematics.css"; */
 
-/* ===== 编辑器排版基础 ===== */
-/* 字体：系统级无衬线栈，优先原生系统字体，保证中文渲染质量 */
-.ProseMirror {
-  /* 正文略大于全局 text-sm，配合窄栏形成舒适的阅读密度 */
-  font-size: 1rem;
-  line-height: 1.8;
-  color: var(--color-neutral-700);
-  text-rendering: optimizeLegibility;
-  caret-color: var(--color-neutral-900);
-}
-
-/* 断行优化：段落避免孤行，标题平衡断行 */
-.ProseMirror p {
-  text-wrap: pretty;
-}
-
-.ProseMirror h1,
-.ProseMirror h2,
-.ProseMirror h3 {
-  text-wrap: balance;
+.ProseMirror:focus {
+  outline: none;
 }
 
 /* 首尾元素不留额外空白 */

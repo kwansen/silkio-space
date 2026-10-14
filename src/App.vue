@@ -4,6 +4,7 @@ import WindowControl from "./components/sections/WindowControl/WindowControl.vue
 import { onMounted, onUnmounted } from "vue";
 import MainView from "./views/MainView.vue";
 import { useDocSortAction } from "./actions/docSort.ts";
+import EditorView from "./views/EditorView.vue";
 
 const label = getCurrentWindow().label;
 const action = useDocSortAction();
@@ -35,8 +36,8 @@ onUnmounted(() => {
     <WindowControl v-if="label === 'main' || label === 'editor'" />
     <div class="flex-1 overflow-hidden">
       <MainView v-if="label === 'main'" />
-      <!-- <EditorView v-else-if="label === 'editor'" />
-      <SearchView v-else-if="label === 'search'" />
+      <EditorView v-else-if="label === 'editor'" />
+      <!-- <SearchView v-else-if="label === 'search'" />
       <InsertView v-else-if="label === 'insert'" />
       <ToolView v-else-if="label === 'tool'" /> -->
     </div>

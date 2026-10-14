@@ -13,6 +13,7 @@ import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import Archive from "../icons/Archive.vue";
 import Delete from "../icons/Delete.vue";
+import { useDocAction } from "@/actions/doc.ts";
 
 interface Props {
   itemKey: string;
@@ -28,6 +29,7 @@ const hoverKey = ref<string>("");
 const openedKey = ref<string>("");
 const target = useTemplateRef("target");
 const floating = useTemplateRef("floating");
+const { openDoc } = useDocAction();
 
 const hover = (v: string) => {
   hoverKey.value = v;
@@ -83,6 +85,7 @@ const list: ListItem[] = [
     :class="hoverKey === itemKey || openedKey === itemKey ? 'bg-gray-100' : ''"
     @mouseenter="hover(itemKey)"
     @mouseleave="unHover"
+    @click="openDoc(itemKey)"
   >
     <!-- 图标 -->
     <div class="w-full flex items-center">
