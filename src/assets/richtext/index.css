@@ -11,6 +11,16 @@
 @import "./task-list.css";
 @import "./mathematics.css"; */
 
+@import "./inlineCode.css";
+@import "./heading.css";
+@import "./p.css";
+@import "./list.css";
+
+.tiptap {
+  font-size: 16px;
+}
+
+/* 去除聚焦时候的outline */
 .ProseMirror:focus {
   outline: none;
 }

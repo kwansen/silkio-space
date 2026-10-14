@@ -1,0 +1,7 @@
+.tiptap > p > code {
+  font-size: 0.85em;
+  font-family: monospace;
+  background-color: var(--color-gray-200);
+  border-radius: 8px;
+  padding: 4px;
+}

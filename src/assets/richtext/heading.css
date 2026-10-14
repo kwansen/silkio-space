@@ -1,0 +1,31 @@
+.tiptap > h1 {
+  font-size: 1.8rem;
+  line-height: 3em;
+  font-weight: bold;
+}
+
+.tiptap > h2 {
+  font-size: 1.64rem;
+  line-height: 2.75em;
+  font-weight: bold;
+}
+.tiptap > h3 {
+  font-size: 1.48rem;
+  line-height: 2.5em;
+  font-weight: bold;
+}
+.tiptap > h4 {
+  font-size: 1.32rem;
+  line-height: 2.25em;
+  font-weight: bold;
+}
+.tiptap > h5 {
+  font-size: 1.16rem;
+  line-height: 2em;
+  font-weight: bold;
+}
+.tiptap > h6 {
+  font-size: 1rem;
+  line-height: 1.75em;
+  font-weight: bold;
+}

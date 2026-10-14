@@ -29,9 +29,15 @@ import Text from "@tiptap/extension-text";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import { UndoRedo } from "@tiptap/extensions";
-import { Editor, EditorContent, useEditor } from "@tiptap/vue-3";
+import { EditorContent, useEditor } from "@tiptap/vue-3";
 import "@/assets/richtext/index.css";
 import RichTextToolbar from "./RichTextToolbar.vue";
+import {
+  Table,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@tiptap/extension-table";
 
 const editor = useEditor({
   extensions: [
@@ -67,17 +73,21 @@ const editor = useEditor({
     }),
     UndoRedo,
     Mathematics,
+    Table,
+    TableCell,
+    TableHeader,
+    TableRow,
   ],
 });
 </script>
 
 <template>
   <ScrollArea>
-    <RichTextToolbar />
+    <RichTextToolbar :editor="editor" />
     <div class="w-full max-w-176 mx-auto">
-      <input class="h-10 w-full outline-none" />
-      <EditorContent :editor="editor" />
-      <div class="h-screen bg-red-200"></div>
+      <input class="h-10 w-full outline-none bg-red-200" />
+      <EditorContent :editor="editor" class="" />
+      <div class="h-screen"></div>
     </div>
   </ScrollArea>
 </template>

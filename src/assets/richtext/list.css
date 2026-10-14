@@ -1,0 +1,39 @@
+/* 有序列表 */
+.tiptap > ol {
+  list-style-type: decimal;
+  margin: 0.8em 0;
+  padding-left: 1.5em;
+}
+
+/* 无序列表 */
+.tiptap > ul:not([data-type="taskList"]) {
+  list-style-type: disc;
+  margin: 0.8em 0;
+  padding-left: 1.5em;
+}
+
+/*
+任务列表
+第一个是留出左边间距
+第二个是让勾选框和文字一排，并留下间距
+第三个是让勾选框垂直居中
+第四个是选中文字颜色变灰
+*/
+
+.tiptap > ul[data-type="taskList"] {
+  padding-left: 0.3em;
+}
+
+.tiptap > ul[data-type="taskList"] > li {
+  display: flex;
+  gap: 0.4em;
+}
+
+.tiptap > ul[data-type="taskList"] > li > label {
+  display: grid;
+  place-items: center;
+}
+
+.tiptap > ul > li[data-checked="true"] {
+  color: var(--color-neutral-400);
+}
