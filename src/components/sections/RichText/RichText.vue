@@ -28,7 +28,7 @@ import Superscript from "@tiptap/extension-superscript";
 import Text from "@tiptap/extension-text";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
-import { UndoRedo } from "@tiptap/extensions";
+import { UndoRedo, Gapcursor, TrailingNode } from "@tiptap/extensions";
 import { EditorContent, useEditor } from "@tiptap/vue-3";
 import "@/assets/richtext/index.css";
 import RichTextToolbar from "./RichTextToolbar.vue";
@@ -38,9 +38,12 @@ import {
   TableHeader,
   TableRow,
 } from "@tiptap/extension-table";
-import LinkDialog from "@/components/dialogs/LinkDialog.vue";
 import { useUiStore } from "@/stores/uiStore.ts";
-
+import RichTextLinkDialog from "./RichTextLinkDialog.vue";
+import RichTextTableToolbar from "./RichTextTableToolbar.vue";
+import RichTextMathDialog from "./RichTextMathDialog.vue";
+import { storeToRefs } from "pinia";
+import "katex/dist/katex.min.css";
 const editor = useEditor({
   extensions: [
     Document,
@@ -56,7 +59,11 @@ const editor = useEditor({
     CodeBlock,
     HorizontalRule,
     HardBreak,
-    Link.configure({ openOnClick: false }),
+    Link.configure({
+      openOnClick: false,
+      markdownLinks: true,
+      defaultProtocol: "https",
+    }),
     TextAlign.configure({ types: ["heading", "paragraph"] }),
     Highlight.configure({ multicolor: true }),
     Image,
@@ -79,20 +86,25 @@ const editor = useEditor({
     TableCell,
     TableHeader,
     TableRow,
+    Gapcursor,
+    TrailingNode,
   ],
 });
 
 const uiStore = useUiStore();
+const { richtextDialog: dialog } = storeToRefs(uiStore);
 </script>
 
 <template>
   <ScrollArea>
     <RichTextToolbar :editor="editor" />
-    <div class="w-full max-w-176 mx-auto">
+    <div class="w-full max-w-176 mx-auto relative">
       <input class="h-10 w-full outline-none bg-red-200" />
       <EditorContent :editor="editor" class="" />
       <div class="h-screen"></div>
+      <RichTextTableToolbar v-if="editor?.isActive('table')" :editor="editor" />
     </div>
-    <LinkDialog v-if="uiStore.show" />
   </ScrollArea>
+  <RichTextLinkDialog :editor="editor" v-if="dialog === 'link'" />
+  <RichTextMathDialog :editor="editor" v-if="dialog === 'math'" />
 </template>

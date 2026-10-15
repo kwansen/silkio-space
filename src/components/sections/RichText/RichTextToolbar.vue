@@ -34,10 +34,9 @@ import RSToolbarDropdown from "./RSToolbarDropdown.vue";
 import { Btn, Group } from "./type.ts";
 import RSToolbarInlineGroup from "./RSToolbarInlineGroup.vue";
 import { Editor } from "@tiptap/vue-3";
-import { ref } from "vue";
 import { useUiStore } from "@/stores/uiStore";
 const uiStore = useUiStore();
-const { setShow } = uiStore;
+const { setRichtextDialog } = uiStore;
 
 interface Props {
   editor: Editor | undefined;
@@ -257,7 +256,7 @@ const link: Btn = {
   name: "链接",
   icon: Link,
   shortcut: "",
-  action: () => setShow(true),
+  action: () => setRichtextDialog("link"),
   disabled: () => !props.editor?.can().setLink({ href: "#" }),
   active: () => props.editor?.isActive("link") ?? false,
 };
@@ -265,8 +264,7 @@ const math: Btn = {
   name: "公式",
   icon: Math,
   shortcut: "",
-  action: () =>
-    props.editor?.chain().focus().insertContent("$ E = mc^2 $").run(),
+  action: () => setRichtextDialog("math"),
   disabled: () => !props.editor?.can().insertContent("$ E = mc^2 $"),
   active: () => false,
 };

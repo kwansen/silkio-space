@@ -27,9 +27,9 @@ export const useUiStore = defineStore("ui", () => {
   };
   //#endregion
 
-  const show = ref<boolean>(false);
-  const setShow = (v: boolean) => {
-    show.value = v;
+  const richtextDialog = ref<RichTextDialog>("");
+  const setRichtextDialog = (v: RichTextDialog) => {
+    richtextDialog.value = v;
   };
 
   return {
@@ -41,7 +41,7 @@ export const useUiStore = defineStore("ui", () => {
     setDocSort,
     currentArchiveSort,
     setArchiveSort,
-    show,
-    setShow,
+    richtextDialog,
+    setRichtextDialog,
   };
 });

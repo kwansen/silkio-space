@@ -12,3 +12,5 @@ type ArchiveSortOption = "manual" | "name" | "viewedAt";
 type ThemeOption = "light" | "dark";
 // 用于切换设置的Tab
 type SettingTabOption = "normal" | "shortcut" | "sync" | "about";
+// 用于打开richtext的dialog
+type RichTextDialog = "link" | "math" | "image" | "";
