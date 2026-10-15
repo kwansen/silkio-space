@@ -1,0 +1,4 @@
+.tiptap > pre {
+  background-color: var(--color-gray-100);
+  margin: 0.8rem 0;
+}

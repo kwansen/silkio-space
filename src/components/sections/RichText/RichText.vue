@@ -38,6 +38,8 @@ import {
   TableHeader,
   TableRow,
 } from "@tiptap/extension-table";
+import LinkDialog from "@/components/dialogs/LinkDialog.vue";
+import { useUiStore } from "@/stores/uiStore.ts";
 
 const editor = useEditor({
   extensions: [
@@ -73,12 +75,14 @@ const editor = useEditor({
     }),
     UndoRedo,
     Mathematics,
-    Table,
+    Table.configure({ resizable: true }),
     TableCell,
     TableHeader,
     TableRow,
   ],
 });
+
+const uiStore = useUiStore();
 </script>
 
 <template>
@@ -89,5 +93,6 @@ const editor = useEditor({
       <EditorContent :editor="editor" class="" />
       <div class="h-screen"></div>
     </div>
+    <LinkDialog v-if="uiStore.show" />
   </ScrollArea>
 </template>

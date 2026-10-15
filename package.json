@@ -57,6 +57,7 @@
     "@tiptap/vue-3": "^3.29.2",
     "@vueuse/core": "^14.4.0",
     "@zhencai/generate-pages": "^1.0.0",
+    "@zhencai/vue-focus-scope": "^1.0.12",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.21",
     "katex": "^0.18.11",

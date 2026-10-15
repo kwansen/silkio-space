@@ -149,6 +149,9 @@ importers:
       '@zhencai/generate-pages':
         specifier: ^1.0.0
         version: 1.0.0
+      '@zhencai/vue-focus-scope':
+        specifier: ^1.0.12
+        version: 1.0.12(vue@3.5.41(typescript@5.6.3))
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -1315,6 +1318,11 @@ packages:
 
   '@zhencai/generate-pages@1.0.0':
     resolution: {integrity: sha512-wngkEc89lQegNNkEtlztXRe9mqPoEIIZhlc6j1Uous93Fvs/yWG+KwyYMU1H+3kIdjT7y0ew1sATrFBJt/aW7w==}
+
+  '@zhencai/vue-focus-scope@1.0.12':
+    resolution: {integrity: sha512-9Vc5wnE7UZCZwexkbdpIiXtno6hPfJojLILICyudxpUez90lnsHbmF/t5VDOZgAuhcBK9uzH9WG4Qdz/KRwafw==}
+    peerDependencies:
+      vue: ^3.0.0
 
   acorn-loose@6.1.0:
     resolution: {integrity: sha512-FHhXoiF0Uch3IqsrnPpWwCtiv5PYvipTpT1k9lDMgQVVYc9iDuSl5zdJV358aI8twfHCYMFBRVYvAVki9wC/ng==}
@@ -3142,6 +3150,10 @@ snapshots:
       vue: 3.5.41(typescript@5.6.3)
 
   '@zhencai/generate-pages@1.0.0': {}
+
+  '@zhencai/vue-focus-scope@1.0.12(vue@3.5.41(typescript@5.6.3))':
+    dependencies:
+      vue: 3.5.41(typescript@5.6.3)
 
   acorn-loose@6.1.0:
     dependencies:

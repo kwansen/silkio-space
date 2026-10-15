@@ -15,9 +15,13 @@
 @import "./heading.css";
 @import "./p.css";
 @import "./list.css";
+@import "./codeBlock.css";
+@import "./quote.css";
+@import "./table.css";
+@import "./a.css";
 
 .tiptap {
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 /* 去除聚焦时候的outline */

@@ -18,8 +18,7 @@
 }
 
 * ::selection {
-  background-color: rgba(255, 0, 255, 0.3);
-  color: black; /* 文字颜色，可选 */
+  background-color: rgba(255, 0, 255, 0.1);
 }
 
 .desktop-draggable {

@@ -27,6 +27,11 @@ export const useUiStore = defineStore("ui", () => {
   };
   //#endregion
 
+  const show = ref<boolean>(false);
+  const setShow = (v: boolean) => {
+    show.value = v;
+  };
+
   return {
     currentMode,
     setMode,
@@ -36,5 +41,7 @@ export const useUiStore = defineStore("ui", () => {
     setDocSort,
     currentArchiveSort,
     setArchiveSort,
+    show,
+    setShow,
   };
 });

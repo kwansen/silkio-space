@@ -1,14 +1,14 @@
 /* 有序列表 */
 .tiptap > ol {
   list-style-type: decimal;
-  margin: 0.8em 0;
+  margin: 0.8rem 0;
   padding-left: 1.5em;
 }
 
 /* 无序列表 */
 .tiptap > ul:not([data-type="taskList"]) {
   list-style-type: disc;
-  margin: 0.8em 0;
+  margin: 0.8rem 0;
   padding-left: 1.5em;
 }
 
@@ -22,6 +22,7 @@
 
 .tiptap > ul[data-type="taskList"] {
   padding-left: 0.3em;
+  margin: 0.8rem 0;
 }
 
 .tiptap > ul[data-type="taskList"] > li {

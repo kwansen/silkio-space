@@ -1,0 +1,8 @@
+.tiptap a {
+  color: var(--color-purple-700);
+  cursor: pointer;
+}
+
+.tiptap a:hover {
+  text-decoration: underline;
+}

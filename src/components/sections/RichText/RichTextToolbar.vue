@@ -35,6 +35,9 @@ import { Btn, Group } from "./type.ts";
 import RSToolbarInlineGroup from "./RSToolbarInlineGroup.vue";
 import { Editor } from "@tiptap/vue-3";
 import { ref } from "vue";
+import { useUiStore } from "@/stores/uiStore";
+const uiStore = useUiStore();
+const { setShow } = uiStore;
 
 interface Props {
   editor: Editor | undefined;
@@ -254,10 +257,7 @@ const link: Btn = {
   name: "链接",
   icon: Link,
   shortcut: "",
-  action: () => {
-    const url = window.prompt("请输入链接地址");
-    if (url) props.editor?.chain().focus().setLink({ href: url }).run();
-  },
+  action: () => setShow(true),
   disabled: () => !props.editor?.can().setLink({ href: "#" }),
   active: () => props.editor?.isActive("link") ?? false,
 };
