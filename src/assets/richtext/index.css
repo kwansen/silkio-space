@@ -19,6 +19,7 @@
 @import "./quote.css";
 @import "./table.css";
 @import "./a.css";
+@import "./math.css";
 
 .tiptap {
   font-size: 1rem;

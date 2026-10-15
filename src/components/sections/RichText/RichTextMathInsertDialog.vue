@@ -3,13 +3,20 @@ import { useUiStore } from "@/stores/uiStore";
 import { Editor } from "@tiptap/vue-3";
 import { FocusScope } from "@zhencai/vue-focus-scope";
 import { ref } from "vue";
+
 interface Props {
   editor: Editor | undefined;
 }
 
-const props = defineProps<Props>();
+const { setRichtextDialog } = useUiStore();
 
 const latex = ref<string>("");
+
+const props = defineProps<Props>();
+
+const close = () => {
+  setRichtextDialog("");
+};
 
 const handleClick = (block: boolean) => {
   const chain = props.editor?.chain();
@@ -19,10 +26,8 @@ const handleClick = (block: boolean) => {
   } else {
     chain.insertInlineMath({ latex: latex.value }).focus().run();
   }
+  close();
 };
-
-const uiStore = useUiStore();
-const { setRichtextDialog } = uiStore;
 </script>
 
 <template>
@@ -41,10 +46,7 @@ const { setRichtextDialog } = uiStore;
       </div>
       <div class="h-6"></div>
       <div class="flex justify-end">
-        <button
-          class="h-9 bg-gray-100 px-4 rounded-l-md"
-          @click="setRichtextDialog('')"
-        >
+        <button class="h-9 bg-gray-100 px-4 rounded-l-md" @click="close">
           取消
         </button>
         <button

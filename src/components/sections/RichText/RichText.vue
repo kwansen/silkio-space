@@ -41,9 +41,32 @@ import {
 import { useUiStore } from "@/stores/uiStore.ts";
 import RichTextLinkDialog from "./RichTextLinkDialog.vue";
 import RichTextTableToolbar from "./RichTextTableToolbar.vue";
-import RichTextMathDialog from "./RichTextMathDialog.vue";
+import RichTextMathInsertDialog from "./RichTextMathInsertDialog.vue";
+import RichTextMathUpdateDialog from "./RichTextMathUpdateDialog.vue";
 import { storeToRefs } from "pinia";
 import "katex/dist/katex.min.css";
+import { ref } from "vue";
+import type { Node } from "@tiptap/pm/model";
+
+const node = ref<Node>();
+const pos = ref<number>(0);
+const block = ref<boolean>(false);
+
+const uiStore = useUiStore();
+const { richtextDialog: dialog } = storeToRefs(uiStore);
+
+const openMathDialog = (n: Node, p: number, b: boolean) => {
+  node.value = n;
+  pos.value = p;
+  block.value = b;
+};
+
+const closeMathDialog = () => {
+  node.value = undefined;
+  pos.value = 0;
+  block.value = false;
+};
+
 const editor = useEditor({
   extensions: [
     Document,
@@ -81,7 +104,14 @@ const editor = useEditor({
       ],
     }),
     UndoRedo,
-    Mathematics,
+    Mathematics.configure({
+      inlineOptions: {
+        onClick: (node, pos) => openMathDialog(node, pos, false),
+      },
+      blockOptions: {
+        onClick: (node, pos) => openMathDialog(node, pos, true),
+      },
+    }),
     Table.configure({ resizable: true }),
     TableCell,
     TableHeader,
@@ -90,9 +120,6 @@ const editor = useEditor({
     TrailingNode,
   ],
 });
-
-const uiStore = useUiStore();
-const { richtextDialog: dialog } = storeToRefs(uiStore);
 </script>
 
 <template>
@@ -106,5 +133,13 @@ const { richtextDialog: dialog } = storeToRefs(uiStore);
     </div>
   </ScrollArea>
   <RichTextLinkDialog :editor="editor" v-if="dialog === 'link'" />
-  <RichTextMathDialog :editor="editor" v-if="dialog === 'math'" />
+  <RichTextMathInsertDialog :editor="editor" v-if="dialog === 'math'" />
+  <RichTextMathUpdateDialog
+    v-if="node"
+    :editor="editor"
+    :node="node"
+    :pos="pos"
+    :block="block"
+    @close="closeMathDialog"
+  />
 </template>

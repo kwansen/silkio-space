@@ -1,0 +1,29 @@
+/* 块级 */
+
+.tiptap .block-math-inner {
+  display: grid;
+  place-items: center;
+  padding: 0.8rem 0;
+}
+
+.tiptap .block-math-inner:hover {
+  background-color: var(--color-gray-100);
+}
+
+.tiptap .block-math-inner :is(*) {
+  cursor: default;
+}
+/* 行内 */
+
+.tiptap span[data-type="inline-math"] {
+  padding: 0 4px;
+}
+
+.tiptap span[data-type="inline-math"]:hover {
+  background-color: var(--color-gray-100);
+  padding: 4px;
+}
+
+.tiptap span[data-type="inline-math"]:is(*) {
+  cursor: default;
+}
