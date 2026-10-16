@@ -10,7 +10,7 @@ defineProps<Prop>();
 <template>
   <div
     v-for="b in group.button"
-    class="w-6.5 h-6.5 rounded-md grid place-items-center mx-0.5"
+    class="w-7 h-7 rounded-md grid place-items-center"
     :class="[
       b.active() ? 'bg-purple-200 text-purple-700' : 'hover:bg-gray-200',
       b.disabled() ? 'opacity-30' : '',

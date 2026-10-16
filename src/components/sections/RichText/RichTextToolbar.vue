@@ -35,6 +35,7 @@ import { Btn, Group } from "./type.ts";
 import RSToolbarInlineGroup from "./RSToolbarInlineGroup.vue";
 import { Editor } from "@tiptap/vue-3";
 import { useUiStore } from "@/stores/uiStore";
+import Eraser from "@/components/icons/Eraser.vue";
 const uiStore = useUiStore();
 const { setRichtextDialog } = uiStore;
 
@@ -302,11 +303,19 @@ const image: Btn = {
   name: "图片",
   icon: Image,
   shortcut: "",
-  action: () => {
-    const src = window.prompt("请输入图片地址");
-    if (src) props.editor?.chain().focus().setImage({ src }).run();
-  },
+  action: () => setRichtextDialog("image"),
   disabled: () => !props.editor?.can().setImage({ src: "#" }),
+  active: () => false,
+};
+//#endregion
+
+//#region 清除
+const clear: Btn = {
+  name: "清除",
+  icon: Eraser,
+  shortcut: "",
+  action: () => props.editor?.chain().focus().unsetAllMarks().run(),
+  disabled: () => false,
   active: () => false,
 };
 //#endregion
@@ -324,6 +333,7 @@ const groupList: Group[] = [
       subscript,
       inlineCode,
       highlight,
+      clear,
     ],
     type: "inline",
     groupIcon: Bold,
@@ -356,8 +366,8 @@ const groupList: Group[] = [
 </script>
 
 <template>
-  <div class="sticky top-0 z-10 h-10 bg-gray-100 flex items-center">
-    <div v-for="group in groupList" class="flex h-full items-center">
+  <div class="sticky top-0 z-10 h-11 px-2 bg-gray-100 flex items-center">
+    <div v-for="group in groupList" class="flex h-full items-center gap-2">
       <RSToolbarInlineGroup v-if="group.type === 'inline'" :group="group" />
       <!-- 下拉菜单 -->
       <RSToolbarDropdown v-else-if="group.type === 'grouped'" :group="group" />
@@ -368,7 +378,7 @@ const groupList: Group[] = [
           (group.type === 'inline' && group.name !== '插入') ||
           group.name === '对齐'
         "
-        class="h-1/3 border-x text-neutral-300 mx-1"
+        class="h-1/3 border-x text-neutral-300 mx-2"
       ></div>
     </div>
   </div>

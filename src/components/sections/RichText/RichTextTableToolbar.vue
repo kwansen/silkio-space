@@ -6,7 +6,6 @@ import AddTopRow from "@/components/icons/AddTopRow.vue";
 import Delete from "@/components/icons/Delete.vue";
 import DeleteCol from "@/components/icons/DeleteCol.vue";
 import DeleteRow from "@/components/icons/DeleteRow.vue";
-import DeleteTable from "@/components/icons/DeleteTable.vue";
 import MergeCell from "@/components/icons/MergeCell.vue";
 import SplitCell from "@/components/icons/SplitCell.vue";
 import { Editor } from "@tiptap/vue-3";

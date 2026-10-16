@@ -34,7 +34,11 @@
       }
     ],
     "security": {
-      "csp": null
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["$APPDATA/**/*"]
+      },
+      "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost"
     }
   },
   "plugins": {

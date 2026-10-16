@@ -47,6 +47,8 @@ import { storeToRefs } from "pinia";
 import "katex/dist/katex.min.css";
 import { ref } from "vue";
 import type { Node } from "@tiptap/pm/model";
+import RichtextImageDialog from "./RichtextImageDialog.vue";
+import RichTextTitle from "./RichTextTitle.vue";
 
 const node = ref<Node>();
 const pos = ref<number>(0);
@@ -126,13 +128,14 @@ const editor = useEditor({
   <ScrollArea>
     <RichTextToolbar :editor="editor" />
     <div class="w-full max-w-176 mx-auto relative">
-      <input class="h-10 w-full outline-none bg-red-200" />
+      <RichTextTitle />
       <EditorContent :editor="editor" class="" />
       <div class="h-screen"></div>
       <RichTextTableToolbar v-if="editor?.isActive('table')" :editor="editor" />
     </div>
   </ScrollArea>
   <RichTextLinkDialog :editor="editor" v-if="dialog === 'link'" />
+  <RichtextImageDialog :editor="editor" v-if="dialog === 'image'" />
   <RichTextMathInsertDialog :editor="editor" v-if="dialog === 'math'" />
   <RichTextMathUpdateDialog
     v-if="node"
