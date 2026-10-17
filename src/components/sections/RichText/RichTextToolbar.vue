@@ -257,7 +257,7 @@ const alignJustify: Btn = {
 const link: Btn = {
   name: "链接",
   icon: Link,
-  shortcut: "待ctrl+k",
+  shortcut: "Ctrl + K",
   action: () => setRichtextDialog("link"),
   disabled: () => !props.editor?.can().setLink({ href: "#" }),
   active: () => props.editor?.isActive("link") ?? false,
@@ -265,7 +265,7 @@ const link: Btn = {
 const math: Btn = {
   name: "公式",
   icon: Math,
-  shortcut: "待Ctrl + Shift + M",
+  shortcut: "Ctrl + Shift + M",
   action: () => setRichtextDialog("math"),
   disabled: () => !props.editor?.can().insertContent("$ E = mc^2 $"),
   active: () => false,
@@ -289,7 +289,7 @@ const codeBlock: Btn = {
 const table: Btn = {
   name: "表格",
   icon: Table,
-  shortcut: "",
+  shortcut: "Ctrl + Shift + T",
   action: () =>
     props.editor
       ?.chain()
@@ -303,7 +303,7 @@ const table: Btn = {
 const image: Btn = {
   name: "图片",
   icon: Image,
-  shortcut: "",
+  shortcut: "Ctrl + Alt + I",
   action: () => setRichtextDialog("image"),
   disabled: () => !props.editor?.can().setImage({ src: "#" }),
   active: () => false,
@@ -311,7 +311,7 @@ const image: Btn = {
 const divider: Btn = {
   name: "分割线",
   icon: Divider,
-  shortcut: "",
+  shortcut: "Ctrl + Shift + -",
   action: () => props.editor?.chain().focus().setHorizontalRule().run(),
   disabled: () => !props.editor?.can().setHorizontalRule(),
   active: () => false,
@@ -322,7 +322,7 @@ const divider: Btn = {
 const clear: Btn = {
   name: "清除",
   icon: Eraser,
-  shortcut: "",
+  shortcut: "Ctrl + \\",
   action: () => props.editor?.chain().focus().unsetAllMarks().run(),
   disabled: () => false,
   active: () => false,

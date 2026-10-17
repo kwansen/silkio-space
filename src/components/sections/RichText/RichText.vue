@@ -50,6 +50,7 @@ import { CustomHr } from "./extensions/CustomHr.ts";
 import { CustomCodeBlock } from "./extensions/CustomCodeBlock.ts";
 import { CustomLink } from "./extensions/CustomLink.ts";
 import CodeBlock from "@tiptap/extension-code-block";
+import { CustomShortcut } from "./extensions/customShortcut.ts";
 
 const node = ref<Node>();
 const pos = ref<number>(0);
@@ -72,6 +73,7 @@ const closeMathDialog = () => {
 
 const editor = useEditor({
   extensions: [
+    CustomShortcut,
     Document,
     Paragraph,
     Text,
