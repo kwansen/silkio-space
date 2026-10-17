@@ -23,7 +23,7 @@ const copy = async () => {
 
 <template>
   <NodeViewWrapper class="bg-gray-100 rounded-md overflow-hidden my-[0.8rem]">
-    <div class="h-10 cursor-default flex items-center justify-end px-4">
+    <div class="h-9 cursor-default flex items-center justify-end px-4">
       <button
         @click="copy"
         :disabled="success"
@@ -35,7 +35,7 @@ const copy = async () => {
       </button>
     </div>
     <pre
-      class="text-xs whitespace-nowrap bg-gray-50 overflow-x-auto p-4 [&::-webkit-scrollbar-thumb]:cursor-default"
-    ><NodeViewContent as="code" class="whitespace-nowrap!"/></pre>
+      class="text-xs p-4 bg-gray-50 overflow-x-auto py-4 [&::-webkit-scrollbar-thumb]:cursor-default"
+    ><NodeViewContent as="code" class="whitespace-pre!" /></pre>
   </NodeViewWrapper>
 </template>
