@@ -1,14 +1,18 @@
 <template>
   <svg
+    t="1792234693004"
+    class="icon"
+    viewBox="0 0 1024 1024"
+    version="1.1"
     xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
-    viewBox="0 0 24 24"
+    p-id="6501"
+    width="200"
+    height="200"
   >
-    <path d="M0 0h24v24H0z" fill="none" />
     <path
-      fill="currentColor"
-      d="M5 13q-.425 0-.712-.288T4 12t.288-.712T5 11h14q.425 0 .713.288T20 12t-.288.713T19 13z"
-    />
+      d="M112 448h800a48 48 0 1 1 0 96H112a48 48 0 0 1 0-96z m112 320h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z m0-576h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64z m256 576h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z m0-576h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64z m256 576h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z m0-576h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z"
+      fill="#4D4D4D"
+      p-id="6502"
+    ></path>
   </svg>
 </template>

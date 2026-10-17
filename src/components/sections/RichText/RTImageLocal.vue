@@ -73,6 +73,18 @@ const handleConfirm = async () => {
 
   close();
 };
+
+import { onKeyStroke } from "@vueuse/core";
+
+// ESC 关闭
+onKeyStroke("Escape", () => {
+  close();
+});
+
+// 回车提交
+onKeyStroke("Enter", () => {
+  handleConfirm();
+});
 </script>
 
 <template>

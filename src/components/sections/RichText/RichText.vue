@@ -42,7 +42,7 @@ import RichTextMathInsertDialog from "./RichTextMathInsertDialog.vue";
 import RichTextMathUpdateDialog from "./RichTextMathUpdateDialog.vue";
 import { storeToRefs } from "pinia";
 import "katex/dist/katex.min.css";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import type { Node } from "@tiptap/pm/model";
 import RichtextImageDialog from "./RichtextImageDialog.vue";
 import RichTextTitle from "./RichTextTitle.vue";
@@ -127,6 +127,18 @@ const editor = useEditor({
     TrailingNode,
   ],
 });
+
+// 对话框关闭后（FocusScope 已卸载）把焦点还给编辑器，
+// 否则焦点落在 body 上，addKeyboardShortcuts 的快捷键不会触发
+watch(
+  dialog,
+  (val, oldVal) => {
+    if (oldVal && !val) {
+      editor.value?.commands.focus();
+    }
+  },
+  { flush: "post" },
+);
 </script>
 
 <template>
