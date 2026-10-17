@@ -49,6 +49,7 @@ import RichTextTitle from "./RichTextTitle.vue";
 import { CustomHr } from "./extensions/CustomHr.ts";
 import { CustomCodeBlock } from "./extensions/CustomCodeBlock.ts";
 import { CustomLink } from "./extensions/CustomLink.ts";
+import CodeBlock from "@tiptap/extension-code-block";
 
 const node = ref<Node>();
 const pos = ref<number>(0);

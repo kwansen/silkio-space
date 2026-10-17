@@ -10,7 +10,7 @@ const props = defineProps(nodeViewProps);
       class="my-[0.8rem] py-[1.6rem]"
       :class="props.selected ? 'bg-purple-50  ' : ''"
     >
-      <hr class="border-t border-neutral-300" />
+      <hr class="border-t border-neutral-200" />
     </div>
   </NodeViewWrapper>
 </template>

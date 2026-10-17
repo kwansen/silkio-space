@@ -66,7 +66,10 @@ const handleConfirm = async () => {
   const dir = await join(baseDir, fileName.value);
   console.log(dir);
   const url = convertFileSrc(dir);
-  props.editor?.chain().setImage({ src: url }).run();
+  props.editor
+    ?.chain()
+    .setImage({ src: url, alt: "这是alt", title: "这是标题" })
+    .run();
 
   close();
 };
