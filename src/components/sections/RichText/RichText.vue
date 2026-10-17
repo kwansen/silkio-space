@@ -49,6 +49,10 @@ import { ref } from "vue";
 import type { Node } from "@tiptap/pm/model";
 import RichtextImageDialog from "./RichtextImageDialog.vue";
 import RichTextTitle from "./RichTextTitle.vue";
+import { CustomHr } from "./extensions/CustomHr.ts";
+import { CustomCodeBlock } from "./extensions/CustomCodeBlock.ts";
+import { CustomLink } from "./extensions/CustomLink.ts";
+import RichTextLinkFloatingMenu from "./RichTextLinkFloatingMenu.vue";
 
 const node = ref<Node>();
 const pos = ref<number>(0);
@@ -81,10 +85,12 @@ const editor = useEditor({
     Code,
     Heading.configure({ levels: [1, 2, 3, 4, 5, 6] }),
     Blockquote,
-    CodeBlock,
-    HorizontalRule,
+    // CodeBlock,
+    CustomCodeBlock,
+    // HorizontalRule,
+    CustomHr,
     HardBreak,
-    Link.configure({
+    CustomLink.configure({
       openOnClick: false,
       markdownLinks: true,
       defaultProtocol: "https",
@@ -122,6 +128,37 @@ const editor = useEditor({
     TrailingNode,
   ],
 });
+
+const linkTarget = ref<HTMLElement | null>(null);
+const menuHovered = ref(false);
+const visible = ref(false);
+let hideTimer: ReturnType<typeof setTimeout> | undefined;
+
+function onMouseOver(e: MouseEvent) {
+  const a = (e.target as HTMLElement)?.closest("a");
+  if (!a) return;
+  clearTimeout(hideTimer);
+  linkTarget.value = a as HTMLElement;
+  visible.value = true;
+}
+
+function onMouseOut(e: MouseEvent) {
+  const a = (e.target as HTMLElement)?.closest("a");
+  if (!a) return;
+  hideTimer = setTimeout(() => {
+    if (menuHovered.value) return;
+    linkTarget.value = null;
+  }, 500);
+}
+
+function onMenuMouseEnter() {
+  menuHovered.value = true;
+}
+
+function onMenuMouseLeave() {
+  menuHovered.value = false;
+  linkTarget.value = null;
+}
 </script>
 
 <template>
@@ -129,11 +166,19 @@ const editor = useEditor({
     <RichTextToolbar :editor="editor" />
     <div class="w-full max-w-176 mx-auto relative">
       <RichTextTitle />
-      <EditorContent :editor="editor" class="" />
+      <div class="" @mouseover="onMouseOver" @mouseout="onMouseOut">
+        <EditorContent :editor="editor" class="" />
+      </div>
       <div class="h-screen"></div>
       <RichTextTableToolbar v-if="editor?.isActive('table')" :editor="editor" />
     </div>
   </ScrollArea>
+  <RichTextLinkFloatingMenu
+    v-if="linkTarget"
+    :target="linkTarget"
+    @mouseenter="onMenuMouseEnter"
+    @mouseleave="onMenuMouseLeave"
+  />
   <RichTextLinkDialog :editor="editor" v-if="dialog === 'link'" />
   <RichtextImageDialog :editor="editor" v-if="dialog === 'image'" />
   <RichTextMathInsertDialog :editor="editor" v-if="dialog === 'math'" />

@@ -42,20 +42,22 @@ onClickOutside(
   <div
     v-if="show"
     ref="floating"
-    class="rounded-lg shadow-2xl bg-white p-1 select-none"
+    class="rounded-lg shadow-2xl bg-white px-1 py-2 select-none"
     :style="floatingStyles"
   >
     <div
       v-for="b in group.button"
-      class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md"
+      class="px-4 py-2 flex items-center"
       :class="[
-        b.active() ? 'bg-purple-200 text-purple-700' : 'hover:bg-gray-200',
+        b.active() ? 'bg-purple-200 text-purple-700' : '',
+        !b.active() && !b.disabled() ? 'hover:bg-gray-100' : '',
         b.disabled() ? 'opacity-30' : '',
       ]"
       @click="!b.disabled() && (b.action(), (show = false))"
     >
-      <component :is="b.icon" class="w-5 h-5" />
-      <span class="text-sm">{{ b.name }}</span>
+      <component :is="b.icon" class="w-5 h-5 mr-2" />
+      <span class="text-xs">{{ b.name }}</span>
+      <span class="text-[10px] ml-auto pl-6">{{ b.shortcut }}</span>
     </div>
   </div>
 </template>

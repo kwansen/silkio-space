@@ -15,7 +15,6 @@
 @import "./heading.css";
 @import "./p.css";
 @import "./list.css";
-@import "./codeBlock.css";
 @import "./quote.css";
 @import "./table.css";
 @import "./a.css";
@@ -25,12 +24,23 @@
   font-size: 1rem;
 }
 
+/* 
+需要在title和content直接留下间距。
+有多种方案，第一种就是直接editorcontent直接加mt-4，不行因为鼠标无法点击
+第二种方案是first-child使用margin，不行因为无法点击
+第三种方案是first-child使用padding，可以正常点击，但影响子元素
+第四种方案是直接给prosemirror加padding，最完美
+*/
+
+.ProseMirror {
+  padding-top: 0.8rem;
+}
+
 /* 去除聚焦时候的outline */
 .ProseMirror:focus {
   outline: none;
 }
 
-/* 首尾元素不留额外空白 */
 .ProseMirror > :first-child {
   margin-top: 0;
 }

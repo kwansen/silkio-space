@@ -36,6 +36,7 @@ import RSToolbarInlineGroup from "./RSToolbarInlineGroup.vue";
 import { Editor } from "@tiptap/vue-3";
 import { useUiStore } from "@/stores/uiStore";
 import Eraser from "@/components/icons/Eraser.vue";
+import Divider from "@/components/icons/Divider.vue";
 const uiStore = useUiStore();
 const { setRichtextDialog } = uiStore;
 
@@ -221,7 +222,7 @@ const taskList: Btn = {
 const alignLeft: Btn = {
   name: "左对齐",
   icon: AlignLeft,
-  shortcut: "",
+  shortcut: "Ctrl + Shift + L",
   action: () => props.editor?.chain().focus().setTextAlign("left").run(),
   disabled: () => !props.editor?.can().setTextAlign("left"),
   active: () => props.editor?.isActive({ textAlign: "left" }) ?? false,
@@ -229,7 +230,7 @@ const alignLeft: Btn = {
 const alignCenter: Btn = {
   name: "居中对齐",
   icon: AlignCenter,
-  shortcut: "",
+  shortcut: "Ctrl + Shift + E",
   action: () => props.editor?.chain().focus().setTextAlign("center").run(),
   disabled: () => !props.editor?.can().setTextAlign("center"),
   active: () => props.editor?.isActive({ textAlign: "center" }) ?? false,
@@ -237,7 +238,7 @@ const alignCenter: Btn = {
 const alignRight: Btn = {
   name: "右对齐",
   icon: AlignRight,
-  shortcut: "",
+  shortcut: "Ctrl + Shift + R",
   action: () => props.editor?.chain().focus().setTextAlign("right").run(),
   disabled: () => !props.editor?.can().setTextAlign("right"),
   active: () => props.editor?.isActive({ textAlign: "right" }) ?? false,
@@ -245,7 +246,7 @@ const alignRight: Btn = {
 const alignJustify: Btn = {
   name: "两端对齐",
   icon: AlignJustify,
-  shortcut: "",
+  shortcut: "Ctrl + Shift + J",
   action: () => props.editor?.chain().focus().setTextAlign("justify").run(),
   disabled: () => !props.editor?.can().setTextAlign("justify"),
   active: () => props.editor?.isActive({ textAlign: "justify" }) ?? false,
@@ -256,7 +257,7 @@ const alignJustify: Btn = {
 const link: Btn = {
   name: "链接",
   icon: Link,
-  shortcut: "",
+  shortcut: "待ctrl+k",
   action: () => setRichtextDialog("link"),
   disabled: () => !props.editor?.can().setLink({ href: "#" }),
   active: () => props.editor?.isActive("link") ?? false,
@@ -264,7 +265,7 @@ const link: Btn = {
 const math: Btn = {
   name: "公式",
   icon: Math,
-  shortcut: "",
+  shortcut: "待Ctrl + Shift + M",
   action: () => setRichtextDialog("math"),
   disabled: () => !props.editor?.can().insertContent("$ E = mc^2 $"),
   active: () => false,
@@ -305,6 +306,14 @@ const image: Btn = {
   shortcut: "",
   action: () => setRichtextDialog("image"),
   disabled: () => !props.editor?.can().setImage({ src: "#" }),
+  active: () => false,
+};
+const divider: Btn = {
+  name: "分割线",
+  icon: Divider,
+  shortcut: "",
+  action: () => props.editor?.chain().focus().setHorizontalRule().run(),
+  disabled: () => !props.editor?.can().setHorizontalRule(),
   active: () => false,
 };
 //#endregion
@@ -358,7 +367,7 @@ const groupList: Group[] = [
   },
   {
     name: "插入",
-    button: [link, math, blockquote, codeBlock, table, image],
+    button: [link, math, blockquote, codeBlock, table, image, divider],
     type: "inline",
     groupIcon: Add,
   },
@@ -366,7 +375,10 @@ const groupList: Group[] = [
 </script>
 
 <template>
-  <div class="sticky top-0 z-10 h-11 px-2 bg-gray-100 flex items-center">
+  <div
+    id="toolbar"
+    class="sticky top-0 z-10 h-11 px-2 bg-gray-100 flex items-center"
+  >
     <div v-for="group in groupList" class="flex h-full items-center gap-2">
       <RSToolbarInlineGroup v-if="group.type === 'inline'" :group="group" />
       <!-- 下拉菜单 -->

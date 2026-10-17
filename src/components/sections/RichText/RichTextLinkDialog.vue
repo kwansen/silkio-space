@@ -23,6 +23,10 @@ const disabled = computed(() => {
   return !url.value || !text.value;
 });
 
+const close = () => {
+  setRichtextDialog("");
+};
+
 const handleClick = () => {
   const editor = props.editor;
   if (!editor) return;
@@ -45,8 +49,10 @@ const handleClick = () => {
   // 选中目标文本范围（替换后选区已失效，需重新指定）再设置链接
   chain
     .setTextSelection({ from, to: from + text.value.length })
-    .setLink({ href: url.value })
+    .setLink({ href: url.value, variant: "card" })
     .run();
+
+  close();
 };
 
 onMounted(() => {
@@ -84,10 +90,7 @@ onMounted(() => {
       </div>
       <div class="h-6"></div>
       <div class="flex justify-end">
-        <button
-          class="h-9 bg-gray-100 px-4 rounded-l-md"
-          @click="setRichtextDialog('')"
-        >
+        <button class="h-9 bg-gray-100 px-4 rounded-l-md" @click="close">
           取消
         </button>
         <button

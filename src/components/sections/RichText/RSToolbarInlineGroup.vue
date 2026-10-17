@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import RSToolbarInlineGroupItem from "./RSToolbarInlineGroupItem.vue";
 import { Group } from "./type";
 
 interface Prop {
@@ -8,15 +9,5 @@ interface Prop {
 defineProps<Prop>();
 </script>
 <template>
-  <div
-    v-for="b in group.button"
-    class="w-7 h-7 rounded-md grid place-items-center"
-    :class="[
-      b.active() ? 'bg-purple-200 text-purple-700' : 'hover:bg-gray-200',
-      b.disabled() ? 'opacity-30' : '',
-    ]"
-    @click="b.action()"
-  >
-    <component :is="b.icon" class="w-5 h-5" />
-  </div>
+  <RSToolbarInlineGroupItem v-for="b in group.button" :b="b" />
 </template>
