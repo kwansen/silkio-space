@@ -49,7 +49,7 @@ const handleClick = () => {
   // 选中目标文本范围（替换后选区已失效，需重新指定）再设置链接
   chain
     .setTextSelection({ from, to: from + text.value.length })
-    .setLink({ href: url.value, variant: "card" })
+    .setLink({ href: url.value })
     .run();
 
   close();

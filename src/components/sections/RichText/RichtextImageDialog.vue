@@ -36,6 +36,7 @@ const isOnline = ref(true);
         </div>
       </div>
       <RTImageOnline :editor="editor" v-if="isOnline" />
-      <RTImageLocal :editor="editor" v-else /></div
-  ></FocusScope>
+      <RTImageLocal :editor="editor" v-else />
+    </div>
+  </FocusScope>
 </template>

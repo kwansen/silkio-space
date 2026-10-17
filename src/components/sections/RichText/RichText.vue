@@ -3,15 +3,12 @@ import ScrollArea from "@/components/shared/ScrollArea.vue";
 import Blockquote from "@tiptap/extension-blockquote";
 import Bold from "@tiptap/extension-bold";
 import Code from "@tiptap/extension-code";
-import CodeBlock from "@tiptap/extension-code-block";
 import Document from "@tiptap/extension-document";
 import HardBreak from "@tiptap/extension-hard-break";
 import Heading from "@tiptap/extension-heading";
 import Highlight from "@tiptap/extension-highlight";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Image from "@tiptap/extension-image";
 import Italic from "@tiptap/extension-italic";
-import Link from "@tiptap/extension-link";
 import {
   BulletList,
   ListItem,
@@ -52,7 +49,6 @@ import RichTextTitle from "./RichTextTitle.vue";
 import { CustomHr } from "./extensions/CustomHr.ts";
 import { CustomCodeBlock } from "./extensions/CustomCodeBlock.ts";
 import { CustomLink } from "./extensions/CustomLink.ts";
-import RichTextLinkFloatingMenu from "./RichTextLinkFloatingMenu.vue";
 
 const node = ref<Node>();
 const pos = ref<number>(0);
@@ -128,37 +124,6 @@ const editor = useEditor({
     TrailingNode,
   ],
 });
-
-const linkTarget = ref<HTMLElement | null>(null);
-const menuHovered = ref(false);
-const visible = ref(false);
-let hideTimer: ReturnType<typeof setTimeout> | undefined;
-
-function onMouseOver(e: MouseEvent) {
-  const a = (e.target as HTMLElement)?.closest("a");
-  if (!a) return;
-  clearTimeout(hideTimer);
-  linkTarget.value = a as HTMLElement;
-  visible.value = true;
-}
-
-function onMouseOut(e: MouseEvent) {
-  const a = (e.target as HTMLElement)?.closest("a");
-  if (!a) return;
-  hideTimer = setTimeout(() => {
-    if (menuHovered.value) return;
-    linkTarget.value = null;
-  }, 500);
-}
-
-function onMenuMouseEnter() {
-  menuHovered.value = true;
-}
-
-function onMenuMouseLeave() {
-  menuHovered.value = false;
-  linkTarget.value = null;
-}
 </script>
 
 <template>
@@ -166,19 +131,11 @@ function onMenuMouseLeave() {
     <RichTextToolbar :editor="editor" />
     <div class="w-full max-w-176 mx-auto relative">
       <RichTextTitle />
-      <div class="" @mouseover="onMouseOver" @mouseout="onMouseOut">
-        <EditorContent :editor="editor" class="" />
-      </div>
+      <EditorContent :editor="editor" class="" />
       <div class="h-screen"></div>
       <RichTextTableToolbar v-if="editor?.isActive('table')" :editor="editor" />
     </div>
   </ScrollArea>
-  <RichTextLinkFloatingMenu
-    v-if="linkTarget"
-    :target="linkTarget"
-    @mouseenter="onMenuMouseEnter"
-    @mouseleave="onMenuMouseLeave"
-  />
   <RichTextLinkDialog :editor="editor" v-if="dialog === 'link'" />
   <RichtextImageDialog :editor="editor" v-if="dialog === 'image'" />
   <RichTextMathInsertDialog :editor="editor" v-if="dialog === 'math'" />
