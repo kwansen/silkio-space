@@ -30,8 +30,8 @@ const insertAtFirst = () => {
   props.editor?.chain().focus().insertContentAt(0, { type: "paragraph" }).run();
 };
 
-const focusFirstLineEnd = () => {
-  props.editor?.chain().focus();
+const focusFirstLineStart = () => {
+  props.editor?.chain().focus().setTextSelection({ from: 1, to: 1 }).run();
 };
 </script>
 
@@ -43,6 +43,6 @@ const focusFirstLineEnd = () => {
     @on-change=""
     @on-input=""
     @on-enter="insertAtFirst"
-    @on-tab="focusFirstLineEnd"
+    @on-tab="focusFirstLineStart"
   />
 </template>

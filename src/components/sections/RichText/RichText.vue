@@ -26,7 +26,7 @@ import Text from "@tiptap/extension-text";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import { UndoRedo, Gapcursor, TrailingNode } from "@tiptap/extensions";
-import { EditorContent, useEditor } from "@tiptap/vue-3";
+import { Editor, EditorContent } from "@tiptap/vue-3";
 import "@/assets/richtext/index.css";
 import RichTextToolbar from "./RichTextToolbar.vue";
 import {
@@ -42,16 +42,18 @@ import RichTextMathInsertDialog from "./RichTextMathInsertDialog.vue";
 import RichTextMathUpdateDialog from "./RichTextMathUpdateDialog.vue";
 import { storeToRefs } from "pinia";
 import "katex/dist/katex.min.css";
-import { ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
 import type { Node } from "@tiptap/pm/model";
 import RichtextImageDialog from "./RichtextImageDialog.vue";
 import RichTextTitle from "./RichTextTitle.vue";
 import { CustomHr } from "./extensions/CustomHr.ts";
 import { CustomCodeBlock } from "./extensions/CustomCodeBlock.ts";
 import { CustomLink } from "./extensions/CustomLink.ts";
-import CodeBlock from "@tiptap/extension-code-block";
+// import CodeBlock from "@tiptap/extension-code-block";
 import { CustomShortcut } from "./extensions/customShortcut.ts";
 import FindAndReplace from "@tiptap/extension-find-and-replace";
+import { useDocSvc } from "@/services/document.ts";
+import { nextTick } from "vue";
 
 const node = ref<Node>();
 const pos = ref<number>(0);
@@ -72,63 +74,69 @@ const closeMathDialog = () => {
   block.value = false;
 };
 
-const editor = useEditor({
-  extensions: [
-    FindAndReplace,
-    CustomShortcut,
-    Document,
-    Paragraph,
-    Text,
-    Bold,
-    Italic,
-    Underline,
-    Strike,
-    Code,
-    Heading.configure({ levels: [1, 2, 3, 4, 5, 6] }),
-    Blockquote,
-    // CodeBlock,
-    CustomCodeBlock,
-    // HorizontalRule,
-    CustomHr,
-    HardBreak,
-    CustomLink.configure({
-      openOnClick: false,
-      markdownLinks: true,
-      defaultProtocol: "https",
-    }),
-    TextAlign.configure({ types: ["heading", "paragraph"] }),
-    Highlight.configure({ multicolor: true }),
-    Image,
-    Subscript,
-    Superscript,
-    BulletList,
-    OrderedList,
-    ListItem,
-    TaskList,
-    TaskItem,
-    ListKeymap.configure({
-      listTypes: [
-        { itemName: "listItem", wrapperNames: ["bulletList", "orderedList"] },
-        { itemName: "taskItem", wrapperNames: ["taskList"] },
-      ],
-    }),
-    UndoRedo,
-    Mathematics.configure({
-      inlineOptions: {
-        onClick: (node, pos) => openMathDialog(node, pos, false),
-      },
-      blockOptions: {
-        onClick: (node, pos) => openMathDialog(node, pos, true),
-      },
-    }),
-    Table.configure({ resizable: true }),
-    TableCell,
-    TableHeader,
-    TableRow,
-    Gapcursor,
-    TrailingNode,
-  ],
-});
+const createEditor = (v: any): Editor => {
+  return new Editor({
+    content: v,
+    extensions: [
+      FindAndReplace,
+      CustomShortcut,
+      Document,
+      Paragraph,
+      Text,
+      Bold,
+      Italic,
+      Underline,
+      Strike,
+      Code,
+      Heading.configure({ levels: [1, 2, 3, 4, 5, 6] }),
+      Blockquote,
+      // CodeBlock,
+      CustomCodeBlock.configure({
+        enableTabIndentation: true,
+        tabSize: 4, // 设置缩进空格数
+      }),
+      // HorizontalRule,
+      CustomHr,
+      HardBreak,
+      CustomLink.configure({
+        openOnClick: false,
+        markdownLinks: true,
+        defaultProtocol: "https",
+      }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
+      Highlight.configure({ multicolor: true }),
+      Image,
+      Subscript,
+      Superscript,
+      BulletList,
+      OrderedList,
+      ListItem,
+      TaskList,
+      TaskItem,
+      ListKeymap.configure({
+        listTypes: [
+          { itemName: "listItem", wrapperNames: ["bulletList", "orderedList"] },
+          { itemName: "taskItem", wrapperNames: ["taskList"] },
+        ],
+      }),
+      UndoRedo,
+      Mathematics.configure({
+        inlineOptions: {
+          onClick: (node, pos) => openMathDialog(node, pos, false),
+        },
+        blockOptions: {
+          onClick: (node, pos) => openMathDialog(node, pos, true),
+        },
+      }),
+      Table.configure({ resizable: true }),
+      TableCell,
+      TableHeader,
+      TableRow,
+      Gapcursor,
+      TrailingNode,
+    ],
+  });
+};
 
 // 对话框关闭后（FocusScope 已卸载）把焦点还给编辑器，
 // 否则焦点落在 body 上，addKeyboardShortcuts 的快捷键不会触发
@@ -141,18 +149,61 @@ watch(
   },
   { flush: "post" },
 );
+
+interface Props {
+  id: string;
+}
+
+const editor = shallowRef<Editor>();
+
+const props = defineProps<Props>();
+const svc = useDocSvc();
+
+const title = ref("");
+const content = ref("");
+
+const emit = defineEmits<{
+  onReady: []; // 事件名是 ready，参数是一个空元组
+}>();
+
+onMounted(async () => {
+  const doc = await svc.getById(props.id);
+  if (doc) {
+    title.value = doc.title || "";
+    content.value = doc.content || "";
+    const json = JSON.parse(content.value);
+    editor.value = createEditor(json);
+  }
+  // 等待dom加载完毕,再通知父组件打开窗口，否则打开新文档时，dom未加载完毕，窗口打开有dom的闪烁
+  await nextTick();
+  emit("onReady");
+});
+
+onBeforeUnmount(() => {
+  editor.value?.destroy();
+});
 </script>
 
 <template>
-  <ScrollArea>
+  <div class="w-full h-full flex flex-col">
     <RichTextToolbar :editor="editor" />
-    <div class="w-full max-w-176 mx-auto relative">
-      <RichTextTitle :editor="editor" />
-      <EditorContent :editor="editor" class="" />
-      <div class="h-screen"></div>
-      <RichTextTableToolbar v-if="editor?.isActive('table')" :editor="editor" />
+    <div class="flex-1 min-h-0">
+      <ScrollArea class="relative">
+        <div class="w-full max-w-176 mx-auto relative">
+          <RichTextTitle :editor="editor" v-model="title" />
+          <EditorContent :editor="editor" class="" />
+          <div
+            class="h-screen cursor-text"
+            @click="editor?.chain().focus('end').run()"
+          ></div>
+          <RichTextTableToolbar
+            v-if="editor?.isActive('table')"
+            :editor="editor"
+          />
+        </div>
+      </ScrollArea>
     </div>
-  </ScrollArea>
+  </div>
   <RichTextLinkDialog :editor="editor" v-if="dialog === 'link'" />
   <RichtextImageDialog :editor="editor" v-if="dialog === 'image'" />
   <RichTextMathInsertDialog :editor="editor" v-if="dialog === 'math'" />
