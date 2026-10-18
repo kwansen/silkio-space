@@ -4,6 +4,9 @@ import { computed, ref } from "vue";
 
 export const useDocSearchStore = defineStore("docSearch", () => {
   const query = ref<string>();
+  const setQuery = (v: string) => {
+    query.value = v;
+  };
   const searchedDocs = ref<ScoredDoc[]>([]);
   const setDocs = (v: ScoredDoc[]) => {
     searchedDocs.value = v;
@@ -20,6 +23,7 @@ export const useDocSearchStore = defineStore("docSearch", () => {
   });
   return {
     query,
+    setQuery,
     searchedDocs,
     setDocs,
     totalPages,

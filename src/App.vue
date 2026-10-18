@@ -20,8 +20,8 @@ onMounted(async () => {
       event.preventDefault();
       await getCurrentWindow().hide();
     });
-  } catch {
-    console.error;
+  } catch (e) {
+    console.error(e);
   }
 });
 
@@ -32,9 +32,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="w-screen h-screen flex flex-col overflow-hidden bg-gray-200">
+  <div
+    class="w-screen h-screen flex flex-col overflow-hidden bg-gray-200 scrollbar-thumb-red-400"
+  >
     <WindowControl v-if="label === 'main' || label === 'editor'" />
-    <div class="flex-1 overflow-hidden">
+    <div class="flex-1 min-h-0 scrollbar-thumb-red-400">
       <MainView v-if="label === 'main'" />
       <EditorView v-else-if="label === 'editor'" />
       <!-- <SearchView v-else-if="label === 'search'" />

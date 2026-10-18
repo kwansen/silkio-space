@@ -1,5 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
-import type { Doc, SortField } from "@/types/doc";
+import type { Doc, DocType, SortField } from "@/types/doc";
 
 // 供其他模块从 db 层转引类型
 export type { Doc, SortField };
@@ -10,7 +10,7 @@ export interface CreateDocParams {
   title?: string;
   content?: string;
   plain_text?: string;
-  doc_type?: string;
+  doc_type?: DocType;
 }
 
 // 文档更新参数
@@ -18,7 +18,8 @@ export interface UpdateDocParams {
   title?: string;
   content?: string;
   plain_text?: string;
-  doc_type?: string;
+  word_count?: number;
+  doc_type?: DocType;
   viewed_at?: number;
 }
 
@@ -119,6 +120,10 @@ export const useDocDb = () => {
     if (params.plain_text !== undefined) {
       fields.push(`plain_text = $${values.length + 1}`);
       values.push(params.plain_text);
+    }
+    if (params.word_count !== undefined) {
+      fields.push(`word_count = $${values.length + 1}`);
+      values.push(params.word_count);
     }
     if (params.doc_type !== undefined) {
       fields.push(`doc_type = $${values.length + 1}`);

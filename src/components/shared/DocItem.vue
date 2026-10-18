@@ -116,7 +116,7 @@ const list: ListItem[] = [
         ref="target"
         class="w-7 h-7 grid place-items-center rounded-md relative"
         :class="openedKey === itemKey ? 'bg-gray-200' : 'hover:bg-gray-200'"
-        @click="handleClickBtn"
+        @click.stop="handleClickBtn"
       >
         <More />
       </div>

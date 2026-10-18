@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDocAction } from "@/actions/doc";
 import { useDocSortAction } from "@/actions/docSort";
 import Add from "@/components/icons/Add.vue";
 import Doc from "@/components/icons/Doc.vue";
@@ -51,11 +52,16 @@ interface PopoverListItem {
   action: () => void;
 }
 
+const { createRichtext } = useDocAction();
+
 const popoverList: PopoverListItem[] = [
   {
     icon: DocMian,
     text: "富文本",
-    action: () => console.log(""),
+    action: () => {
+      createRichtext();
+      show.value = false;
+    },
   },
   {
     icon: MindmapMian,
@@ -105,6 +111,7 @@ const handleClickBtn = () => {
     <div
       v-for="i in popoverList"
       class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md hover:bg-gray-100"
+      @click="i.action()"
     >
       <component :is="i.icon" class="w-5 h-5" />
       <span>{{ i.text }}</span>

@@ -24,34 +24,32 @@ export const useDocSortAction = () => {
   const svc = useDocSvc();
 
   const getSortedDocs = async (option: DocSortOption, page: number) => {
-    const sort = toBackendSort(option);
-    const result = await svc.getSortedInPage(sort, page);
+    const sortField = toBackendSort(option);
+    const result = await svc.getSortedInPage(sortField, page);
     setDocs(result.list);
     setTotal(result.total);
     setPage(page);
   };
 
-  const goToPage = (page: number) => {
+  // 元函数：按当前排序重新拉取列表，默认当前页（供增删改后刷新）
+  const refresh = (page: number = currentPage.value) =>
     getSortedDocs(sort.value, page);
-  };
+
+  const goToPage = (page: number) => getSortedDocs(sort.value, page);
 
   const goPrev = async () => {
-    if (currentPage.value <= 1) return;
-    else {
-      const prev = currentPage.value - 1;
-      getSortedDocs(sort.value, prev);
-    }
+    if (currentPage.value > 1)
+      await getSortedDocs(sort.value, currentPage.value - 1);
   };
 
   const goNext = async () => {
-    if (currentPage.value >= totalPages.value) return;
-    else {
-      const next = currentPage.value + 1;
-      getSortedDocs(sort.value, next);
-    }
+    if (currentPage.value < totalPages.value)
+      await getSortedDocs(sort.value, currentPage.value + 1);
   };
+
   return {
     getSortedDocs,
+    refresh,
     goToPage,
     goPrev,
     goNext,

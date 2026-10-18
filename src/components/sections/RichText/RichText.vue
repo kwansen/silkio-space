@@ -135,6 +135,12 @@ const createEditor = (v: any): Editor => {
       Gapcursor,
       TrailingNode,
     ],
+    onUpdate: async ({ editor }) => {
+      content.value = JSON.stringify(editor.getJSON());
+      const text = editor.getText();
+      const length = text.length;
+      await delayedSaveContent(content.value, text, length);
+    },
   });
 };
 
@@ -171,17 +177,46 @@ onMounted(async () => {
   if (doc) {
     title.value = doc.title || "";
     content.value = doc.content || "";
-    const json = JSON.parse(content.value);
-    editor.value = createEditor(json);
+    let v;
+    try {
+      v = JSON.parse(content.value);
+    } catch {
+      v = content.value;
+    }
+    editor.value = createEditor(v);
   }
   // 等待dom加载完毕,再通知父组件打开窗口，否则打开新文档时，dom未加载完毕，窗口打开有dom的闪烁
   await nextTick();
   emit("onReady");
 });
 
+import { useDebounceFn } from "@vueuse/core";
+
+const delayedSaveTitle = useDebounceFn((v: string) => {
+  svc.update(props.id, { title: v });
+}, 1000);
+
+const delayedSaveContent = useDebounceFn(
+  (content: string, plain_text: string, word_count: number) => {
+    svc.update(props.id, {
+      content: content,
+      plain_text: plain_text,
+      word_count: word_count,
+    });
+  },
+  1000,
+);
+
 onBeforeUnmount(() => {
   editor.value?.destroy();
 });
+
+watch(
+  () => title.value,
+  async (v) => {
+    await delayedSaveTitle(v);
+  },
+);
 </script>
 
 <template>
