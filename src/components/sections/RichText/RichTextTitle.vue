@@ -8,7 +8,7 @@ interface Props {
   editor: Editor | undefined;
 }
 
-// const props = defineProps<Props>();
+const props = defineProps<Props>();
 
 // interface Emits {
 //   onChange: [];
@@ -25,6 +25,14 @@ const titleAreaRef =
 onMounted(() => {
   titleAreaRef.value?.focus();
 });
+
+const insertAtFirst = () => {
+  props.editor?.chain().focus().insertContentAt(0, { type: "paragraph" }).run();
+};
+
+const focusFirstLineEnd = () => {
+  props.editor?.chain().focus();
+};
 </script>
 
 <template>
@@ -34,7 +42,7 @@ onMounted(() => {
     placeholder="请输入标题"
     @on-change=""
     @on-input=""
-    @on-enter=""
-    @on-tab=""
+    @on-enter="insertAtFirst"
+    @on-tab="focusFirstLineEnd"
   />
 </template>

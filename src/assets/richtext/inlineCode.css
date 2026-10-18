@@ -1,7 +1,11 @@
 .tiptap > p > code {
   font-size: 0.85em;
   font-family: monospace;
-  background-color: var(--color-gray-200);
+  background-color: var(--color-gray-100);
   border-radius: 8px;
-  padding: 4px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  /* 加上基线反倒偏下了，因此不应调整基线 */
+  /* vertical-align: middle; */
 }

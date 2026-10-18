@@ -147,7 +147,7 @@ watch(
   <ScrollArea>
     <RichTextToolbar :editor="editor" />
     <div class="w-full max-w-176 mx-auto relative">
-      <RichTextTitle />
+      <RichTextTitle :editor="editor" />
       <EditorContent :editor="editor" class="" />
       <div class="h-screen"></div>
       <RichTextTableToolbar v-if="editor?.isActive('table')" :editor="editor" />
