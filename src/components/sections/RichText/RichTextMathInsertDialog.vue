@@ -28,6 +28,18 @@ const handleClick = (block: boolean) => {
   }
   close();
 };
+
+import { onKeyStroke } from "@vueuse/core";
+
+// ESC 关闭
+onKeyStroke("Escape", () => {
+  close();
+});
+
+// 回车
+onKeyStroke("Enter", () => {
+  handleClick(true);
+});
 </script>
 
 <template>

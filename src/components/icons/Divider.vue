@@ -1,17 +1,13 @@
 <template>
   <svg
-    t="1792234693004"
-    class="icon"
     viewBox="0 0 1024 1024"
-    version="1.1"
     xmlns="http://www.w3.org/2000/svg"
-    p-id="6501"
-    width="200"
-    height="200"
+    width="24"
+    height="24"
   >
     <path
       d="M112 448h800a48 48 0 1 1 0 96H112a48 48 0 0 1 0-96z m112 320h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z m0-576h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64z m256 576h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z m0-576h64a32 32 0 0 1 0 64h-64a32 32 0 0 1 0-64z m256 576h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z m0-576h64a32 32 0 1 1 0 64h-64a32 32 0 1 1 0-64z"
-      fill="#4D4D4D"
+      fill="currentColor"
       p-id="6502"
     ></path>
   </svg>

@@ -63,6 +63,18 @@ onMounted(() => {
   if (!text.value) return;
   url.value = props.editor.getAttributes("link").href ?? "";
 });
+
+import { onKeyStroke } from "@vueuse/core";
+
+// ESC 关闭
+onKeyStroke("Escape", () => {
+  close();
+});
+
+// 回车
+onKeyStroke("Enter", () => {
+  handleClick();
+});
 </script>
 <template>
   <FocusScope

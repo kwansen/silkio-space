@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, useTemplateRef } from "vue";
-import { Group } from "./type";
+import { type Component, computed, ref, useTemplateRef } from "vue";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import ArrowDown from "@/components/icons/ArrowDown.vue";
+import { Btn } from "./type.ts";
 
 interface Prop {
-  group: Group;
+  icon: Component;
+  buttons: Btn[];
 }
 
 defineProps<Prop>();
@@ -32,11 +33,11 @@ onClickOutside(
 <template>
   <div
     ref="target"
-    class="px-1 h-6.5 rounded-md flex justify-center items-center mx-0.5"
+    class="px-1 h-7 mx-1 rounded-md flex justify-center items-center"
     :class="show ? 'bg-gray-200' : 'hover:bg-gray-200'"
     @click="show = !show"
   >
-    <component :is="group.groupIcon" class="w-5 h-5" />
+    <component :is="icon" class="w-5 h-5" />
     <ArrowDown />
   </div>
   <div
@@ -46,7 +47,7 @@ onClickOutside(
     :style="floatingStyles"
   >
     <div
-      v-for="b in group.button"
+      v-for="b in buttons"
       class="px-4 py-2 flex items-center"
       :class="[
         b.active() ? 'bg-purple-200 text-purple-700' : '',

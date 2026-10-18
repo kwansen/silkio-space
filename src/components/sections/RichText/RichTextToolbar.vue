@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Add from "@/components/icons/Add.vue";
 import AlignCenter from "@/components/icons/AlignCenter.vue";
 import AlignJustify from "@/components/icons/AlignJustify.vue";
 import AlignLeft from "@/components/icons/AlignLeft.vue";
@@ -31,12 +30,14 @@ import Underline from "@/components/icons/Underline.vue";
 import Undo from "@/components/icons/Undo.vue";
 import UnorderList from "@/components/icons/UnorderList.vue";
 import RSToolbarDropdown from "./RSToolbarDropdown.vue";
-import { Btn, Group } from "./type.ts";
-import RSToolbarInlineGroup from "./RSToolbarInlineGroup.vue";
+import RTSearchPopover from "./RTSearchPopover.vue";
 import { Editor } from "@tiptap/vue-3";
 import { useUiStore } from "@/stores/uiStore";
 import Eraser from "@/components/icons/Eraser.vue";
 import Divider from "@/components/icons/Divider.vue";
+import Search from "@/components/icons/Search.vue";
+import { Btn, Group } from "./type.ts";
+import RSToolbarBtn from "./RSToolbarBtn.vue";
 const uiStore = useUiStore();
 const { setRichtextDialog } = uiStore;
 
@@ -329,68 +330,97 @@ const clear: Btn = {
 };
 //#endregion
 
+//#region 搜索与替换
+const search: Btn = {
+  name: "搜索与替换",
+  icon: Search,
+  shortcut: "Ctrl + H",
+  action: () => {},
+  disabled: () => false,
+  active: () => false,
+};
+//#endregion
+
 const groupList: Group[] = [
-  { name: "历史", button: [undo, redo], type: "inline", groupIcon: H1 },
   {
-    name: "文字",
-    button: [
-      bold,
-      italic,
-      underline,
-      strike,
-      superscript,
-      subscript,
-      inlineCode,
-      highlight,
-      clear,
+    items: [
+      { kind: "button", btn: undo },
+      { kind: "button", btn: redo },
     ],
-    type: "inline",
-    groupIcon: Bold,
+    divider: true,
   },
   {
-    name: "段落",
-    button: [paragraph, h1, h2, h3, h4, h5, h6],
-    type: "grouped",
-    groupIcon: H1,
+    items: [
+      { kind: "button", btn: bold },
+      { kind: "button", btn: italic },
+      { kind: "button", btn: underline },
+      { kind: "button", btn: strike },
+      { kind: "button", btn: superscript },
+      { kind: "button", btn: subscript },
+      { kind: "button", btn: inlineCode },
+      { kind: "button", btn: highlight },
+      { kind: "button", btn: clear },
+    ],
+    divider: true,
   },
   {
-    name: "列表",
-    button: [orderedList, bulletList, taskList],
-    type: "grouped",
-    groupIcon: UnorderList,
+    items: [
+      {
+        kind: "choice",
+        buttons: [paragraph, h1, h2, h3, h4, h5, h6],
+        icon: H1,
+      },
+      {
+        kind: "choice",
+        buttons: [orderedList, bulletList, taskList],
+        icon: UnorderList,
+      },
+      {
+        kind: "choice",
+        buttons: [alignLeft, alignCenter, alignRight, alignJustify],
+        icon: AlignJustify,
+      },
+    ],
+    divider: true,
   },
   {
-    name: "对齐",
-    button: [alignLeft, alignCenter, alignRight, alignJustify],
-    type: "grouped",
-    groupIcon: AlignJustify,
+    items: [
+      { kind: "button", btn: link },
+      { kind: "button", btn: math },
+      { kind: "button", btn: blockquote },
+      { kind: "button", btn: codeBlock },
+      { kind: "button", btn: table },
+      { kind: "button", btn: image },
+      { kind: "button", btn: divider },
+    ],
+    divider: true,
   },
   {
-    name: "插入",
-    button: [link, math, blockquote, codeBlock, table, image, divider],
-    type: "inline",
-    groupIcon: Add,
+    items: [{ kind: "custom", component: RTSearchPopover }],
+    divider: false,
   },
 ];
 </script>
 
 <template>
-  <div
-    id="toolbar"
-    class="sticky top-0 z-10 h-11 px-2 bg-gray-100 flex items-center"
-  >
-    <div v-for="group in groupList" class="flex h-full items-center gap-2">
-      <RSToolbarInlineGroup v-if="group.type === 'inline'" :group="group" />
-      <!-- 下拉菜单 -->
-      <RSToolbarDropdown v-else-if="group.type === 'grouped'" :group="group" />
-
-      <!-- 分隔符，对齐后面永远有，插入后面永远没有 -->
+  <div class="sticky top-0 z-10 h-11 px-2 bg-gray-100 flex items-center">
+    <div v-for="group in groupList" class="flex h-full items-center">
+      <div v-for="item in group.items">
+        <RSToolbarBtn v-if="item.kind === 'button'" :b="item.btn" />
+        <RSToolbarDropdown
+          v-if="item.kind === 'choice'"
+          :icon="item.icon"
+          :buttons="item.buttons"
+        />
+        <component
+          v-if="item.kind === 'custom'"
+          :is="item.component"
+          :editor="editor"
+        />
+      </div>
       <div
-        v-if="
-          (group.type === 'inline' && group.name !== '插入') ||
-          group.name === '对齐'
-        "
-        class="h-1/3 border-x text-neutral-300 mx-2"
+        v-if="group.divider"
+        class="h-1/3 border-x text-neutral-300 mx-1"
       ></div>
     </div>
   </div>

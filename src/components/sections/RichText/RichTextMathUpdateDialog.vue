@@ -30,6 +30,18 @@ const handleUpdate = () => {
 onMounted(() => {
   latex.value = props.node.attrs.latex;
 });
+
+import { onKeyStroke } from "@vueuse/core";
+
+// ESC 关闭
+onKeyStroke("Escape", () => {
+  close();
+});
+
+// 回车
+onKeyStroke("Enter", () => {
+  handleUpdate();
+});
 </script>
 
 <template>

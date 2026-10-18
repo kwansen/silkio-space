@@ -1,7 +1,5 @@
 import { type Component } from "vue";
 
-type GroupType = "inline" | "grouped";
-
 export interface Btn {
   name: string;
   icon: Component;
@@ -12,8 +10,12 @@ export interface Btn {
 }
 
 export interface Group {
-  name: string;
-  button: Btn[];
-  type: GroupType;
-  groupIcon: Component;
+  items: GroupItem[];
+  divider?: boolean;
 }
+
+// 组里装什么（内容语义）
+type GroupItem =
+  | { kind: "button"; btn: Btn }
+  | { kind: "choice"; buttons: Btn[]; icon: Component } // 互斥选项，段落/列表/对齐
+  | { kind: "custom"; component: Component }; // 搜索替换
