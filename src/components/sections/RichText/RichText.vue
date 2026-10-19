@@ -58,6 +58,8 @@ import { nextTick } from "vue";
 const node = ref<Node>();
 const pos = ref<number>(0);
 const block = ref<boolean>(false);
+const oldTitle = ref("");
+const oldContent = ref("");
 
 const uiStore = useUiStore();
 const { richtextDialog: dialog } = storeToRefs(uiStore);
@@ -137,9 +139,11 @@ const createEditor = (v: any): Editor => {
     ],
     onUpdate: async ({ editor }) => {
       content.value = JSON.stringify(editor.getJSON());
+      if (content.value === oldContent.value) return;
       const text = editor.getText();
       const length = text.length;
       await delayedSaveContent(content.value, text, length);
+      oldContent.value = content.value;
     },
   });
 };
@@ -175,13 +179,17 @@ const emit = defineEmits<{
 onMounted(async () => {
   const doc = await svc.getById(props.id);
   if (doc) {
-    title.value = doc.title || "";
-    content.value = doc.content || "";
+    const t = doc.title || "";
+    title.value = t;
+    oldTitle.value = t;
+    const c = doc.content || "";
+    content.value = c;
+    oldContent.value = c;
     let v;
     try {
-      v = JSON.parse(content.value);
+      v = JSON.parse(c);
     } catch {
-      v = content.value;
+      v = c;
     }
     editor.value = createEditor(v);
   }
@@ -195,6 +203,16 @@ import { useDebounceFn } from "@vueuse/core";
 const delayedSaveTitle = useDebounceFn((v: string) => {
   svc.update(props.id, { title: v });
 }, 1000);
+
+watch(
+  () => title.value,
+  (v) => {
+    // 防止重复保存，尤其是最开始挂载引发保存
+    if (v === oldTitle.value) return;
+    delayedSaveTitle(v);
+    oldTitle.value = v;
+  },
+);
 
 const delayedSaveContent = useDebounceFn(
   (content: string, plain_text: string, word_count: number) => {
@@ -210,13 +228,6 @@ const delayedSaveContent = useDebounceFn(
 onBeforeUnmount(() => {
   editor.value?.destroy();
 });
-
-watch(
-  () => title.value,
-  async (v) => {
-    await delayedSaveTitle(v);
-  },
-);
 </script>
 
 <template>

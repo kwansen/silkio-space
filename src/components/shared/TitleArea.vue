@@ -34,7 +34,7 @@ interface Emits {
 
 const emit = defineEmits<Emits>();
 
-const v = defineModel<string>();
+const v = defineModel<string>({ default: "" });
 
 const titleRef = useTemplateRef("titleRef");
 
@@ -83,5 +83,6 @@ onUnmounted(() => {
     @input="handleOnInput"
     @change="emit('onChange')"
     @keydown.enter.prevent="emit('onEnter')"
-    @keydown.tab.prevent="emit('onTab')"></textarea>
+    @keydown.tab.prevent="emit('onTab')"
+  ></textarea>
 </template>

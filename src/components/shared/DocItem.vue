@@ -81,7 +81,7 @@ const list: ListItem[] = [
 </script>
 <template>
   <div
-    class="h-16 grid grid-cols-[2.75rem_1fr_auto] border-b border-gray-100 select-none relative group"
+    class="h-14 grid grid-cols-[2.75rem_1fr_auto] border-b border-gray-100 select-none relative group"
     :class="hoverKey === itemKey || openedKey === itemKey ? 'bg-gray-100' : ''"
     @mouseenter="hover(itemKey)"
     @mouseleave="unHover"
@@ -95,9 +95,11 @@ const list: ListItem[] = [
     </div>
 
     <!-- 标题与内容 -->
-    <div class="w-full flex flex-col justify-center">
+    <div class="w-full flex flex-col justify-center min-w-0">
       <div class="truncate">{{ title }}</div>
-      <div class="truncate text-xs text-neutral-400">{{ content }}</div>
+      <div class="truncate text-xs text-neutral-400">
+        {{ content }}
+      </div>
     </div>
 
     <!-- 数据 -->

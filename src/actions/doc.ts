@@ -10,13 +10,16 @@ export const useDocAction = () => {
 
   const openDoc = async (id: string) => {
     await emitTo("editor", "open", { type: "doc", id });
+    await svc.update(id, { viewed_at: Date.now() });
+    await Promise.all([refreshSorted(), refreshSearched()]);
   };
 
   // 元函数：创建富文本后刷新列表（排序保持当前页，搜索按最后关键词重查）
   const createRichtext = async () => {
     try {
-      await svc.create({ doc_type: "richText" });
+      const id = await svc.create({ doc_type: "richText" });
       await Promise.all([refreshSorted(), refreshSearched()]);
+      await emitTo("editor", "open", { type: "doc", id });
     } catch (e) {
       console.error(e);
     }

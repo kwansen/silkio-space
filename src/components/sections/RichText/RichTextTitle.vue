@@ -2,7 +2,7 @@
 import TitleArea from "@/components/shared/TitleArea.vue";
 import { Editor } from "@tiptap/vue-3";
 import { onMounted, useTemplateRef } from "vue";
-const title = defineModel<string>();
+const title = defineModel<string>({ default: "" });
 
 interface Props {
   editor: Editor | undefined;
@@ -33,6 +33,10 @@ const insertAtFirst = () => {
 const focusFirstLineStart = () => {
   props.editor?.chain().focus().setTextSelection({ from: 1, to: 1 }).run();
 };
+
+const input = () => {
+  console.log("v:" + title.value);
+};
 </script>
 
 <template>
@@ -40,8 +44,7 @@ const focusFirstLineStart = () => {
     ref="titleAreaRef"
     v-model="title"
     placeholder="请输入标题"
-    @on-change=""
-    @on-input=""
+    @on-input="input"
     @on-enter="insertAtFirst"
     @on-tab="focusFirstLineStart"
   />
