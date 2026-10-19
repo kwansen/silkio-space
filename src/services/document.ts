@@ -9,7 +9,6 @@ import {
 import {
   useSearchApi,
   type DocIndexInput,
-  type SearchResult,
 } from "@/infrastructure/api/search.ts";
 import { Doc, ScoredDoc } from "@/types/doc";
 

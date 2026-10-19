@@ -119,21 +119,21 @@ const list: ListItem[] = [
         <More />
       </div>
     </div>
-  </div>
-  <!-- popover -->
-  <div
-    v-if="openedKey === itemKey"
-    ref="floating"
-    class="bg-white z-10 select-none text-xs rounded-lg overflow-hidden p-1 shadow-2xl"
-    :style="floatingStyles"
-  >
+    <!-- popover -->
     <div
-      v-for="i in list"
-      class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md"
-      :class="i.class"
+      v-if="openedKey === itemKey"
+      ref="floating"
+      class="bg-white z-10 select-none text-xs rounded-lg overflow-hidden p-1 shadow-2xl"
+      :style="floatingStyles"
     >
-      <component :is="i.icon" class="w-5 h-5" />
-      <span>{{ i.text }}</span>
+      <div
+        v-for="i in list"
+        class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md"
+        :class="i.class"
+      >
+        <component :is="i.icon" class="w-5 h-5" />
+        <span>{{ i.text }}</span>
+      </div>
     </div>
   </div>
 </template>

@@ -4,13 +4,11 @@ import Check from "@/components/icons/Check.vue";
 import Close from "@/components/icons/Close.vue";
 import { useArchiveSortStore } from "@/stores/archiveSortStore";
 import { onClickOutside } from "@vueuse/core";
-import { storeToRefs } from "pinia";
-import { nextTick, ref } from "vue";
-import { onMounted, useTemplateRef, watch } from "vue";
+import { ref } from "vue";
+import { onMounted, useTemplateRef } from "vue";
 
 const store = useArchiveSortStore();
 const { setShow } = store;
-const { show } = storeToRefs(store);
 
 const box = useTemplateRef("box");
 const input = useTemplateRef("input");

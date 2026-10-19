@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { autoUpdate, flip, offset, shift, useFloating } from "@floating-ui/vue";
+import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { Btn } from "./type";
 import { ref, useTemplateRef } from "vue";
 

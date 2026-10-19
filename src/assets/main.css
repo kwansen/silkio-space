@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./scrollbar.css";
+@import "./ghost.css";
 
 * {
   font-family:

@@ -7,7 +7,6 @@ export const useArchiveSortAction = () => {
   const svc = useFdSvc();
   const store = useArchiveSortStore();
   const { setArchives } = store;
-  const { archives } = storeToRefs(store);
   const uiStore = useUiStore();
   const { currentArchiveSort: sort } = storeToRefs(uiStore);
   const getSortedArchives = async (v: ArchiveSortOption) => {

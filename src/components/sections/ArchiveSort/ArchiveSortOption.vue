@@ -4,7 +4,6 @@ import Add from "@/components/icons/Add.vue";
 import { useArchiveSortStore } from "@/stores/archiveSortStore";
 import { useUiStore } from "@/stores/uiStore";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
 
 const store = useUiStore();
 const { currentArchiveSort: sort } = storeToRefs(store);
