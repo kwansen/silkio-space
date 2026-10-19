@@ -137,12 +137,12 @@ const createEditor = (v: any): Editor => {
       Gapcursor,
       TrailingNode,
     ],
-    onUpdate: async ({ editor }) => {
+    onUpdate: ({ editor }) => {
       content.value = JSON.stringify(editor.getJSON());
       if (content.value === oldContent.value) return;
       const text = editor.getText();
       const length = text.length;
-      await delayedSaveContent(content.value, text, length);
+      delayedSaveContent(content.value, text, length);
       oldContent.value = content.value;
     },
   });
@@ -199,9 +199,12 @@ onMounted(async () => {
 });
 
 import { useDebounceFn } from "@vueuse/core";
+import { emitTo } from "@tauri-apps/api/event";
 
-const delayedSaveTitle = useDebounceFn((v: string) => {
-  svc.update(props.id, { title: v });
+const delayedSaveTitle = useDebounceFn(async (v: string) => {
+  await svc.update(props.id, { title: v });
+  // 等保存落库完成后再通知主窗口刷新，否则主窗口会查到旧数据
+  emitTo("main", "refresh");
 }, 1000);
 
 watch(
@@ -215,12 +218,14 @@ watch(
 );
 
 const delayedSaveContent = useDebounceFn(
-  (content: string, plain_text: string, word_count: number) => {
-    svc.update(props.id, {
+  async (content: string, plain_text: string, word_count: number) => {
+    await svc.update(props.id, {
       content: content,
       plain_text: plain_text,
       word_count: word_count,
     });
+    // 等保存落库完成后再通知主窗口刷新，否则主窗口会查到旧数据
+    emitTo("main", "refresh");
   },
   1000,
 );

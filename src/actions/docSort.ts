@@ -26,6 +26,7 @@ export const useDocSortAction = () => {
   const getSortedDocs = async (option: DocSortOption, page: number) => {
     const sortField = toBackendSort(option);
     const result = await svc.getSortedInPage(sortField, page);
+    console.log(result.list);
     setDocs(result.list);
     setTotal(result.total);
     setPage(page);

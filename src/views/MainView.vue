@@ -1,14 +1,41 @@
 <script setup lang="ts">
+import { useArchiveSortAction } from "@/actions/archiveSort";
+import { useDocSortAction } from "@/actions/docSort";
 import ArchiveSort from "@/components/sections/ArchiveSort/ArchiveSort.vue";
 import DocSearch from "@/components/sections/DocSearch/DocSearch.vue";
 import DocSort from "@/components/sections/DocSort/DocSort.vue";
 import DocTabs from "@/components/sections/DocTabs/DocTabs.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
 import { useUiStore } from "@/stores/uiStore";
+import { listen } from "@tauri-apps/api/event";
 import { storeToRefs } from "pinia";
+import { onMounted, onUnmounted } from "vue";
 
 const store = useUiStore();
 const { currentDocTab: tab } = storeToRefs(store);
+const docAction = useDocSortAction();
+const archiveAction = useArchiveSortAction();
+
+let stopOnUpdate: (() => void) | null = null;
+
+onMounted(async () => {
+  // 挂载时获取文档
+  await docAction.refresh();
+  // 挂载时获取归档
+  await archiveAction.refresh();
+
+  stopOnUpdate = await listen("refresh", async () => {
+    console.log("更新了");
+    // 挂载时获取文档
+    await docAction.refresh();
+    // 挂载时获取归档
+    await archiveAction.refresh();
+  });
+});
+
+onUnmounted(() => {
+  stopOnUpdate?.();
+});
 </script>
 
 <template>

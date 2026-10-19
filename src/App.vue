@@ -3,21 +3,14 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import WindowControl from "./components/sections/WindowControl/WindowControl.vue";
 import { onMounted, onUnmounted } from "vue";
 import MainView from "./views/MainView.vue";
-import { useDocSortAction } from "./actions/docSort.ts";
 import EditorView from "./views/EditorView.vue";
-import { useArchiveSortAction } from "./actions/archiveSort.ts";
 
 const label = getCurrentWindow().label;
-const { getSortedDocs } = useDocSortAction();
-const { refresh } = useArchiveSortAction();
+
 let stopOnClose: (() => void) | null = null;
 
 onMounted(async () => {
   try {
-    // 挂载时获取文档
-    await getSortedDocs("viewedAt", 1);
-    await refresh();
-    // 挂载时获取归档
     // 挂载时阻止窗口关闭，改为隐藏
     stopOnClose = await getCurrentWindow().onCloseRequested(async (event) => {
       event.preventDefault();
