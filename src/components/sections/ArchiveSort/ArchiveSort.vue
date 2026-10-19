@@ -2,15 +2,18 @@
 import ArchiveSortList from "./ArchiveSortList.vue";
 import ArchiveSortOption from "./ArchiveSortOption.vue";
 import ArchiveSortEmpty from "./ArchiveSortEmpty.vue";
-import { useArchiveSortStore } from "@/stores/archiveSort";
-
+import ArchiveInput from "./ArchiveInput.vue";
+import { useArchiveSortStore } from "@/stores/archiveSortStore.ts";
+import { storeToRefs } from "pinia";
 const store = useArchiveSortStore();
+const { show, archives } = storeToRefs(store);
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl p-4">
+  <div>
     <ArchiveSortOption />
-    <ArchiveSortEmpty v-if="store.folders.length === 0" />
+    <ArchiveInput v-if="show" />
+    <ArchiveSortEmpty v-if="!show && archives.length === 0" />
     <ArchiveSortList />
   </div>
 </template>

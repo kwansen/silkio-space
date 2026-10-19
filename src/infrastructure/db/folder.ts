@@ -15,17 +15,6 @@ export interface CreateFolderParams {
 // 可排序字段：手动排序（自由）、名称、归档自身浏览时间（最近打开）
 export type FolderSortField = "sort_order" | "name" | "viewed_at";
 
-// 归档对象（viewed_at 为归档自身的最近打开时间，null 表示从未打开）
-export interface Folder {
-  id: string;
-  name: string;
-  parent_id: string | null;
-  sort_order: number;
-  viewed_at: number | null;
-  created_at: number;
-  updated_at: number;
-}
-
 // 归档子树内文档（附带所属容器 id 与容器内加入顺序，供导航树拍平分组）
 export type DocInContainer = Doc & {
   container_id: string;
@@ -84,7 +73,8 @@ export const useFolderDb = () => {
     const now = Date.now();
     let sortOrder = params.sort_order ?? 0;
     if (params.sort_order === undefined) {
-      sortOrder = (await getMaxChildSortOrder(db, params.parent_id ?? null)) + 1;
+      sortOrder =
+        (await getMaxChildSortOrder(db, params.parent_id ?? null)) + 1;
     }
     await db.execute(
       `INSERT INTO folders (id, name, parent_id, sort_order, viewed_at, created_at, updated_at)
@@ -103,10 +93,7 @@ export const useFolderDb = () => {
   };
 
   // 元函数：收集以 id 为根的子树全部归档 id（含自身）
-  const getSubtreeIds = async (
-    db: Database,
-    id: string,
-  ): Promise<string[]> => {
+  const getSubtreeIds = async (db: Database, id: string): Promise<string[]> => {
     const rows = await db.select<{ id: string }[]>(
       `WITH RECURSIVE sub(id) AS (
          SELECT $1
@@ -237,7 +224,11 @@ export const useFolderDb = () => {
   };
 
   // 元函数：重命名归档并刷新 updated_at
-  const rename = async (db: Database, id: string, name: string): Promise<void> => {
+  const rename = async (
+    db: Database,
+    id: string,
+    name: string,
+  ): Promise<void> => {
     await db.execute(
       "UPDATE folders SET name = $1, updated_at = $2 WHERE id = $3",
       [name, Date.now(), id],
@@ -316,7 +307,10 @@ export const useFolderDb = () => {
 
   // 元函数：根据 id 查询单个归档
   const getById = async (db: Database, id: string): Promise<Folder | null> => {
-    const rows = await db.select<Folder[]>("SELECT * FROM folders WHERE id = $1", [id]);
+    const rows = await db.select<Folder[]>(
+      "SELECT * FROM folders WHERE id = $1",
+      [id],
+    );
     return rows.length > 0 ? rows[0] : null;
   };
 

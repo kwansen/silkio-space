@@ -3,10 +3,11 @@ import {
   useFolderDb,
   type ChildRef,
   type ContainerChild,
-  type Folder,
   type FolderSortField,
 } from "@/infrastructure/db/folder.ts";
 import { useFolderDocumentDb } from "@/infrastructure/db/folderDocument.ts";
+import { Folder } from "@/types/archive";
+import { Doc } from "@/types/doc";
 
 // 归档（文件夹）创建参数（id 与时间字段仅在同步服务端数据时传入，本地创建自动生成/取当前时间）
 export interface CreateFolderParams {
@@ -38,7 +39,7 @@ export const useFdSvc = () => {
    * @returns 新建归档 id
    ***/
   const createFolder = async (params: CreateFolderParams): Promise<string> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.create(db, {
       id: params.id,
       name: params.name,
@@ -56,7 +57,7 @@ export const useFdSvc = () => {
    * @param params.id - 必须，级联删除其全部后代文件夹及关联的folder_document行，文档本体保留
    ***/
   const deleteFolder = async (params: { id: string }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.remove(db, params.id);
   };
   //#endregion
@@ -70,7 +71,7 @@ export const useFdSvc = () => {
     id: string;
     name: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.rename(db, params.id, params.name);
   };
   //#endregion
@@ -84,7 +85,7 @@ export const useFdSvc = () => {
     id: string;
     viewedAt?: number;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.touch(db, params.id, params.viewedAt);
   };
   //#endregion
@@ -98,7 +99,7 @@ export const useFdSvc = () => {
   const getArchiveChildren = async (params: {
     id: string;
   }): Promise<ContainerChild[]> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.getChildrenMerged(db, params.id);
   };
   //#endregion
@@ -114,7 +115,7 @@ export const useFdSvc = () => {
     id: string;
     items: ChildRef[];
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.reorderChildren(db, params.id, params.items);
   };
   //#endregion
@@ -125,7 +126,7 @@ export const useFdSvc = () => {
    * @returns 根归档数组
    ***/
   const getArchives = async (): Promise<Folder[]> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.getSorted(db, "sort_order", "ASC");
   };
   //#endregion
@@ -138,7 +139,7 @@ export const useFdSvc = () => {
   const getSortedFolders = async (params: {
     sortField?: FolderSortField;
   }): Promise<Folder[]> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.getSorted(db, params.sortField ?? "sort_order", "ASC");
   };
   //#endregion
@@ -153,7 +154,7 @@ export const useFdSvc = () => {
     id: string;
     targetId: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     if (params.id === params.targetId) {
       throw new Error("不能将文件夹拖入其自身");
     }
@@ -179,7 +180,7 @@ export const useFdSvc = () => {
     targetId: string;
     sourceId?: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     if (params.sourceId === params.targetId) return;
     await folderDocumentDb.add(db, params.targetId, params.id);
     if (params.sourceId) {
@@ -198,7 +199,7 @@ export const useFdSvc = () => {
     folderId: string;
     docId: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDocumentDb.remove(db, params.folderId, params.docId);
   };
   //#endregion
@@ -211,7 +212,7 @@ export const useFdSvc = () => {
   const removeDocRelations = async (params: {
     docId: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDocumentDb.removeByDoc(db, params.docId);
   };
   //#endregion
@@ -226,7 +227,7 @@ export const useFdSvc = () => {
     folderId: string;
     docId: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDocumentDb.add(db, params.folderId, params.docId);
   };
   //#endregion
@@ -239,7 +240,7 @@ export const useFdSvc = () => {
   const getFolderIdsByDoc = async (params: {
     docId: string;
   }): Promise<string[]> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDocumentDb.getFolderIdsByDoc(db, params.docId);
   };
   //#endregion
@@ -254,7 +255,7 @@ export const useFdSvc = () => {
     folderIds: string[];
     docId: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDocumentDb.addMany(db, params.folderIds, params.docId);
   };
   //#endregion
@@ -269,7 +270,7 @@ export const useFdSvc = () => {
     folderIds: string[];
     docId: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDocumentDb.removeMany(db, params.folderIds, params.docId);
   };
   //#endregion
@@ -284,7 +285,7 @@ export const useFdSvc = () => {
     folderId: string;
     docId: string;
   }): Promise<void> => {
-    const db = await getDb();
+    const db = getDb();
     const descendantIds = await folderDb.getDescendantIds(db, params.folderId);
     const folderIds = await folderDocumentDb.getFolderIdsByDoc(
       db,
@@ -305,7 +306,7 @@ export const useFdSvc = () => {
   const getFirstDocInSubtree = async (params: {
     folderId: string;
   }): Promise<Doc | null> => {
-    const db = await getDb();
+    const db = getDb();
     const descendantIds = await folderDb.getDescendantIds(db, params.folderId);
     const ids = [params.folderId, ...descendantIds];
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
@@ -328,7 +329,7 @@ export const useFdSvc = () => {
   const getFolderById = async (params: {
     id: string;
   }): Promise<Folder | null> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.getById(db, params.id);
   };
   //#endregion
@@ -342,7 +343,7 @@ export const useFdSvc = () => {
     folderId: string;
     docId: string;
   }): Promise<boolean> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.hasDocInSubtree(db, params.folderId, params.docId);
   };
   //#endregion
@@ -355,7 +356,7 @@ export const useFdSvc = () => {
   const getDescendantIds = async (params: {
     id: string;
   }): Promise<string[]> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.getDescendantIds(db, params.id);
   };
   //#endregion
@@ -367,7 +368,7 @@ export const useFdSvc = () => {
   const getSubtreeFolders = async (params: {
     id: string;
   }): Promise<Folder[]> => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.getSubtreeFolders(db, params.id);
   };
   //#endregion
@@ -378,7 +379,7 @@ export const useFdSvc = () => {
    * @returns 文档数组，携带所属容器 container_id 与容器内排序 container_order
    ***/
   const getSubtreeDocs = async (params: { id: string }) => {
-    const db = await getDb();
+    const db = getDb();
     return folderDb.getSubtreeDocs(db, params.id);
   };
   //#endregion
