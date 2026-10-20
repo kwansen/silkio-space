@@ -2,7 +2,7 @@
 import { useDocAction } from "@/actions/docAction";
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { storeToRefs } from "pinia";
-import { onMounted, ref, useTemplateRef, watch } from "vue";
+import { onMounted, useTemplateRef, watch } from "vue";
 
 // 输入框引用，用于组件挂载后手动聚焦
 const inputRef = useTemplateRef("inputRef");

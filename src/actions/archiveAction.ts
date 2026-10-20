@@ -19,7 +19,7 @@ export const useArchiveAction = () => {
         if (a.viewed_at === null && b.viewed_at === null) return 0;
         if (a.viewed_at === null) return 1;
         if (b.viewed_at === null) return -1;
-        return a.viewed_at - b.viewed_at;
+        return b.viewed_at - a.viewed_at;
       });
       archives = results;
     } else {
