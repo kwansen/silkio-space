@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useDocSortAction } from "@/actions/docSort";
+import { useDocAction } from "@/actions/docAction";
 import ArrowLeft from "@/components/icons/ArrowLeft.vue";
 import ArrowRight from "@/components/icons/ArrowRight.vue";
 import { useDocSortStore } from "@/stores/docSortStore";
 import { storeToRefs } from "pinia";
 
-const action = useDocSortAction();
+const action = useDocAction();
 
 const store = useDocSortStore();
 const { currentPage, totalPages } = storeToRefs(store);

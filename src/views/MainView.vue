@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useArchiveAction } from "@/actions/archiveAction";
-import { useDocSortAction } from "@/actions/docSort";
+import { useDocAction } from "@/actions/docAction";
 import ArchiveSearch from "@/components/sections/ArchiveSearch/ArchiveSearch.vue";
 import ArchiveSort from "@/components/sections/ArchiveSort/ArchiveSort.vue";
 import DocSearch from "@/components/sections/DocSearch/DocSearch.vue";
@@ -15,21 +15,21 @@ import { onMounted, onUnmounted } from "vue";
 
 const store = useUiStore();
 const { currentDocTab: tab } = storeToRefs(store);
-const docAction = useDocSortAction();
+const docAction = useDocAction();
 const archiveAction = useArchiveAction();
 
 let stopOnUpdate: (() => void) | null = null;
 
 onMounted(async () => {
   // 挂载时获取文档
-  await docAction.refresh();
+  await docAction.refreshSorted();
   // 挂载时获取归档
   await archiveAction.refresh();
 
   stopOnUpdate = await listen("refresh", async () => {
     console.log("更新了");
     // 挂载时获取文档
-    await docAction.refresh();
+    await docAction.refreshSorted();
     // 挂载时获取归档
     await archiveAction.refresh();
   });

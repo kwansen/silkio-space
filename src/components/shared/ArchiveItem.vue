@@ -12,7 +12,7 @@ import { useTemplateRef } from "vue";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import Delete from "../icons/Delete.vue";
-import { useDocAction } from "@/actions/doc.ts";
+import { useDocAction } from "@/actions/docAction.ts";
 import Pencil from "../icons/Pencil.vue";
 import ArchiveItemInput from "./ArchiveItemInput.vue";
 import { useArchiveAction } from "@/actions/archiveAction.ts";

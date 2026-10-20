@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDocSearchAction } from "@/actions/docSearch";
+import { useDocAction } from "@/actions/docAction";
 import ArrowLeft from "@/components/icons/ArrowLeft.vue";
 import ArrowRight from "@/components/icons/ArrowRight.vue";
 import { useDocSearchStore } from "@/stores/docSearchStore";
@@ -9,7 +9,7 @@ import { computed } from "vue";
 
 const store = useDocSearchStore();
 const { currentPage, totalPages } = storeToRefs(store);
-const { goPrev, goNext, goToPage } = useDocSearchAction();
+const { goPrev, goNext, goToPage } = useDocAction();
 const pages = computed(() =>
   generatePages(currentPage.value, totalPages.value),
 );

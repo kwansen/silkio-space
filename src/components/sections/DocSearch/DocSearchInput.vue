@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDocSearchAction } from "@/actions/docSearch";
+import { useDocAction } from "@/actions/docAction";
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { storeToRefs } from "pinia";
 import { onMounted, ref, useTemplateRef, watch } from "vue";
@@ -8,7 +8,7 @@ import { onMounted, ref, useTemplateRef, watch } from "vue";
 const inputRef = useTemplateRef("inputRef");
 const store = useDocSearchStore();
 const { query } = storeToRefs(store);
-const action = useDocSearchAction();
+const action = useDocAction();
 
 onMounted(() => {
   inputRef.value?.focus();

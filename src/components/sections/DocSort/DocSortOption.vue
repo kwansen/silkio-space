@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { useDocAction } from "@/actions/doc";
-import { useDocSortAction } from "@/actions/docSort";
+import { useDocAction } from "@/actions/docAction";
 import Add from "@/components/icons/Add.vue";
-import Doc from "@/components/icons/Doc.vue";
 import DocMian from "@/components/icons/DocMian.vue";
 import FlowchartMian from "@/components/icons/FlowchartMian.vue";
 import MindmapMian from "@/components/icons/MindmapMian.vue";
@@ -15,7 +13,7 @@ import { type Component, computed, ref, useTemplateRef } from "vue";
 const store = useUiStore();
 const { currentDocSort: sort } = storeToRefs(store);
 const { setDocSort } = store;
-const action = useDocSortAction();
+const action = useDocAction();
 const list: { key: DocSortOption; show: string }[] = [
   { key: "viewedAt", show: "最近浏览" },
   { key: "updatedAt", show: "最近更新" },

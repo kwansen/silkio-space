@@ -13,7 +13,7 @@ import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import Archive from "../icons/Archive.vue";
 import Delete from "../icons/Delete.vue";
-import { useDocAction } from "@/actions/doc.ts";
+import { useDocAction } from "@/actions/docAction.ts";
 import { useUiStore } from "@/stores/uiStore.ts";
 
 interface Props {
