@@ -16,16 +16,20 @@ import { useDocAction } from "@/actions/doc.ts";
 import Pencil from "../icons/Pencil.vue";
 import ArchiveItemInput from "./ArchiveItemInput.vue";
 import { useArchiveSortAction } from "@/actions/archiveSort.ts";
-const editing = ref(false);
 
 interface Props {
   itemKey: string;
   name: string;
   meta?: string;
   icon: Component;
+  editing?: boolean;
 }
 
 const props = defineProps<Props>();
+
+const emit = defineEmits<{
+  "update:editing": [v: boolean];
+}>();
 
 const hoverKey = ref<string>("");
 const openedKey = ref<string>("");
@@ -67,7 +71,7 @@ interface ListItem {
 }
 
 const rename = () => {
-  editing.value = true;
+  emit("update:editing", true);
 };
 
 const list: ListItem[] = [
@@ -99,7 +103,7 @@ const action = useArchiveSortAction();
       :name="name"
       :id="itemKey"
       v-if="editing"
-      @close="editing = false"
+      @close="emit('update:editing', false)"
     />
     <div
       v-else

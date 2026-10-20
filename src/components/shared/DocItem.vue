@@ -64,6 +64,8 @@ interface ListItem {
   class: string;
 }
 
+const action = useDocAction();
+
 const list: ListItem[] = [
   {
     icon: Archive,
@@ -74,7 +76,10 @@ const list: ListItem[] = [
   {
     icon: Delete,
     text: "删除",
-    action: () => console.log("删除"),
+    action: async () => {
+      await action.remove(props.itemKey);
+      openedKey.value = "";
+    },
     class: "hover:bg-red-100",
   },
 ];
@@ -135,6 +140,7 @@ const list: ListItem[] = [
       v-for="i in list"
       class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md"
       :class="i.class"
+      @click="i.action"
     >
       <component :is="i.icon" class="w-5 h-5" />
       <span>{{ i.text }}</span>

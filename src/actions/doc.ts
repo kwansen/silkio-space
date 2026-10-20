@@ -25,5 +25,10 @@ export const useDocAction = () => {
     }
   };
 
-  return { openDoc, createRichtext };
+  const remove = async (id: string) => {
+    await svc.remove(id);
+    await Promise.all([refreshSorted(), refreshSearched()]);
+  };
+
+  return { openDoc, createRichtext, remove };
 };
