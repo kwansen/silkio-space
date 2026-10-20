@@ -15,7 +15,7 @@ import Delete from "../icons/Delete.vue";
 import { useDocAction } from "@/actions/doc.ts";
 import Pencil from "../icons/Pencil.vue";
 import ArchiveItemInput from "./ArchiveItemInput.vue";
-import { useArchiveSortAction } from "@/actions/archiveSort.ts";
+import { useArchiveAction } from "@/actions/archiveAction.ts";
 
 interface Props {
   itemKey: string;
@@ -94,7 +94,7 @@ const list: ListItem[] = [
   },
 ];
 
-const action = useArchiveSortAction();
+const action = useArchiveAction();
 </script>
 <template>
   <div class="h-10">

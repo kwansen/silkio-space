@@ -1,5 +1,5 @@
 import { useFdSvc } from "@/services/folder.ts";
-import { useArchiveSortStore } from "@/stores/archiveSort";
+import { useArchiveStore } from "@/stores/archiveSort";
 import { notifyEditorFolderChange } from "@/infrastructure/api/windowEvent.ts";
 import type { FolderSortField } from "@/infrastructure/db/folder.ts";
 
@@ -8,7 +8,7 @@ import type { FolderSortField } from "@/infrastructure/db/folder.ts";
 const folderSvc = useFdSvc();
 
 export const useArchiveSort = () => {
-  const archiveSortStore = useArchiveSortStore();
+  const archiveSortStore = useArchiveStore();
 
   // 元函数：按排序方式刷新归档列表（全量，不分页）
   // 可选传入目标排序字段：数据返回后将排序与列表一次性更新，避免闪烁
@@ -70,5 +70,15 @@ export const useArchiveSort = () => {
   const getFolderIdsByDoc = (docId: string) =>
     folderSvc.getFolderIdsByDoc({ docId });
 
-  return { refreshFolders, createFolder, touchFolder, renameFolder, reorderFolders, removeFolder, addDocToFolder, removeDocFromFolder, getFolderIdsByDoc };
+  return {
+    refreshFolders,
+    createFolder,
+    touchFolder,
+    renameFolder,
+    reorderFolders,
+    removeFolder,
+    addDocToFolder,
+    removeDocFromFolder,
+    getFolderIdsByDoc,
+  };
 };

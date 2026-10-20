@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import ArchiveItem from "@/components/shared/ArchiveItem.vue";
-import { useArchiveSortStore } from "@/stores/archiveSortStore";
+import { useArchiveStore } from "@/stores/archiveStore";
 import { ref } from "vue";
 
-const store = useArchiveSortStore();
+const store = useArchiveStore();
 
 // 正在重命名的 archive id,null 表示没有;编辑时禁用拖拽
 const editingKey = ref<string>("");

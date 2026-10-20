@@ -1,13 +1,13 @@
 import { useFdSvc } from "@/services/folder";
-import { useArchiveSortStore } from "@/stores/archiveSortStore";
+import { useArchiveStore } from "@/stores/archiveStore";
 import { useUiStore } from "@/stores/uiStore";
 import { storeToRefs } from "pinia";
 
-export const useArchiveSortAction = () => {
+export const useArchiveAction = () => {
   const svc = useFdSvc();
-  const store = useArchiveSortStore();
-  const { setSortedArchives } = store;
+  const store = useArchiveStore();
   const uiStore = useUiStore();
+  const { setSortedArchives } = store;
   const { currentArchiveSort: sort } = storeToRefs(uiStore);
   const getSortedArchives = async (v: ArchiveSortOption) => {
     let archives;
@@ -29,23 +29,23 @@ export const useArchiveSortAction = () => {
     setSortedArchives(archives);
   };
 
-  const refreshSortedArchives = async () => {
+  const refresh = async () => {
     await getSortedArchives(sort.value);
   };
 
   const createArchive = async (v: string) => {
     await svc.createFolder({ name: v });
-    await refreshSortedArchives();
+    await refresh();
   };
 
   const updateName = async (id: string, name: string) => {
     await svc.renameFolder({ id, name });
-    await refreshSortedArchives();
+    await refresh();
   };
 
   const remove = async (id: string) => {
     await svc.deleteFolder({ id });
-    await refreshSortedArchives();
+    await refresh();
   };
 
   //   获取带checked状态的归档
@@ -71,7 +71,7 @@ export const useArchiveSortAction = () => {
 
   return {
     getSortedArchives,
-    refreshSortedArchives,
+    refresh,
     createArchive,
     updateName,
     remove,

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useArchiveSortStore } from "@/stores/archiveSortStore.ts";
+import { useArchiveStore } from "@/stores/archiveStore.ts";
 import ArchiveSearchEmpty from "./ArchiveSearchEmpty.vue";
 import ArchiveSearchInput from "./ArchiveSearchInput.vue";
 import ArchiveSearchList from "./ArchiveSearchList.vue";
 import { storeToRefs } from "pinia";
 
-const store = useArchiveSortStore();
+const store = useArchiveStore();
 const { searchedArchives: archives, query } = storeToRefs(store);
 </script>
 

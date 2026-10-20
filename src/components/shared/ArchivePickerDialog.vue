@@ -3,7 +3,7 @@ import { FocusScope } from "@zhencai/vue-focus-scope";
 import ScrollArea from "./ScrollArea.vue";
 import CheckBoxMian from "../icons/CheckBoxMian.vue";
 import { onMounted, ref } from "vue";
-import { useArchiveSortAction } from "@/actions/archiveSort";
+import { useArchiveAction } from "@/actions/archiveAction.ts";
 import { CheckedArchive } from "@/types/archive.ts";
 import CheckBoxEmpty from "../icons/CheckBoxEmpty.vue";
 
@@ -13,7 +13,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const action = useArchiveSortAction();
+const action = useArchiveAction();
 
 const archives = ref<CheckedArchive[]>([]);
 

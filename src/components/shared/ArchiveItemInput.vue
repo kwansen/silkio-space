@@ -25,7 +25,7 @@ const close = () => {
   emit("close");
 };
 
-const action = useArchiveSortAction();
+const action = useArchiveAction();
 
 const handleClick = async () => {
   if (!name.value) return;
@@ -36,7 +36,7 @@ const handleClick = async () => {
 };
 
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
-import { useArchiveSortAction } from "@/actions/archiveSort";
+import { useArchiveAction } from "@/actions/archiveAction.ts";
 import Check from "../icons/Check.vue";
 import Close from "../icons/Close.vue";
 

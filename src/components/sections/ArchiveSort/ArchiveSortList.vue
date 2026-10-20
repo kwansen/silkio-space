@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import ArchiveItem from "@/components/shared/ArchiveItem.vue";
 import { useFdSvc } from "@/services/folder";
-import { useArchiveSortStore } from "@/stores/archiveSortStore";
+import { useArchiveStore } from "@/stores/archiveStore";
 import { useUiStore } from "@/stores/uiStore";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import draggable from "vuedraggable";
 
-const store = useArchiveSortStore();
+const store = useArchiveStore();
 const svc = useFdSvc();
 const uiStore = useUiStore();
 const { currentArchiveSort: sort } = storeToRefs(uiStore);

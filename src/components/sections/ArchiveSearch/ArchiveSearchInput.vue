@@ -1,30 +1,15 @@
 <script setup lang="ts">
-import { useArchiveSortAction } from "@/actions/archiveSort";
-import { useArchiveSortStore } from "@/stores/archiveSortStore";
+import { useArchiveStore } from "@/stores/archiveStore";
 import { storeToRefs } from "pinia";
-import { onMounted, useTemplateRef, watch } from "vue";
+import { onMounted, useTemplateRef } from "vue";
 
-// 输入框引用，用于组件挂载后手动聚焦
 const inputRef = useTemplateRef("inputRef");
-const store = useArchiveSortStore();
+const store = useArchiveStore();
 const { query } = storeToRefs(store);
-const action = useArchiveSortAction();
 
 onMounted(() => {
   inputRef.value?.focus();
 });
-
-// 元函数：关键词变化时立即执行搜索（纯本地应用，无需防抖）
-// watch(
-//   () => query.value,
-//   (v) => {
-//     if (v) {
-//       action.search(v);
-//     } else {
-//       store.setSearchedArchives([]);
-//     }
-//   },
-// );
 </script>
 
 <template>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useArchiveSortAction } from "@/actions/archiveSort";
+import { useArchiveAction } from "@/actions/archiveAction";
 import Check from "@/components/icons/Check.vue";
 import Close from "@/components/icons/Close.vue";
-import { useArchiveSortStore } from "@/stores/archiveSortStore";
+import { useArchiveStore } from "@/stores/archiveStore";
 import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
 import { onMounted, useTemplateRef } from "vue";
 
-const store = useArchiveSortStore();
+const store = useArchiveStore();
 const { setShow } = store;
 
 const box = useTemplateRef("box");
@@ -27,7 +27,7 @@ onClickOutside(
   },
 );
 
-const action = useArchiveSortAction();
+const action = useArchiveAction();
 const name = ref("");
 
 const handleClick = () => {

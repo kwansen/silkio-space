@@ -2,16 +2,11 @@ import { Archive } from "@/types/archive";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
-export const useArchiveSortStore = defineStore("archiveSort", () => {
+export const useArchiveStore = defineStore("archiveSort", () => {
   const sortedArchives = ref<Archive[]>([]);
   const setSortedArchives = (v: Archive[]) => {
     sortedArchives.value = v;
   };
-
-  // const searchedArchives = ref<Archive[]>([]);
-  // const setSearchedArchives = (v: Archive[]) => {
-  //   searchedArchives.value = v;
-  // };
 
   const query = ref("");
   const setQuery = (v: string) => {
