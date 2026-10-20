@@ -10,3 +10,7 @@ export interface Folder {
 }
 
 export interface Archive extends Folder {}
+
+export interface CheckedArchive extends Folder {
+  checked: boolean;
+}

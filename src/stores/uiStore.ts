@@ -32,6 +32,11 @@ export const useUiStore = defineStore("ui", () => {
     richtextDialog.value = v;
   };
 
+  const openId = ref("");
+  const setOpenId = (v: string) => {
+    openId.value = v;
+  };
+
   return {
     currentMode,
     setMode,
@@ -43,5 +48,7 @@ export const useUiStore = defineStore("ui", () => {
     setArchiveSort,
     richtextDialog,
     setRichtextDialog,
+    openId,
+    setOpenId,
   };
 });

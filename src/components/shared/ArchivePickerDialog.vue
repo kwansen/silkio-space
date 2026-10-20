@@ -1,0 +1,83 @@
+<script setup lang="ts">
+import { FocusScope } from "@zhencai/vue-focus-scope";
+import ScrollArea from "./ScrollArea.vue";
+import CheckBoxMian from "../icons/CheckBoxMian.vue";
+import { onMounted, ref } from "vue";
+import { useArchiveSortAction } from "@/actions/archiveSort";
+import { CheckedArchive } from "@/types/archive.ts";
+import CheckBoxEmpty from "../icons/CheckBoxEmpty.vue";
+
+interface Props {
+  id: string;
+}
+
+const props = defineProps<Props>();
+
+const action = useArchiveSortAction();
+
+const archives = ref<CheckedArchive[]>([]);
+
+onMounted(async () => {
+  archives.value = await action.checkArchives(props.id);
+});
+
+const store = useUiStore();
+
+const close = () => {
+  store.setOpenId("");
+};
+
+const handleClick = async () => {
+  const ids = archives.value.filter((a) => a.checked === true).map((a) => a.id);
+  await action.addDocToArchives(props.id, ids);
+  close();
+};
+
+import { onKeyStroke } from "@vueuse/core";
+import { useUiStore } from "@/stores/uiStore.ts";
+
+// ESC 关闭
+onKeyStroke("Escape", () => {
+  close();
+});
+
+// 回车
+onKeyStroke("Enter", () => {
+  handleClick();
+});
+</script>
+
+<template>
+  <div class="fixed inset-0 grid place-items-center bg-black/10">
+    <FocusScope
+      class="w-100 h-100 bg-white rounded-2xl flex flex-col overflow-hidden"
+    >
+      <div class="flex-1 min-h-0">
+        <ScrollArea class="py-2">
+          <div v-for="a in archives" class="px-2 h-10">
+            <div
+              class="h-10 hover:bg-gray-100 rounded-md flex px-2 gap-2 items-center cursor-pointer"
+              @click="a.checked = !a.checked"
+            >
+              <CheckBoxMian v-if="a.checked" class="w-5 h-5 text-purple-700" />
+              <CheckBoxEmpty v-else class="w-5 h-5" />
+              <span>{{ a.name }}</span>
+            </div>
+          </div>
+        </ScrollArea>
+      </div>
+
+      <div class="flex p-4">
+        <button class="h-9 w-1/2 bg-gray-100 rounded-l-md" @click="close">
+          取消
+        </button>
+        <button
+          class="h-9 w-1/2 bg-purple-500 text-white rounded-r-md disabled:bg-purple-200 disabled:cursor-not-allowed"
+          @click="handleClick"
+        >
+          确认
+        </button>
+      </div>
+    </FocusScope>
+  </div>
+</template>

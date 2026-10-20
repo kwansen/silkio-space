@@ -5,6 +5,7 @@ import ArchiveSort from "@/components/sections/ArchiveSort/ArchiveSort.vue";
 import DocSearch from "@/components/sections/DocSearch/DocSearch.vue";
 import DocSort from "@/components/sections/DocSort/DocSort.vue";
 import DocTabs from "@/components/sections/DocTabs/DocTabs.vue";
+import ArchivePickerDialog from "@/components/shared/ArchivePickerDialog.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
 import { useUiStore } from "@/stores/uiStore";
 import { listen } from "@tauri-apps/api/event";
@@ -55,4 +56,5 @@ onUnmounted(() => {
       </ScrollArea>
     </div>
   </div>
+  <ArchivePickerDialog v-if="store.openId" :id="store.openId" />
 </template>

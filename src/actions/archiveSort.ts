@@ -48,5 +48,34 @@ export const useArchiveSortAction = () => {
     await refresh();
   };
 
-  return { getSortedArchives, refresh, createArchive, updateName, remove };
+  //   获取带checked状态的归档
+  const checkArchives = async (id: string) => {
+    const [archives, folderIds] = await Promise.all([
+      svc.getArchives(),
+      svc.getFolderIdsByDoc({ docId: id }),
+    ]);
+    const ids = new Set(folderIds);
+
+    return archives.map((a) => ({
+      ...a,
+      checked: ids.has(a.id),
+    }));
+  };
+
+  const addDocToArchives = async (docId: string, archiveIds: string[]) => {
+    await svc.addDocToFolders({
+      docId: docId,
+      folderIds: archiveIds,
+    });
+  };
+
+  return {
+    getSortedArchives,
+    refresh,
+    createArchive,
+    updateName,
+    remove,
+    checkArchives,
+    addDocToArchives,
+  };
 };

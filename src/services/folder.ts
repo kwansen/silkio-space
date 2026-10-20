@@ -257,10 +257,14 @@ export const useFdSvc = () => {
   };
   //#endregion
 
-  //#region CHECKED：批量将文档加入归档
+  //#region CHECKED：对齐文档的归档关联
   /***
-   * 将文档批量加入多个归档（幂等，重复加入自动忽略，各自追加到统一排序空间末尾）
-   * @param params.folderIds 必须，归档 id 集合
+   * 将文档的归档关联对齐到传入集合（数据库最终恰好等于 folderIds，不多不少）：
+   * - 已关联且在 folderIds 中：保持不变
+   * - 未关联且在 folderIds 中：加入（各自追加到统一排序空间末尾）
+   * - 已关联但不在 folderIds 中：移除
+   * 先加后删，中途失败不会导致关联全部丢失
+   * @param params.folderIds 必须，目标归档 id 集合（文档最终应关联的全部归档）
    * @param params.docId     必须，文档 id
    ***/
   const addDocToFolders = async (params: {
@@ -268,7 +272,20 @@ export const useFdSvc = () => {
     docId: string;
   }): Promise<void> => {
     const db = getDb();
-    return folderDocumentDb.addMany(db, params.folderIds, params.docId);
+    const currentIds = await folderDocumentDb.getFolderIdsByDoc(
+      db,
+      params.docId,
+    );
+    const targetSet = new Set(params.folderIds);
+    const currentSet = new Set(currentIds);
+    const toAdd = params.folderIds.filter((id) => !currentSet.has(id));
+    const toRemove = currentIds.filter((id) => !targetSet.has(id));
+    if (toAdd.length > 0) {
+      await folderDocumentDb.addMany(db, toAdd, params.docId);
+    }
+    if (toRemove.length > 0) {
+      await folderDocumentDb.removeMany(db, toRemove, params.docId);
+    }
   };
   //#endregion
 

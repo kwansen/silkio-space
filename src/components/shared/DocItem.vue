@@ -14,6 +14,7 @@ import { onClickOutside } from "@vueuse/core";
 import Archive from "../icons/Archive.vue";
 import Delete from "../icons/Delete.vue";
 import { useDocAction } from "@/actions/doc.ts";
+import { useUiStore } from "@/stores/uiStore.ts";
 
 interface Props {
   itemKey: string;
@@ -65,12 +66,16 @@ interface ListItem {
 }
 
 const action = useDocAction();
+const store = useUiStore();
 
 const list: ListItem[] = [
   {
     icon: Archive,
     text: "归档",
-    action: () => console.log("归档"),
+    action: () => {
+      store.setOpenId(props.itemKey);
+      openedKey.value = "";
+    },
     class: "hover:bg-gray-100",
   },
   {
