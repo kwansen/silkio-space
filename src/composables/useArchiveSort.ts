@@ -41,14 +41,9 @@ export const useArchiveSort = () => {
   };
 
   // 元函数：将当前列表顺序持久化为 sort_order（0,1,2...）
-  // 根归档无所属容器：重排子项为文件夹时容器 id 不参与落库，传空串复用统一重排元函数
   const reorderFolders = async () => {
-    await folderSvc.reorderChildren({
-      id: "",
-      items: archiveSortStore.folders.map((f) => ({
-        kind: "folder" as const,
-        id: f.id,
-      })),
+    await folderSvc.reorderFolders({
+      ids: archiveSortStore.folders.map((f) => f.id),
     });
   };
 

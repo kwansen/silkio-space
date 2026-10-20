@@ -1,5 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import type { Doc } from "@/infrastructure/db/document.ts";
+import { Folder } from "@/types/archive";
 
 // 归档（文件夹）创建参数（id 与时间字段仅在同步服务端数据时传入，本地创建自动生成/取当前时间）
 export interface CreateFolderParams {

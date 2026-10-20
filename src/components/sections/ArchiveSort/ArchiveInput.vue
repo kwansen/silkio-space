@@ -31,6 +31,7 @@ const action = useArchiveSortAction();
 const name = ref("");
 
 const handleClick = () => {
+  if (!name.value) return;
   action.createArchive(name.value);
   setShow(false);
 };
@@ -51,7 +52,7 @@ onKeyStroke("Enter", () => {
 <template>
   <div
     ref="box"
-    class="h-10 focus-within:ring focus-within:ring-purple-300 flex items-center gap-4 pr-4"
+    class="h-10 focus-within:bg-gray-50 flex items-center gap-4 pr-4"
   >
     <input
       ref="input"
@@ -60,12 +61,13 @@ onKeyStroke("Enter", () => {
       class="flex-1 h-full outline-none pl-4"
       @blur="input?.focus()"
     />
-    <div
-      class="w-7 h-7 hover:bg-gray-200 grid place-items-center rounded-md"
+    <button
+      :disabled="!name"
+      class="w-7 h-7 enabled:hover:bg-gray-200 disabled:opacity-30 grid place-items-center rounded-md"
       @click="handleClick"
     >
       <Check class="w-5 h-5" />
-    </div>
+    </button>
     <div
       class="w-7 h-7 hover:bg-gray-200 grid place-items-center rounded-md"
       @click="setShow(false)"

@@ -120,6 +120,18 @@ export const useFdSvc = () => {
   };
   //#endregion
 
+  //#region CHECKED：重排序根归档
+  /***
+   * 按传入顺序批量重写归档 sort_order（0,1,2...），用于自由排序持久化
+   * （根归档无所属容器，与容器内子项重排的统一编号空间无关，仅写 folders.sort_order）
+   * @param params.ids 必须，归档 id 的目标顺序数组
+   ***/
+  const reorderFolders = async (ids: string[]): Promise<void> => {
+    const db = getDb();
+    return folderDb.reorder(db, ids);
+  };
+  //#endregion
+
   //#region CKECKED：获取归档
   /***
    * 获取全部根归档（仅 parent_id 为空的归档展示于主窗口，数量少，不分页，按 sort_order 升序）
@@ -390,6 +402,7 @@ export const useFdSvc = () => {
     updateFolderViewedAt,
     getArchiveChildren,
     reorderChildren,
+    reorderFolders,
     getArchives,
     getSortedFolders,
     moveFolderInto,
