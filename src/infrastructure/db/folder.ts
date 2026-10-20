@@ -65,7 +65,7 @@ export const useFolderDb = () => {
 
   // 元函数：创建归档并返回新 id
   // sort_order 未传时取容器统一排序空间当前最大值 +1（子文件夹与文档共用一个序列）；
-  // 时间字段未传时取当前时间（viewed_at 默认 null 表示从未打开）
+  // 时间字段未传时取当前时间（viewed_at 默认当前时间，表示创建即视为最近打开）
   const create = async (
     db: Database,
     params: CreateFolderParams = {},
@@ -85,7 +85,7 @@ export const useFolderDb = () => {
         params.name ?? "新建归档",
         params.parent_id ?? null,
         sortOrder,
-        params.viewed_at ?? null,
+        params.viewed_at ?? now,
         params.created_at ?? now,
         params.updated_at ?? now,
       ],

@@ -33,7 +33,7 @@ export const useFdSvc = () => {
    * @param params.name       - 必须，名称
    * @param params.sortOrder  - 可选，排序值；不传时取同级当前最大值 +1（根归档取根级最大值 +1）
    * @param params.parentId   - 可选，父节点 id；不传表示根 archive，传了表示 archive 下的文件夹
-   * @param params.viewedAt   - 可选，最近打开时间，仅同步服务端数据时使用，一般无需填写
+   * @param params.viewedAt   - 可选，最近打开时间；不传时取当前时间（仅同步服务端数据时填写）
    * @param params.createdAt  - 可选，创建时间，仅同步服务端数据时使用，一般无需填写
    * @param params.updatedAt  - 可选，最近更新时间，仅同步服务端数据时使用，一般无需填写
    * @returns 新建归档 id
