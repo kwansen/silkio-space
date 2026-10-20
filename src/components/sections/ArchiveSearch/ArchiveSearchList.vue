@@ -1,31 +1,22 @@
 <script setup lang="ts">
-import ArchiveList, { Item } from "@/components/shared/ArchiveList.vue";
-import { computed } from "vue";
-import { useArchiveSearchStore } from "@/stores/archiveSearch";
-import { useArchiveSort } from "@/composables/useArchiveSort.ts";
-import { notifyEditorOpen } from "@/infrastructure/api/windowEvent.ts";
+import ArchiveItem from "@/components/shared/ArchiveItem.vue";
+import { useArchiveSortStore } from "@/stores/archiveSortStore";
+import { ref } from "vue";
 
-const archiveSearchStore = useArchiveSearchStore();
+const store = useArchiveSortStore();
 
-// 元函数：将命中归档转换为 ArchiveList 列表项（仅展示名称）
-const items = computed<Item[]>(() =>
-  archiveSearchStore.archives.map((folder) => ({
-    key: folder.id,
-    title: folder.name,
-  })),
-);
-
-// 元函数：组装归档排序组合式函数（复用 touchFolder 更新浏览时间）
-const { touchFolder } = useArchiveSort();
-
-// 元函数：点击结果项时先更新 viewed_at，再通知 editor 窗口打开该归档
-const handleClick = (item: Item) => {
-  touchFolder(String(item.key))
-    .then(() => notifyEditorOpen("folder", String(item.key)))
-    .catch(console.error);
-};
+// 正在重命名的 archive id,null 表示没有;编辑时禁用拖拽
+const editingKey = ref<string>("");
 </script>
 
 <template>
-  <ArchiveList :list="items" @onClick="handleClick" />
+  <div>
+    <ArchiveItem
+      v-for="a in store.searchedArchives"
+      :item-key="a.id"
+      :name="a.name"
+      :editing="editingKey === a.id"
+      @update:editing="(v) => (editingKey = v ? a.id : '')"
+    />
+  </div>
 </template>

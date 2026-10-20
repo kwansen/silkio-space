@@ -37,6 +37,8 @@ const handleClick = async () => {
 
 import { onClickOutside, onKeyStroke } from "@vueuse/core";
 import { useArchiveSortAction } from "@/actions/archiveSort";
+import Check from "../icons/Check.vue";
+import Close from "../icons/Close.vue";
 
 // ESC 关闭
 onKeyStroke("Escape", () => {
@@ -66,7 +68,18 @@ onClickOutside(box, () => {
       type="text"
       class="outline-none flex-1 h-full pl-4"
     />
-    <div class="w-7 h-7 bg-gray-200 rounded-md" @click="handleClick"></div>
-    <div class="w-7 h-7 bg-gray-200 rounded-md" @click="close"></div>
+    <button
+      :disabled="name === props.name || !name"
+      class="w-7 h-7 enabled:hover:bg-gray-200 rounded-md grid place-items-center disabled:opacity-30"
+      @click="handleClick"
+    >
+      <Check class="w-5 h-5" />
+    </button>
+    <div
+      class="w-7 h-7 hover:bg-gray-200 rounded-md grid place-items-center"
+      @click="close"
+    >
+      <Close class="w-5 h-5" />
+    </div>
   </div>
 </template>

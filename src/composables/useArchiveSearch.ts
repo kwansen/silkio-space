@@ -24,10 +24,10 @@ export const useArchiveSearch = () => {
   const searchFolders = (queryStr: string) => {
     archiveSearchStore.setQuery(queryStr);
     if (!queryStr.trim()) {
-      archiveSearchStore.setArchives([]);
+      archiveSearchStore.setSortedArchives([]);
       return;
     }
-    archiveSearchStore.setArchives(toResults(index.search(queryStr)));
+    archiveSearchStore.setSortedArchives(toResults(index.search(queryStr)));
   };
 
   // 元函数：加载全部归档并重建标题倒排索引；已有关键词时自动重搜
@@ -39,7 +39,8 @@ export const useArchiveSearch = () => {
       folderMap.set(f.id, f);
       index.add(f.id, f.name);
     }
-    if (archiveSearchStore.query.trim()) searchFolders(archiveSearchStore.query);
+    if (archiveSearchStore.query.trim())
+      searchFolders(archiveSearchStore.query);
   };
 
   // 元函数：重命名归档并同步更新索引、快照与搜索结果（同步通知 editor 更新当前展示的归档名）
@@ -48,7 +49,8 @@ export const useArchiveSearch = () => {
     const folder = folderMap.get(id);
     if (folder) folderMap.set(id, { ...folder, name });
     index.add(id, name);
-    if (archiveSearchStore.query.trim()) searchFolders(archiveSearchStore.query);
+    if (archiveSearchStore.query.trim())
+      searchFolders(archiveSearchStore.query);
     await notifyEditorFolderChange(id);
   };
 
@@ -57,7 +59,7 @@ export const useArchiveSearch = () => {
     await folderSvc.deleteFolder({ id });
     index.remove(id);
     folderMap.delete(id);
-    archiveSearchStore.setArchives(
+    archiveSearchStore.setSortedArchives(
       archiveSearchStore.archives.filter((r) => r.id !== id),
     );
     await notifyEditorFolderChange(id);

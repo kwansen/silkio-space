@@ -6,7 +6,7 @@ import { storeToRefs } from "pinia";
 export const useArchiveSortAction = () => {
   const svc = useFdSvc();
   const store = useArchiveSortStore();
-  const { setArchives } = store;
+  const { setSortedArchives } = store;
   const uiStore = useUiStore();
   const { currentArchiveSort: sort } = storeToRefs(uiStore);
   const getSortedArchives = async (v: ArchiveSortOption) => {
@@ -26,26 +26,26 @@ export const useArchiveSortAction = () => {
       results.sort((a, b) => a.name.localeCompare(b.name));
       archives = results;
     }
-    setArchives(archives);
+    setSortedArchives(archives);
   };
 
-  const refresh = async () => {
+  const refreshSortedArchives = async () => {
     await getSortedArchives(sort.value);
   };
 
   const createArchive = async (v: string) => {
     await svc.createFolder({ name: v });
-    await refresh();
+    await refreshSortedArchives();
   };
 
   const updateName = async (id: string, name: string) => {
     await svc.renameFolder({ id, name });
-    await refresh();
+    await refreshSortedArchives();
   };
 
   const remove = async (id: string) => {
     await svc.deleteFolder({ id });
-    await refresh();
+    await refreshSortedArchives();
   };
 
   //   获取带checked状态的归档
@@ -71,7 +71,7 @@ export const useArchiveSortAction = () => {
 
   return {
     getSortedArchives,
-    refresh,
+    refreshSortedArchives,
     createArchive,
     updateName,
     remove,

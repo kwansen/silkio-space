@@ -8,13 +8,13 @@ export const useArchiveSearchStore = defineStore("archiveSearch", () => {
   const setQuery = (v: string) => {
     query.value = v;
   };
-  const setArchives = (v: Folder[]) => {
+  const setSortedArchives = (v: Folder[]) => {
     archives.value = v;
   };
   return {
     query,
     archives,
     setQuery,
-    setArchives,
+    setSortedArchives,
   };
 });

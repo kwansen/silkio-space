@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useArchiveSortAction } from "@/actions/archiveSort";
 import { useDocSortAction } from "@/actions/docSort";
+import ArchiveSearch from "@/components/sections/ArchiveSearch/ArchiveSearch.vue";
 import ArchiveSort from "@/components/sections/ArchiveSort/ArchiveSort.vue";
 import DocSearch from "@/components/sections/DocSearch/DocSearch.vue";
 import DocSort from "@/components/sections/DocSort/DocSort.vue";
@@ -23,14 +24,14 @@ onMounted(async () => {
   // 挂载时获取文档
   await docAction.refresh();
   // 挂载时获取归档
-  await archiveAction.refresh();
+  await archiveAction.refreshSortedArchives();
 
   stopOnUpdate = await listen("refresh", async () => {
     console.log("更新了");
     // 挂载时获取文档
     await docAction.refresh();
     // 挂载时获取归档
-    await archiveAction.refresh();
+    await archiveAction.refreshSortedArchives();
   });
 });
 
@@ -51,6 +52,7 @@ onUnmounted(() => {
             <DocSort v-if="tab === 'docSort'" />
             <DocSearch v-if="tab === 'docSearch'" />
             <ArchiveSort v-if="tab === 'archiveSort'" />
+            <ArchiveSearch v-if="tab === 'archiveSearch'" />
           </div>
         </div>
       </ScrollArea>

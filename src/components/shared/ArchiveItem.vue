@@ -6,7 +6,7 @@
 -->
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch, type Component } from "vue";
+import { computed, ref, type Component } from "vue";
 import More from "../icons/More.vue";
 import { useTemplateRef } from "vue";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
@@ -21,7 +21,6 @@ interface Props {
   itemKey: string;
   name: string;
   meta?: string;
-  icon: Component;
   editing?: boolean;
 }
 
