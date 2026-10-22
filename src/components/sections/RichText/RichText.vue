@@ -58,8 +58,6 @@ import { nextTick } from "vue";
 const node = ref<Node>();
 const pos = ref<number>(0);
 const block = ref<boolean>(false);
-const oldTitle = ref("");
-const oldContent = ref("");
 
 const uiStore = useUiStore();
 const { richtextDialog: dialog } = storeToRefs(uiStore);
@@ -75,6 +73,12 @@ const closeMathDialog = () => {
   pos.value = 0;
   block.value = false;
 };
+
+const emit = defineEmits<{
+  onReady: [];
+  onTitleSave: [title: string];
+  onContentSave: [content: string, plain_text: string, word_count: number];
+}>();
 
 const createEditor = (v: any): Editor => {
   return new Editor({
@@ -139,11 +143,9 @@ const createEditor = (v: any): Editor => {
     ],
     onUpdate: ({ editor }) => {
       content.value = JSON.stringify(editor.getJSON());
-      if (content.value === oldContent.value) return;
       const text = editor.getText();
       const length = text.length;
-      delayedSaveContent(content.value, text, length);
-      oldContent.value = content.value;
+      emit("onContentSave", content.value, text, length);
     },
   });
 };
@@ -162,72 +164,39 @@ watch(
 
 interface Props {
   id: string;
+  title: string;
+  content: string;
 }
 
 const editor = shallowRef<Editor>();
 
 const props = defineProps<Props>();
-const svc = useDocSvc();
 
-const title = ref("");
+// 直接用 props 初始化，避免 onMounted 里赋值触发 title watch，
+// 在每次挂载时多发一次 onTitleSave 把标题多余地写回数据库
+const title = ref(props.title);
 const content = ref("");
 
-const emit = defineEmits<{
-  onReady: []; // 事件名是 ready，参数是一个空元组
-}>();
-
 onMounted(async () => {
-  const doc = await svc.getById(props.id);
-  if (doc) {
-    const t = doc.title || "";
-    title.value = t;
-    oldTitle.value = t;
-    const c = doc.content || "";
-    content.value = c;
-    oldContent.value = c;
-    let v;
-    try {
-      v = JSON.parse(c);
-    } catch {
-      v = c;
-    }
-    editor.value = createEditor(v);
+  const c = props.content;
+  content.value = c;
+  let v;
+  try {
+    v = JSON.parse(c);
+  } catch {
+    v = c;
   }
+  editor.value = createEditor(v);
   // 等待dom加载完毕,再通知父组件打开窗口，否则打开新文档时，dom未加载完毕，窗口打开有dom的闪烁
   await nextTick();
   emit("onReady");
 });
 
-import { useDebounceFn } from "@vueuse/core";
-import { emitTo } from "@tauri-apps/api/event";
-
-const delayedSaveTitle = useDebounceFn(async (v: string) => {
-  await svc.update(props.id, { title: v });
-  // 等保存落库完成后再通知主窗口刷新，否则主窗口会查到旧数据
-  emitTo("main", "refresh");
-}, 1000);
-
 watch(
   () => title.value,
   (v) => {
-    // 防止重复保存，尤其是最开始挂载引发保存
-    if (v === oldTitle.value) return;
-    delayedSaveTitle(v);
-    oldTitle.value = v;
+    emit("onTitleSave", v);
   },
-);
-
-const delayedSaveContent = useDebounceFn(
-  async (content: string, plain_text: string, word_count: number) => {
-    await svc.update(props.id, {
-      content: content,
-      plain_text: plain_text,
-      word_count: word_count,
-    });
-    // 等保存落库完成后再通知主窗口刷新，否则主窗口会查到旧数据
-    emitTo("main", "refresh");
-  },
-  1000,
 );
 
 onBeforeUnmount(() => {
