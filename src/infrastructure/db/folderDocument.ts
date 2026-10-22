@@ -19,9 +19,9 @@ export const useFolderDocumentDb = () => {
       [folderId],
     );
     await db.execute(
-      `INSERT OR IGNORE INTO folder_document (id, folder_id, document_id, sort_order)
-       VALUES ($1, $2, $3, $4)`,
-      [crypto.randomUUID(), folderId, documentId, (rows[0]?.max ?? -1) + 1],
+      `INSERT OR IGNORE INTO folder_document (folder_id, document_id, sort_order)
+       VALUES ($1, $2, $3)`,
+      [folderId, documentId, (rows[0]?.max ?? -1) + 1],
     );
   };
 

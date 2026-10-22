@@ -9,6 +9,7 @@ import { onMounted, onUnmounted, ref } from "vue";
 const name = ref("");
 const id = ref("");
 const key = ref("");
+const archiveId = ref("");
 const svc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
 
@@ -22,9 +23,9 @@ onMounted(async () => {
         id.value = data.id;
       } else if (data.type === "archive") {
         const folderId = data.id;
+        archiveId.value = folderId;
         const archive = await svc.getFolderById({ id: folderId });
         name.value = archive?.name || "";
-        const children = await svc.getArchiveChildren({ id: folderId });
       }
     },
   );
@@ -43,7 +44,7 @@ onUnmounted(() => {
 
 <template>
   <div class="w-full h-full flex">
-    <LeftBar />
+    <LeftBar v-if="archiveId" :id="archiveId" />
     <div class="flex-1 min-w-0 px-2 pb-2">
       <div class="w-full h-full bg-white rounded-lg overflow-hidden">
         <RichText v-if="id" :id="id" :key="key" @on-ready="ready" />
