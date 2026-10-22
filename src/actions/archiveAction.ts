@@ -1,6 +1,7 @@
 import { useFdSvc } from "@/services/folder";
 import { useArchiveStore } from "@/stores/archiveStore";
 import { useUiStore } from "@/stores/uiStore";
+import { emitTo } from "@tauri-apps/api/event";
 import { storeToRefs } from "pinia";
 
 export const useArchiveAction = () => {
@@ -69,6 +70,12 @@ export const useArchiveAction = () => {
     });
   };
 
+  const openArchive = async (id: string) => {
+    await emitTo("editor", "open", { type: "archive", id });
+    await svc.update({ id: id, viewedAt: Date.now() });
+    await refresh();
+  };
+
   return {
     getSortedArchives,
     refresh,
@@ -77,5 +84,6 @@ export const useArchiveAction = () => {
     remove,
     checkArchives,
     addDocToArchives,
+    openArchive,
   };
 };

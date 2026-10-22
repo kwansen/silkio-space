@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS documents (
     title TEXT,
     content TEXT,
     plain_text TEXT,
-    doc_type TEXT NOT NULL DEFAULT 'document',
+    doc_type TEXT NOT NULL ,
     word_count INTEGER NOT NULL,
     viewed_at INTEGER NOT NULL,
     created_at INTEGER NOT NULL,
@@ -45,37 +45,17 @@ CREATE TABLE IF NOT EXISTS folders (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     parent_id TEXT,
-    sort_order INTEGER NOT NULL DEFAULT 0,
-    viewed_at INTEGER,
-    created_at INTEGER,
-    updated_at INTEGER
+    sort_order INTEGER NOT NULL,
+    viewed_at INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_folders_parent_id ON folders(parent_id);
 
 CREATE TABLE IF NOT EXISTS folder_document (
-    id TEXT,
     folder_id TEXT NOT NULL,
     document_id TEXT NOT NULL,
     sort_order INTEGER NOT NULL,
     PRIMARY KEY (folder_id, document_id)
 );
-
-CREATE INDEX IF NOT EXISTS idx_fd_index_folder ON folder_document(folder_id);
-CREATE INDEX IF NOT EXISTS idx_fd_index_doc ON folder_document(document_id);
-
-CREATE TABLE IF NOT EXISTS document_images (
-    doc_id TEXT NOT NULL,
-    image_path TEXT NOT NULL,
-    PRIMARY KEY (doc_id, image_path)
-) WITHOUT ROWID;
-
-CREATE TABLE IF NOT EXISTS sync_log (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    operation TEXT NOT NULL,
-    entity_type TEXT NOT NULL,
-    entity_id TEXT NOT NULL,
-    payload TEXT,
-    error TEXT,
-    created_at INTEGER NOT NULL,
-    retry_count INTEGER DEFAULT 0,
-    status TEXT DEFAULT 'pending'
-);
+CREATE INDEX IF NOT EXISTS idx_folder_document_document ON folder_document (document_id);

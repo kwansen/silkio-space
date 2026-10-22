@@ -1,35 +1,83 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { useEditorViewStore } from "@/stores/editorView";
-import NavHeader from "./NavHeader.vue";
-import TocHeader from "./TocHeader.vue";
-import NavMain from "./NavMain.vue";
-import TocMain from "./TocMain.vue";
-import ScrollArea from "@/components/shared/ScrollArea.vue";
+import { createSpliceTree } from "@splicetree/core";
+import { useSpliceTree, SpliceTreeNode } from "@splicetree/adapter-vue";
+import dnd, { DropPosition } from "@splicetree/plugin-dnd";
+import Folder from "@/components/icons/Folder.vue";
+import { ref } from "vue";
+import Doc from "@/components/icons/Doc.vue";
+import ArrowRight from "@/components/icons/ArrowRight.vue";
+import FolderOpenLine from "@/components/icons/FolderOpenLine.vue";
 
-const store = useEditorViewStore();
+interface CustomNode {
+  id: string;
+  title: string;
+  parent: string | null;
+  type: "folder" | "doc";
+}
 
-// 元函数：当前是否为大纲视图（直接打开文档时固定大纲，打开归档时由标题栏切换控制）
-const isOutline = computed(() =>
-  store.folder ? store.sidebarView === "outline" : true,
-);
+const data = ref<CustomNode[]>([
+  { id: "a", title: "搜索引擎", parent: null, type: "folder" },
+  { id: "b", title: "百度", parent: "a", type: "doc" },
+  { id: "c", title: "Google", parent: "a", type: "doc" },
+  { id: "d", title: "Bing", parent: "a", type: "doc" },
+  { id: "e", title: "搜狗", parent: "a", type: "doc" },
+  { id: "f", title: "360", parent: "a", type: "doc" },
+  { id: "g", title: "在线文档", parent: null, type: "folder" },
+  { id: "h", title: "飞书", parent: "g", type: "doc" },
+  { id: "i", title: "金山文档", parent: "g", type: "doc" },
+  { id: "j", title: "腾讯文档", parent: "g", type: "doc" },
+  { id: "k", title: "轻流", parent: "g", type: "doc" },
+]);
+
+const { items, dragProps, ghostStyle } = useSpliceTree(data, {
+  configuration: {
+    keyField: "id",
+    parentField: "parent",
+  },
+  plugins: [dnd],
+});
+
+function allowNest(target: SpliceTreeNode<unknown>) {
+  return (target.original as CustomNode).type !== "doc";
+}
+
+function allowSortable(_target: SpliceTreeNode<unknown>) {
+  return true;
+}
 </script>
-
 <template>
-  <div class="w-65 h-full flex flex-col select-none">
-    <header class="h-8">
-      <!-- 导航头部 -->
-      <NavHeader v-if="!isOutline" />
-      <!-- 大纲头部 -->
-      <TocHeader v-else />
-    </header>
-    <main class="flex-1">
-      <ScrollArea>
-        <!-- 导航列表 -->
-        <NavMain v-if="!isOutline" />
-        <!-- 大纲列表 -->
-        <TocMain v-else />
-      </ScrollArea>
-    </main>
+  <div class="w-65 h-full select-none relative">
+    <div v-bind="ghostStyle()"></div>
+    <div
+      v-for="i in items"
+      :key="i.id"
+      v-bind="
+        dragProps(i.id, {
+          nestable: allowNest,
+          sortable: allowSortable,
+        })
+      "
+      :style="{ paddingLeft: `${i.level * 16}px` }"
+      class="flex items-center hover:bg-white py-0.5"
+      @click="i.toggleExpand()"
+    >
+      <ArrowRight
+        class="size-4"
+        v-if="i.original?.type === 'folder'"
+        :class="i.isExpanded() ? 'rotate-90' : ''"
+      />
+
+      <Folder
+        v-if="i.original?.type === 'folder' && !i.isExpanded()"
+        class="size-4"
+      />
+      <FolderOpenLine
+        v-if="i.original?.type === 'folder' && i.isExpanded()"
+        class="size-4"
+      />
+      <Doc v-if="i.original?.type === 'doc'" class="size-4" />
+
+      <span class="pl-1"> {{ i.original.title }}</span>
+    </div>
   </div>
 </template>

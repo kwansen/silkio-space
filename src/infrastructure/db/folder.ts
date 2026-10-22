@@ -13,6 +13,14 @@ export interface CreateFolderParams {
   updated_at?: number;
 }
 
+// 归档更新参数（仅传入的字段会被更新）
+export interface UpdateFolderParams {
+  name?: string;
+  parent_id?: string | null;
+  sort_order?: number;
+  viewed_at?: number;
+}
+
 // 可排序字段：手动排序（自由）、名称、归档自身浏览时间（最近打开）
 export type FolderSortField = "sort_order" | "name" | "viewed_at";
 
@@ -236,6 +244,45 @@ export const useFolderDb = () => {
     );
   };
 
+  // 元函数：更新归档（动态 SET，仅更新传入字段；仅 viewed_at 浏览时间变更时不刷新 updated_at；
+  // parent_id 环检测由服务层在调用前完成，拖拽移动场景请走 moveFolderInto）
+  const update = async (
+    db: Database,
+    id: string,
+    params: UpdateFolderParams,
+  ): Promise<void> => {
+    const fields: string[] = [];
+    const values: unknown[] = [];
+    if (params.name !== undefined) {
+      fields.push(`name = $${values.length + 1}`);
+      values.push(params.name);
+    }
+    if (params.parent_id !== undefined) {
+      fields.push(`parent_id = $${values.length + 1}`);
+      values.push(params.parent_id);
+    }
+    if (params.sort_order !== undefined) {
+      fields.push(`sort_order = $${values.length + 1}`);
+      values.push(params.sort_order);
+    }
+    if (params.viewed_at !== undefined) {
+      fields.push(`viewed_at = $${values.length + 1}`);
+      values.push(params.viewed_at);
+    }
+    if (fields.length === 0) return;
+    // 存在 viewed_at 以外的字段才视为内容变更，刷新 updated_at
+    const touchUpdatedAt = Object.keys(params).some((k) => k !== "viewed_at");
+    const setSql = touchUpdatedAt
+      ? `${fields.join(", ")}, updated_at = $${values.length + 1}`
+      : fields.join(", ");
+    if (touchUpdatedAt) values.push(Date.now());
+    values.push(id);
+    await db.execute(
+      `UPDATE folders SET ${setSql} WHERE id = $${values.length}`,
+      values,
+    );
+  };
+
   // 排序字段 → SQL ORDER BY 表达式
   const orderByExpr: Record<FolderSortField, string> = {
     sort_order: "sort_order",
@@ -370,6 +417,7 @@ export const useFolderDb = () => {
     remove,
     touch,
     rename,
+    update,
     getById,
     getSorted,
     reorder,

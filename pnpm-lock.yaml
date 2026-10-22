@@ -35,6 +35,15 @@ importers:
       '@leafer-in/viewport':
         specifier: ^2.2.9
         version: 2.2.9(@leafer-in/interface@2.2.9(@leafer-ui/interface@2.2.9)(@leafer/interface@2.2.9))(@leafer-ui/core@2.2.9)(@leafer-ui/interface@2.2.9)
+      '@splicetree/adapter-vue':
+        specifier: ^3.1.1
+        version: 3.1.1(vue@3.5.41(typescript@5.6.3))
+      '@splicetree/core':
+        specifier: ^3.1.1
+        version: 3.1.1
+      '@splicetree/plugin-dnd':
+        specifier: ^3.1.1
+        version: 3.1.1
       '@tailwindcss/vite':
         specifier: ^4.3.3
         version: 4.3.3(vite@6.4.3(@types/node@26.2.0)(jiti@2.7.0)(lightningcss@1.32.0))
@@ -48,8 +57,8 @@ importers:
         specifier: ^2.7.2
         version: 2.7.2
       '@tauri-apps/plugin-sql':
-        specifier: ~2.4.1
-        version: 2.4.1
+        specifier: ~2.6.0
+        version: 2.6.0
       '@tiptap/core':
         specifier: ^3.32.0
         version: 3.32.0(@tiptap/pm@3.32.0)
@@ -800,6 +809,17 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@splicetree/adapter-vue@3.1.1':
+    resolution: {integrity: sha512-BIEmUdGUryP6eNkGnpzgDEKxaMAuDmqzdCiet5XHQ5fWk1ssX4dNxwZ2mljsa/JtQSBNHytJTm2k0tU4vwce2g==}
+    peerDependencies:
+      vue: ^3.0.0
+
+  '@splicetree/core@3.1.1':
+    resolution: {integrity: sha512-JFuciQ0sRGmNDSwT9NEvmMZC6+ofblmVFudT4sxCk5NHLe5bjPRoAN8Rcf28Ngk5/4chACC+nAE5RyegakvLBA==}
+
+  '@splicetree/plugin-dnd@3.1.1':
+    resolution: {integrity: sha512-xCuCwnqRO35gOt1okMy6crOWQwMRKa1szP3+5Fm/4edVi1AhsFkVF1LeZ37Yp+FEjeBTYYXpIYWsL3U/87o7Xw==}
+
   '@svgdotjs/svg.js@3.2.0':
     resolution: {integrity: sha512-Tr8p+QVP7y+QT1GBlq1Tt57IvedVH8zCPoYxdHLX0Oof3a/PqnC/tXAkVufv1JQJfsDHlH/UrjcDfgxSofqSNA==}
 
@@ -982,8 +1002,8 @@ packages:
   '@tauri-apps/plugin-opener@2.7.2':
     resolution: {integrity: sha512-LyybP1VSzTMQiaFYcsbAse47KpivlyXdLZMQzGLEnkgQacGESnpjAfFoQ6h5sqWgAdZDH9szYjPzHMpv0Sz+TQ==}
 
-  '@tauri-apps/plugin-sql@2.4.1':
-    resolution: {integrity: sha512-w9fImJ2XaCLFEj+kLbs8nO/Idq89mpjl//Bm37JZo8AugbaVzaW5iHTjjcozHjtLgjb0IAQjYromv0YpzDOFkA==}
+  '@tauri-apps/plugin-sql@2.6.0':
+    resolution: {integrity: sha512-UfP4p3Zwh6N7ODRMgnMgXSN6rfUxFo7YXHnRjX8L3Vx7i+IV0bh+r8puwv2OnGq04SLDZFY+LvotxN+pJdZ1Zg==}
 
   '@tiptap/core@3.32.0':
     resolution: {integrity: sha512-Ghh2h02GKSqzytQGcLV4espYOG4EHxjj0MsrUB2Vnr47xmlZYRf6r7k2J09H+JpBdaGrWwrTkyBEi5i3c3yy2Q==}
@@ -2681,6 +2701,14 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.62.4':
     optional: true
 
+  '@splicetree/adapter-vue@3.1.1(vue@3.5.41(typescript@5.6.3))':
+    dependencies:
+      vue: 3.5.41(typescript@5.6.3)
+
+  '@splicetree/core@3.1.1': {}
+
+  '@splicetree/plugin-dnd@3.1.1': {}
+
   '@svgdotjs/svg.js@3.2.0': {}
 
   '@tailwindcss/node@4.3.3':
@@ -2808,7 +2836,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.12.4
 
-  '@tauri-apps/plugin-sql@2.4.1':
+  '@tauri-apps/plugin-sql@2.6.0':
     dependencies:
       '@tauri-apps/api': 2.12.4
 

@@ -90,6 +90,33 @@ export const useFdSvc = () => {
   };
   //#endregion
 
+  //#region CHECKED：更新文件夹（通用）
+  /***
+   * 通用更新：仅更新传入字段（name/parentId/sortOrder/viewedAt），同时刷新 updated_at
+   * （归档不参与搜索索引，无需索引同步；parent_id 变更不做环检测，拖拽移动请使用 moveFolderInto）
+   * @param params.id        必须，文件夹 id
+   * @param params.name      可选，新名称
+   * @param params.parentId  可选，父节点 id；传 null 表示移至根级
+   * @param params.sortOrder 可选，排序值
+   * @param params.viewedAt  可选，最近打开时间；仅更新该字段时不刷新 updated_at（仅同步服务端数据时填写）
+   ***/
+  const update = async (params: {
+    id: string;
+    name?: string;
+    parentId?: string | null;
+    sortOrder?: number;
+    viewedAt?: number;
+  }): Promise<void> => {
+    const db = getDb();
+    return folderDb.update(db, params.id, {
+      name: params.name,
+      parent_id: params.parentId,
+      sort_order: params.sortOrder,
+      viewed_at: params.viewedAt,
+    });
+  };
+  //#endregion
+
   //#region CKECKED：获取归档子项
   /***
    * 获取归档下的文件夹和文档（统一 sort_order 升序穿插排列）
@@ -417,6 +444,7 @@ export const useFdSvc = () => {
     deleteFolder,
     renameFolder,
     updateFolderViewedAt,
+    update,
     getArchiveChildren,
     reorderChildren,
     reorderFolders,

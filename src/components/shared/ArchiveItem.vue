@@ -12,7 +12,6 @@ import { useTemplateRef } from "vue";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import Delete from "../icons/Delete.vue";
-import { useDocAction } from "@/actions/docAction.ts";
 import Pencil from "../icons/Pencil.vue";
 import ArchiveItemInput from "./ArchiveItemInput.vue";
 import { useArchiveAction } from "@/actions/archiveAction.ts";
@@ -34,7 +33,7 @@ const hoverKey = ref<string>("");
 const openedKey = ref<string>("");
 const target = useTemplateRef("target");
 const floating = useTemplateRef("floating");
-const { openDoc } = useDocAction();
+const { openArchive } = useArchiveAction();
 
 const hover = (v: string) => {
   hoverKey.value = v;
@@ -112,7 +111,7 @@ const action = useArchiveAction();
       "
       @mouseenter="hover(itemKey)"
       @mouseleave="unHover"
-      @click="openDoc(itemKey)"
+      @click="openArchive(itemKey)"
     >
       <!-- 图标 -->
       <!-- <div class="w-full flex items-center">
