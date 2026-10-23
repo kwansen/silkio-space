@@ -14,7 +14,6 @@ import { storeToRefs } from "pinia";
 
 const oldContent = ref("");
 
-const key = ref("");
 const archiveId = ref("");
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
@@ -34,13 +33,13 @@ onMounted(async () => {
         setTitle(doc?.title || "");
         setContent(c);
         setDocType(doc?.doc_type);
-        key.value = Date.now().toString();
+        setKey(Date.now().toString());
       } else if (t === "archive") {
         archiveId.value = data.id;
-        const docNavList = await fdSvc.getArchiveDocEntries({ id: data.id });
-        setDocNavList(docNavList);
-        const doc = docNavList[0]
-          ? await docSvc.getById(docNavList[0].id)
+        const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
+        setDocEntries(docEntries);
+        const doc = docEntries[0]
+          ? await docSvc.getById(docEntries[0].id)
           : null;
         setId(doc?.id);
         const c = doc?.content || "";
@@ -48,7 +47,7 @@ onMounted(async () => {
         setTitle(doc?.title || "");
         setContent(c);
         setDocType(doc?.doc_type);
-        key.value = Date.now().toString();
+        setKey(Date.now().toString());
       }
     },
   );
@@ -94,13 +93,15 @@ const onContentSave = (
 };
 
 const editorStore = useEditorStore();
-const { id, docNavList, title, content, docType } = storeToRefs(editorStore);
-const { setId, setTitle, setContent, setDocType, setDocNavList } = editorStore;
+const { id, docEntries, title, content, docType, key } =
+  storeToRefs(editorStore);
+const { setId, setTitle, setContent, setDocType, setDocEntries, setKey } =
+  editorStore;
 </script>
 
 <template>
   <div class="w-full h-full flex">
-    <LeftBar v-if="docNavList" v-model="docNavList" />
+    <LeftBar v-if="docEntries" v-model="docEntries" />
     <div class="flex-1 min-w-0 px-2 pb-2">
       <div class="w-full h-full bg-white rounded-lg overflow-hidden">
         <RichText

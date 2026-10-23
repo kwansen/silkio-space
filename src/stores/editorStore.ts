@@ -1,4 +1,4 @@
-import { DocNav, DocType } from "@/types/doc";
+import { DocEntry, DocType } from "@/types/doc";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -15,13 +15,17 @@ export const useEditorStore = defineStore("editor", () => {
   const setContent = (v: string) => {
     content.value = v;
   };
-  const docNavList = ref<DocNav[]>([]);
-  const setDocNavList = (v: DocNav[]) => {
-    docNavList.value = v;
+  const docEntries = ref<DocEntry[]>([]);
+  const setDocEntries = (v: DocEntry[]) => {
+    docEntries.value = v;
   };
   const docType = ref<DocType>();
   const setDocType = (v: DocType | undefined) => {
     docType.value = v;
+  };
+  const key = ref("");
+  const setKey = (v: string) => {
+    key.value = v;
   };
 
   return {
@@ -31,9 +35,11 @@ export const useEditorStore = defineStore("editor", () => {
     setTitle,
     content,
     setContent,
-    docNavList,
-    setDocNavList,
+    docEntries,
+    setDocEntries,
     docType,
     setDocType,
+    key,
+    setKey,
   };
 });

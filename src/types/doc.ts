@@ -23,7 +23,7 @@ export interface ScoredDoc extends Doc {
 }
 
 // 用作目录列表
-export interface DocNav extends Omit<Doc, "content" | "plain_text"> {}
+export interface DocEntry extends Omit<Doc, "content" | "plain_text"> {}
 
 export interface TocItem {
   id: string;

@@ -1,5 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
-import type { Doc, DocNav } from "@/types/doc";
+import type { Doc, DocEntry } from "@/types/doc";
 
 // 归档-文档关联（folder_document）数据库元函数集合
 export const useFolderDocumentDb = () => {
@@ -102,8 +102,8 @@ export const useFolderDocumentDb = () => {
   const getDocEntriesByFolder = async (
     db: Database,
     folderId: string,
-  ): Promise<DocNav[]> => {
-    return db.select<DocNav[]>(
+  ): Promise<DocEntry[]> => {
+    return db.select<DocEntry[]>(
       `SELECT d.id, d.title, d.doc_type, d.word_count, d.viewed_at, d.created_at, d.updated_at
        FROM folder_document fd
        JOIN documents d ON d.id = fd.document_id
