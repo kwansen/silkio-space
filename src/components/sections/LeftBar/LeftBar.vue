@@ -13,11 +13,7 @@ const docSvc = useDocSvc();
 
 const openEntry = async (entry: DocEntry) => {
   const doc = await docSvc.getById(entry.id);
-  store.setId(doc?.id);
-  store.setTitle(doc?.title || "");
-  store.setContent(doc?.content || "");
-  store.setDocType(doc?.doc_type);
-  store.setKey(Date.now().toString());
+  store.setDoc(doc);
 };
 </script>
 

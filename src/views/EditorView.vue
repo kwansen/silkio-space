@@ -12,8 +12,6 @@ import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
 
-const oldContent = ref("");
-
 const archiveId = ref("");
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
@@ -27,13 +25,7 @@ onMounted(async () => {
       const t = data.type;
       if (t === "doc") {
         const doc = await docSvc.getById(data.id);
-        setId(doc?.id);
-        const c = doc?.content || "";
-        oldContent.value = c;
-        setTitle(doc?.title || "");
-        setContent(c);
-        setDocType(doc?.doc_type);
-        setKey(Date.now().toString());
+        setDoc(doc);
       } else if (t === "archive") {
         archiveId.value = data.id;
         const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
@@ -41,13 +33,7 @@ onMounted(async () => {
         const doc = docEntries[0]
           ? await docSvc.getById(docEntries[0].id)
           : null;
-        setId(doc?.id);
-        const c = doc?.content || "";
-        oldContent.value = c;
-        setTitle(doc?.title || "");
-        setContent(c);
-        setDocType(doc?.doc_type);
-        setKey(Date.now().toString());
+        setDoc(doc);
       }
     },
   );
@@ -93,10 +79,9 @@ const onContentSave = (
 };
 
 const editorStore = useEditorStore();
-const { id, docEntries, title, content, docType, key } =
+const { id, docEntries, title, content, docType, key, oldContent } =
   storeToRefs(editorStore);
-const { setId, setTitle, setContent, setDocType, setDocEntries, setKey } =
-  editorStore;
+const { setDoc, setDocEntries } = editorStore;
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-import { DocEntry, DocType } from "@/types/doc";
+import { Doc, DocEntry, DocType } from "@/types/doc";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -27,6 +27,18 @@ export const useEditorStore = defineStore("editor", () => {
   const setKey = (v: string) => {
     key.value = v;
   };
+  // 上次落库的内容快照，用于跳过无变化的保存
+  const oldContent = ref("");
+  // 元函数：整册替换当前文档（id/title/content/docType），并重置内容快照与重挂载 key
+  const setDoc = (doc: Doc | null) => {
+    setId(doc?.id);
+    const c = doc?.content || "";
+    oldContent.value = c;
+    setTitle(doc?.title || "");
+    setContent(c);
+    setDocType(doc?.doc_type);
+    setKey(Date.now().toString());
+  };
 
   return {
     id,
@@ -41,5 +53,7 @@ export const useEditorStore = defineStore("editor", () => {
     setDocType,
     key,
     setKey,
+    oldContent,
+    setDoc,
   };
 });
