@@ -199,27 +199,6 @@ export const useFolderDb = () => {
     return (rows[0]?.e ?? 0) === 1;
   };
 
-  // 元函数：查询归档子树内第一篇文档（优先根容器按加入顺序，其次后代层级）
-  const getFirstDocInSubtree = async (
-    db: Database,
-    folderId: string,
-  ): Promise<Doc | null> => {
-    const rows = await db.select<Doc[]>(
-      `WITH RECURSIVE sub(id) AS (
-         SELECT $1
-         UNION ALL
-         SELECT f.id FROM folders f JOIN sub ON f.parent_id = sub.id
-       )
-       SELECT d.* FROM folder_document fd
-       JOIN documents d ON d.id = fd.document_id
-       WHERE fd.folder_id IN (SELECT id FROM sub)
-       ORDER BY (fd.folder_id = $1) DESC, fd.sort_order ASC
-       LIMIT 1`,
-      [folderId],
-    );
-    return rows.length > 0 ? rows[0] : null;
-  };
-
   // 元函数：更新归档浏览时间（打开归档时调用，不影响 updated_at；viewedAt 仅同步服务端数据时传入，不传取当前时间）
   const touch = async (
     db: Database,
@@ -427,7 +406,6 @@ export const useFolderDb = () => {
     setParent,
     setSortOrder,
     hasDocInSubtree,
-    getFirstDocInSubtree,
     getSubtreeFolders,
     getSubtreeDocs,
     reorderChildren,

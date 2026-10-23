@@ -25,6 +25,7 @@ const editingKey = ref<string>("");
     <draggable
       :list="store.sortedArchives"
       item-key="id"
+      :animation="200"
       ghost-class="ghost"
       :disabled="sort !== 'manual' || editingKey"
       @end="dragEnd"

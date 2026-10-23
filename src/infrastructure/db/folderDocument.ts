@@ -1,5 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
-import type { Doc } from "@/infrastructure/db/document.ts";
+import type { Doc, DocNav } from "@/types/doc";
 
 // 归档-文档关联（folder_document）数据库元函数集合
 export const useFolderDocumentDb = () => {
@@ -63,7 +63,10 @@ export const useFolderDocumentDb = () => {
   };
 
   // 元函数：删除文档的全部归档关联（文档被永久删除时调用，表无外键级联）
-  const removeByDoc = async (db: Database, documentId: string): Promise<void> => {
+  const removeByDoc = async (
+    db: Database,
+    documentId: string,
+  ): Promise<void> => {
     await db.execute("DELETE FROM folder_document WHERE document_id = $1", [
       documentId,
     ]);
@@ -81,22 +84,6 @@ export const useFolderDocumentDb = () => {
     return rows.map((r) => r.folder_id);
   };
 
-  // 元函数：查询归档下第一个文档（按加入顺序 sort_order 升序，无文档返回 null）
-  const getFirstDoc = async (
-    db: Database,
-    folderId: string,
-  ): Promise<Doc | null> => {
-    const rows = await db.select<Doc[]>(
-      `SELECT d.* FROM folder_document fd
-       JOIN documents d ON d.id = fd.document_id
-       WHERE fd.folder_id = $1
-       ORDER BY fd.sort_order ASC
-       LIMIT 1`,
-      [folderId],
-    );
-    return rows.length > 0 ? rows[0] : null;
-  };
-
   // 元函数：查询归档下全部文档（按加入顺序 sort_order 升序）
   const getDocsByFolder = async (
     db: Database,
@@ -104,6 +91,21 @@ export const useFolderDocumentDb = () => {
   ): Promise<Doc[]> => {
     return db.select<Doc[]>(
       `SELECT d.* FROM folder_document fd
+       JOIN documents d ON d.id = fd.document_id
+       WHERE fd.folder_id = $1
+       ORDER BY fd.sort_order ASC`,
+      [folderId],
+    );
+  };
+
+  // 元函数：查询归档下全部文档条目（目录用，不含 content/plain_text，按加入顺序 sort_order 升序）
+  const getDocEntriesByFolder = async (
+    db: Database,
+    folderId: string,
+  ): Promise<DocNav[]> => {
+    return db.select<DocNav[]>(
+      `SELECT d.id, d.title, d.doc_type, d.word_count, d.viewed_at, d.created_at, d.updated_at
+       FROM folder_document fd
        JOIN documents d ON d.id = fd.document_id
        WHERE fd.folder_id = $1
        ORDER BY fd.sort_order ASC`,
@@ -125,5 +127,15 @@ export const useFolderDocumentDb = () => {
     }
   };
 
-  return { add, remove, addMany, removeMany, removeByDoc, getFolderIdsByDoc, getFirstDoc, getDocsByFolder, reorder };
+  return {
+    add,
+    remove,
+    addMany,
+    removeMany,
+    removeByDoc,
+    getFolderIdsByDoc,
+    getDocsByFolder,
+    getDocEntriesByFolder,
+    reorder,
+  };
 };

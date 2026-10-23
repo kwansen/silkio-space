@@ -7,7 +7,7 @@ import {
 } from "@/infrastructure/db/folder.ts";
 import { useFolderDocumentDb } from "@/infrastructure/db/folderDocument.ts";
 import { Folder } from "@/types/archive";
-import { Doc } from "@/types/doc";
+import { Doc, DocNav } from "@/types/doc";
 
 // 归档（文件夹）创建参数（id 与时间字段仅在同步服务端数据时传入，本地创建自动生成/取当前时间）
 export interface CreateFolderParams {
@@ -365,27 +365,17 @@ export const useFdSvc = () => {
   };
   //#endregion
 
-  //#region CHECKED：获取归档子树内第一篇文档
+  //#region CHECKED：获取归档下文档条目（目录）
   /***
-   * 按加入顺序（sort_order 升序）返回归档子树内第一篇文档，无文档返回 null
-   * @param params.folderId 必须，归档（容器）id
+   * 仅返回直接关联该归档的文档条目（不含子文件夹内文档，不含 content/plain_text），按加入顺序 sort_order 升序
+   * @param params.id 必须，归档 id
+   * @returns 文档条目数组（DocNav，用作目录列表）
    ***/
-  const getFirstDocInSubtree = async (params: {
-    folderId: string;
-  }): Promise<Doc | null> => {
+  const getArchiveDocEntries = async (params: {
+    id: string;
+  }): Promise<DocNav[]> => {
     const db = getDb();
-    const descendantIds = await folderDb.getDescendantIds(db, params.folderId);
-    const ids = [params.folderId, ...descendantIds];
-    const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
-    const rows = await db.select<Doc[]>(
-      `SELECT d.* FROM folder_document fd
-       JOIN documents d ON d.id = fd.document_id
-       WHERE fd.folder_id IN (${placeholders})
-       ORDER BY fd.sort_order ASC
-       LIMIT 1`,
-      ids,
-    );
-    return rows[0] ?? null;
+    return folderDocumentDb.getDocEntriesByFolder(db, params.id);
   };
   //#endregion
 
@@ -471,7 +461,7 @@ export const useFdSvc = () => {
     removeDocFromFolders,
     removeDocFromSubtree,
     getDocsByFolder,
-    getFirstDocInSubtree,
+    getArchiveDocEntries,
     getFolderById,
     hasDocInSubtree,
     getDescendantIds,

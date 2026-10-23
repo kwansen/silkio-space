@@ -6,6 +6,11 @@ import { useFdSvc } from "@/services/folder";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { onMounted, onUnmounted, ref } from "vue";
+import { useDebounceFn } from "@vueuse/core";
+import { emitTo } from "@tauri-apps/api/event";
+import { useDocSvc } from "@/services/document";
+import { useEditorStore } from "@/stores/editorStore";
+import { storeToRefs } from "pinia";
 
 const oldContent = ref("");
 
@@ -26,15 +31,21 @@ onMounted(async () => {
         setId(doc?.id);
         const c = doc?.content || "";
         oldContent.value = c;
+        setTitle(doc?.title || "");
         setContent(c);
         setDocType(doc?.doc_type);
         key.value = Date.now().toString();
       } else if (t === "archive") {
         archiveId.value = data.id;
-        const doc = await fdSvc.getFirstDocInSubtree({ folderId: data.id });
+        const docNavList = await fdSvc.getArchiveDocEntries({ id: data.id });
+        setDocNavList(docNavList);
+        const doc = docNavList[0]
+          ? await docSvc.getById(docNavList[0].id)
+          : null;
         setId(doc?.id);
         const c = doc?.content || "";
         oldContent.value = c;
+        setTitle(doc?.title || "");
         setContent(c);
         setDocType(doc?.doc_type);
         key.value = Date.now().toString();
@@ -52,12 +63,6 @@ const ready = () => {
 onUnmounted(() => {
   stopOnOpen?.();
 });
-
-import { useDebounceFn } from "@vueuse/core";
-import { emitTo } from "@tauri-apps/api/event";
-import { useDocSvc } from "@/services/document";
-import { useEditorStore } from "@/stores/editorStore";
-import { storeToRefs } from "pinia";
 
 const delayedSaveContent = useDebounceFn(
   async (
@@ -90,7 +95,7 @@ const onContentSave = (
 
 const editorStore = useEditorStore();
 const { id, docNavList, title, content, docType } = storeToRefs(editorStore);
-const { setId, setTitle, setContent, setDocType } = editorStore;
+const { setId, setTitle, setContent, setDocType, setDocNavList } = editorStore;
 </script>
 
 <template>

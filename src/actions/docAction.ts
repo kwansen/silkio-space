@@ -26,14 +26,14 @@ export const useDocAction = () => {
   const openDoc = async (id: string) => {
     await emitTo("editor", "open", { type: "doc", id });
     await svc.update(id, { viewed_at: Date.now() });
-    await Promise.all([refreshSorted(), refreshSearched()]);
+    await refreshAll();
   };
 
   // 元函数：创建富文本后刷新列表（排序保持当前页，搜索按最后关键词重查）
   const createRichtext = async () => {
     try {
       const id = await svc.create({ doc_type: "richText" });
-      await Promise.all([refreshSorted(), refreshSearched()]);
+      await refreshAll();
       await emitTo("editor", "open", { type: "doc", id });
     } catch (e) {
       console.error(e);
@@ -42,7 +42,7 @@ export const useDocAction = () => {
 
   const remove = async (id: string) => {
     await svc.remove(id);
-    await Promise.all([refreshSorted(), refreshSearched()]);
+    await refreshAll();
   };
 
   // 元函数：按关键词搜索文档
@@ -102,6 +102,10 @@ export const useDocAction = () => {
   const goSortedNext = async () => {
     if (sortStore.currentPage < sortStore.totalPages)
       await getSortedDocs(uiStore.currentDocSort, sortStore.currentPage + 1);
+  };
+
+  const refreshAll = async () => {
+    await Promise.all([refreshSorted(), refreshSearched()]);
   };
 
   return {
