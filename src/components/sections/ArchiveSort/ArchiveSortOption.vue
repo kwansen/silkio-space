@@ -6,7 +6,7 @@ import { useUiStore } from "@/stores/uiStore";
 import { storeToRefs } from "pinia";
 
 const store = useUiStore();
-const { currentArchiveSort: sort } = storeToRefs(store);
+const { archiveSort: sort } = storeToRefs(store);
 const { setArchiveSort } = store;
 const action = useArchiveAction();
 

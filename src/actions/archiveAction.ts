@@ -9,7 +9,7 @@ export const useArchiveAction = () => {
   const store = useArchiveStore();
   const uiStore = useUiStore();
   const { setSortedArchives } = store;
-  const { currentArchiveSort: sort } = storeToRefs(uiStore);
+  const { archiveSort: sort } = storeToRefs(uiStore);
   const getSortedArchives = async (v: ArchiveSortOption) => {
     let archives;
     const results = await svc.getArchives();

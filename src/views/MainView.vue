@@ -14,7 +14,7 @@ import { storeToRefs } from "pinia";
 import { onMounted, onUnmounted } from "vue";
 
 const store = useUiStore();
-const { currentDocTab: tab } = storeToRefs(store);
+const { docTab: tab } = storeToRefs(store);
 const docAction = useDocAction();
 const archiveAction = useArchiveAction();
 

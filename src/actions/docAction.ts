@@ -89,19 +89,18 @@ export const useDocAction = () => {
 
   // 元函数：按当前排序重新拉取列表，默认当前页（供增删改后刷新）
   const refreshSorted = (page: number = sortStore.currentPage) =>
-    getSortedDocs(uiStore.currentDocSort, page);
+    getSortedDocs(uiStore.docSort, page);
 
-  const goToSortedPage = (page: number) =>
-    getSortedDocs(uiStore.currentDocSort, page);
+  const goToSortedPage = (page: number) => getSortedDocs(uiStore.docSort, page);
 
   const goSortedPrev = async () => {
     if (sortStore.currentPage > 1)
-      await getSortedDocs(uiStore.currentDocSort, sortStore.currentPage - 1);
+      await getSortedDocs(uiStore.docSort, sortStore.currentPage - 1);
   };
 
   const goSortedNext = async () => {
     if (sortStore.currentPage < sortStore.totalPages)
-      await getSortedDocs(uiStore.currentDocSort, sortStore.currentPage + 1);
+      await getSortedDocs(uiStore.docSort, sortStore.currentPage + 1);
   };
 
   const refreshAll = async () => {

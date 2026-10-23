@@ -3,27 +3,27 @@ import { ref } from "vue";
 
 export const useUiStore = defineStore("ui", () => {
   //#region mode的切换
-  const currentMode = ref<AppModeOption>("document");
-  const setMode = (v: AppModeOption) => {
-    currentMode.value = v;
+  const appMode = ref<AppModeOption>("document");
+  const setAppMode = (v: AppModeOption) => {
+    appMode.value = v;
   };
   //#endregion
   //#region docTab的切换
-  const currentDocTab = ref<DocTabOption>("docSort");
+  const docTab = ref<DocTabOption>("docSort");
   const setDocTab = (v: DocTabOption) => {
-    currentDocTab.value = v;
+    docTab.value = v;
   };
   //#endregion
   //#region docSort的切换
-  const currentDocSort = ref<DocSortOption>("viewedAt");
+  const docSort = ref<DocSortOption>("viewedAt");
   const setDocSort = (v: DocSortOption) => {
-    currentDocSort.value = v;
+    docSort.value = v;
   };
   //#endregion
   //#region archiveSort的切换
-  const currentArchiveSort = ref<ArchiveSortOption>("manual");
+  const archiveSort = ref<ArchiveSortOption>("manual");
   const setArchiveSort = (v: ArchiveSortOption) => {
-    currentArchiveSort.value = v;
+    archiveSort.value = v;
   };
   //#endregion
 
@@ -42,14 +42,19 @@ export const useUiStore = defineStore("ui", () => {
     editorMode.value = v;
   };
 
+  const leftbarOption = ref<LeftBarOption>("docEntries");
+  const setLeftbarOption = (v: LeftBarOption) => {
+    leftbarOption.value = v;
+  };
+
   return {
-    currentMode,
-    setMode,
-    currentDocTab,
+    appMode,
+    setAppMode,
+    docTab,
     setDocTab,
-    currentDocSort,
+    docSort,
     setDocSort,
-    currentArchiveSort,
+    archiveSort,
     setArchiveSort,
     richtextDialog,
     setRichtextDialog,
@@ -57,5 +62,7 @@ export const useUiStore = defineStore("ui", () => {
     setOpenId,
     editorMode,
     setEditorMode,
+    leftbarOption,
+    setLeftbarOption,
   };
 });

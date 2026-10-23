@@ -1,7 +1,7 @@
 // 用于切换文档或片段
 type AppModeOption = "document" | "snippet";
 // 用于切换导航或大纲
-type LeftBarOption = "nav" | "outline";
+type LeftBarOption = "docEntries" | "toc";
 // 用于切换document的TAB
 type DocTabOption = "docSort" | "docSearch" | "archiveSort" | "archiveSearch";
 // 用于文档排序的方法

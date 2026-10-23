@@ -10,7 +10,7 @@ import draggable from "vuedraggable";
 const store = useArchiveStore();
 const svc = useFdSvc();
 const uiStore = useUiStore();
-const { currentArchiveSort: sort } = storeToRefs(uiStore);
+const { archiveSort: sort } = storeToRefs(uiStore);
 const dragEnd = () => {
   const ids = store.sortedArchives.map((a) => a.id);
   svc.reorderFolders(ids);

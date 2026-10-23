@@ -11,7 +11,7 @@ import { Component } from "vue";
 const docSortStore = useDocSortStore();
 const { sortedDocs: docs } = storeToRefs(docSortStore);
 const uiStore = useUiStore();
-const { currentDocSort: sort } = storeToRefs(uiStore);
+const { docSort: sort } = storeToRefs(uiStore);
 
 const dtf = new Intl.DateTimeFormat("zh-CN", {
   year: "numeric",

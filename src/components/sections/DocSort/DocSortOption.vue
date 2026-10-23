@@ -11,7 +11,7 @@ import { storeToRefs } from "pinia";
 import { type Component, computed, ref, useTemplateRef } from "vue";
 
 const store = useUiStore();
-const { currentDocSort: sort } = storeToRefs(store);
+const { docSort: sort } = storeToRefs(store);
 const { setDocSort } = store;
 const action = useDocAction();
 const list: { key: DocSortOption; show: string }[] = [

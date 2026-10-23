@@ -9,7 +9,7 @@ import type { Component } from "vue";
 
 const store = useUiStore();
 const { setDocTab } = store;
-const { currentDocTab: tab } = storeToRefs(store);
+const { docTab: tab } = storeToRefs(store);
 
 const options: { key: DocTabOption; icon: Component }[] = [
   { key: "docSort", icon: Doc },
