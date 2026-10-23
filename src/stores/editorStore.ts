@@ -19,6 +19,11 @@ export const useEditorStore = defineStore("editor", () => {
   const setDocEntries = (v: DocEntry[]) => {
     docEntries.value = v;
   };
+  // 同步更新目录列表中对应文档的标题（左侧栏实时跟随标题编辑）
+  const updateDocEntryTitle = (docId: string, v: string) => {
+    const entry = docEntries.value.find((e) => e.id === docId);
+    if (entry) entry.title = v;
+  };
   const docType = ref<DocType>();
   const setDocType = (v: DocType | undefined) => {
     docType.value = v;
@@ -43,6 +48,11 @@ export const useEditorStore = defineStore("editor", () => {
   const setName = (v: string) => {
     name.value = v;
   };
+  // 当前打开的归档 id（archive 模式下创建文档需归档关联）
+  const archiveId = ref<string>();
+  const setArchiveId = (v: string | undefined) => {
+    archiveId.value = v;
+  };
   return {
     id,
     setId,
@@ -52,6 +62,7 @@ export const useEditorStore = defineStore("editor", () => {
     setContent,
     docEntries,
     setDocEntries,
+    updateDocEntryTitle,
     docType,
     setDocType,
     key,
@@ -60,6 +71,8 @@ export const useEditorStore = defineStore("editor", () => {
     setDoc,
     name,
     setName,
+    archiveId,
+    setArchiveId,
   };
 });
 

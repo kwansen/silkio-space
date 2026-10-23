@@ -43,6 +43,8 @@ watch(
   (v) => {
     const id = store.id;
     if (!id) return;
+    // 实时同步左侧目录列表中该文档的标题
+    store.updateDocEntryTitle(id, v);
     delayedSaveTitle(id, v);
   },
 );

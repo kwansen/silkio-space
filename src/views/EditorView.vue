@@ -17,7 +17,7 @@ const editorStore = useEditorStore();
 const uiStore = useUiStore();
 const { id, docEntries, content, docType, key, oldContent, name } =
   storeToRefs(editorStore);
-const { setDoc, setDocEntries } = editorStore;
+const { setDoc, setDocEntries, setArchiveId } = editorStore;
 
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
@@ -35,6 +35,7 @@ onMounted(async () => {
         setDoc(doc);
       } else if (t === "archive") {
         uiStore.setEditorMode("archive");
+        setArchiveId(data.id);
         const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
         try {
           name.value = await fdSvc.getArchiveName({ id: data.id });

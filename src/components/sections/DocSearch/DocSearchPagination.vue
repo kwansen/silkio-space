@@ -9,7 +9,7 @@ import { computed } from "vue";
 
 const store = useDocSearchStore();
 const { currentPage, totalPages } = storeToRefs(store);
-const { goPrev, goNext, goToPage } = useDocAction();
+const { goSearchedPrev, goSearchedNext, goToSearchedPage } = useDocAction();
 const pages = computed(() =>
   generatePages(currentPage.value, totalPages.value),
 );
@@ -19,7 +19,7 @@ const pages = computed(() =>
   <div class="h-14 bg-white flex justify-center items-center gap-2">
     <!-- 上一页 -->
     <div
-      @click="goPrev"
+      @click="goSearchedPrev"
       class="w-9 h-9 rounded-md cursor-default grid place-items-center"
       :class="[store.currentPage <= 1 ? 'opacity-40' : 'hover:bg-gray-100']"
     >
@@ -28,7 +28,7 @@ const pages = computed(() =>
 
     <div
       v-for="page in pages"
-      @click="goToPage(page)"
+      @click="goToSearchedPage(page)"
       class="w-9 h-9 rounded-md cursor-default grid place-items-center"
       :class="[
         page === store.currentPage ? 'bg-purple-200' : 'hover:bg-gray-100',
@@ -39,7 +39,7 @@ const pages = computed(() =>
 
     <!-- 下一页 -->
     <div
-      @click="goNext"
+      @click="goSearchedNext"
       class="w-9 h-9 rounded-md cursor-default grid place-items-center"
       :class="[
         store.currentPage >= store.totalPages
