@@ -7,8 +7,9 @@ import { useDocSvc } from "@/services/document";
 import { DocEntry } from "@/types/doc";
 import { storeToRefs } from "pinia";
 import Drag from "vuedraggable";
+import Archive from "@/components/icons/Archive.vue";
 const store = useEditorStore();
-const { docEntries } = storeToRefs(store);
+const { docEntries, name, id } = storeToRefs(store);
 const docSvc = useDocSvc();
 
 const openEntry = async (entry: DocEntry) => {
@@ -19,11 +20,16 @@ const openEntry = async (entry: DocEntry) => {
 
 <template>
   <div class="w-65 h-full select-none">
-    <div></div>
-    <Drag :list="docEntries" :animation="200" ghost-class="ghost">
+    <div class="h-11 flex items-center pl-4 gap-1 border-b border-purple-300">
+      <Archive class="size-4" />{{ name }}
+      <div class="flex-1"></div>
+      <div class="size-7 grid place-items-center rounded-md bg-gray-50"></div>
+    </div>
+    <Drag :list="docEntries" :animation="200" ghost-class="ghost" item-key="id">
       <template #item="{ element }: { element: DocEntry }">
         <div
-          class="flex items-center gap-1 py-0.5 hover:bg-gray-50 px-4 cursor-pointer"
+          class="flex items-center gap-1 py-0.5 px-4"
+          :class="id === element.id ? 'bg-purple-200' : 'hover:bg-gray-50'"
           @click="openEntry(element)"
         >
           <Mindmap v-if="element.doc_type === 'mindMap'" class="size-4" />

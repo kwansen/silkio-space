@@ -7,7 +7,7 @@ import {
 } from "@/infrastructure/db/folder.ts";
 import { useFolderDocumentDb } from "@/infrastructure/db/folderDocument.ts";
 import { Folder } from "@/types/archive";
-import { Doc, DocNav } from "@/types/doc";
+import { Doc, DocEntry } from "@/types/doc";
 
 // 归档（文件夹）创建参数（id 与时间字段仅在同步服务端数据时传入，本地创建自动生成/取当前时间）
 export interface CreateFolderParams {
@@ -373,9 +373,21 @@ export const useFdSvc = () => {
    ***/
   const getArchiveDocEntries = async (params: {
     id: string;
-  }): Promise<DocNav[]> => {
+  }): Promise<DocEntry[]> => {
     const db = getDb();
     return folderDocumentDb.getDocEntriesByFolder(db, params.id);
+  };
+  //#endregion
+
+  //#region CHECKED：根据 id 查询归档名称
+  /***
+   * @param params.id 必须，归档 id
+   * @returns 归档名称，不存在时返回空字符串
+   ***/
+  const getArchiveName = async (params: { id: string }): Promise<string> => {
+    const db = getDb();
+    const folder = await folderDb.getById(db, params.id);
+    return folder?.name ?? "";
   };
   //#endregion
 
@@ -462,6 +474,7 @@ export const useFdSvc = () => {
     removeDocFromSubtree,
     getDocsByFolder,
     getArchiveDocEntries,
+    getArchiveName,
     getFolderById,
     hasDocInSubtree,
     getDescendantIds,

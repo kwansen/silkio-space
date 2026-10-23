@@ -5,14 +5,13 @@ import RichText from "@/components/sections/RichText/RichText.vue";
 import { useFdSvc } from "@/services/folder";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import { emitTo } from "@tauri-apps/api/event";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
 
-const archiveId = ref("");
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
 const docSvc = useDocSvc();
@@ -27,8 +26,13 @@ onMounted(async () => {
         const doc = await docSvc.getById(data.id);
         setDoc(doc);
       } else if (t === "archive") {
-        archiveId.value = data.id;
         const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
+        try {
+          name.value = await fdSvc.getArchiveName({ id: data.id });
+        } catch (e) {
+          console.error(e);
+        }
+
         setDocEntries(docEntries);
         const doc = docEntries[0]
           ? await docSvc.getById(docEntries[0].id)
@@ -79,7 +83,7 @@ const onContentSave = (
 };
 
 const editorStore = useEditorStore();
-const { id, docEntries, title, content, docType, key, oldContent } =
+const { id, docEntries, content, docType, key, oldContent, name } =
   storeToRefs(editorStore);
 const { setDoc, setDocEntries } = editorStore;
 </script>
@@ -91,7 +95,6 @@ const { setDoc, setDocEntries } = editorStore;
       <div class="w-full h-full bg-white rounded-lg overflow-hidden">
         <RichText
           v-if="docType === 'richText'"
-          :title="title"
           :content="content"
           :key="key"
           @on-ready="ready"

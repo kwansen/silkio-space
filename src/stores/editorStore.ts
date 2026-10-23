@@ -1,5 +1,5 @@
 import { Doc, DocEntry, DocType } from "@/types/doc";
-import { defineStore } from "pinia";
+import { acceptHMRUpdate, defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useEditorStore = defineStore("editor", () => {
@@ -39,7 +39,10 @@ export const useEditorStore = defineStore("editor", () => {
     setDocType(doc?.doc_type);
     setKey(Date.now().toString());
   };
-
+  const name = ref("");
+  const setName = (v: string) => {
+    name.value = v;
+  };
   return {
     id,
     setId,
@@ -55,5 +58,12 @@ export const useEditorStore = defineStore("editor", () => {
     setKey,
     oldContent,
     setDoc,
+    name,
+    setName,
   };
 });
+
+// 开发环境 HMR 热更新 store（否则修改 store 后热更新不会重跑 setup，新增 state 不生效）
+if (import.meta.hot) {
+  acceptHMRUpdate(useEditorStore, import.meta.hot);
+}
