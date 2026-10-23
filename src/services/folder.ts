@@ -354,6 +354,17 @@ export const useFdSvc = () => {
   };
   //#endregion
 
+  //#region CHECKED：获取归档下直接关联的文档
+  /***
+   * 仅返回直接关联该归档的文档（不含子文件夹内文档），按加入顺序 sort_order 升序
+   * @param params.id 必须，归档 id
+   ***/
+  const getDocsByFolder = async (params: { id: string }): Promise<Doc[]> => {
+    const db = getDb();
+    return folderDocumentDb.getDocsByFolder(db, params.id);
+  };
+  //#endregion
+
   //#region CHECKED：获取归档子树内第一篇文档
   /***
    * 按加入顺序（sort_order 升序）返回归档子树内第一篇文档，无文档返回 null
@@ -459,6 +470,7 @@ export const useFdSvc = () => {
     addDocToFolders,
     removeDocFromFolders,
     removeDocFromSubtree,
+    getDocsByFolder,
     getFirstDocInSubtree,
     getFolderById,
     hasDocInSubtree,

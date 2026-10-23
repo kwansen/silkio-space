@@ -1,5 +1,5 @@
 export type DocType = "richText" | "mindMap" | "flowChart";
-// 可排序字段：仅字数与三种时间
+
 export type SortField =
   | "word_count"
   | "viewed_at"
@@ -20,4 +20,13 @@ export interface Doc {
 
 export interface ScoredDoc extends Doc {
   score: number;
+}
+
+// 用作目录列表
+export interface DocNav extends Omit<Doc, "content" | "plain_text"> {}
+
+export interface TocItem {
+  id: string;
+  title: string;
+  level: number;
 }

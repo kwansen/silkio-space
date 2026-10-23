@@ -52,7 +52,6 @@ import { CustomLink } from "./extensions/CustomLink.ts";
 // import CodeBlock from "@tiptap/extension-code-block";
 import { CustomShortcut } from "./extensions/customShortcut.ts";
 import FindAndReplace from "@tiptap/extension-find-and-replace";
-import { useDocSvc } from "@/services/document.ts";
 import { nextTick } from "vue";
 
 const node = ref<Node>();
@@ -76,7 +75,6 @@ const closeMathDialog = () => {
 
 const emit = defineEmits<{
   onReady: [];
-  onTitleSave: [title: string];
   onContentSave: [content: string, plain_text: string, word_count: number];
 }>();
 
@@ -163,8 +161,6 @@ watch(
 );
 
 interface Props {
-  id: string;
-  title: string;
   content: string;
 }
 
@@ -172,9 +168,6 @@ const editor = shallowRef<Editor>();
 
 const props = defineProps<Props>();
 
-// 直接用 props 初始化，避免 onMounted 里赋值触发 title watch，
-// 在每次挂载时多发一次 onTitleSave 把标题多余地写回数据库
-const title = ref(props.title);
 const content = ref("");
 
 onMounted(async () => {
@@ -192,13 +185,6 @@ onMounted(async () => {
   emit("onReady");
 });
 
-watch(
-  () => title.value,
-  (v) => {
-    emit("onTitleSave", v);
-  },
-);
-
 onBeforeUnmount(() => {
   editor.value?.destroy();
 });
@@ -210,7 +196,7 @@ onBeforeUnmount(() => {
     <div class="flex-1 min-h-0">
       <ScrollArea class="relative">
         <div class="w-full max-w-176 mx-auto relative">
-          <RichTextTitle :editor="editor" v-model="title" />
+          <RichTextTitle :editor="editor" />
           <EditorContent :editor="editor" class="" />
           <div
             class="h-screen cursor-text"
