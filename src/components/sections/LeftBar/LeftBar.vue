@@ -9,7 +9,7 @@ import { storeToRefs } from "pinia";
 import Drag from "vuedraggable";
 import Archive from "@/components/icons/Archive.vue";
 const store = useEditorStore();
-const { docEntries, name, id } = storeToRefs(store);
+const { docEntries, name, id, docType } = storeToRefs(store);
 const docSvc = useDocSvc();
 
 const openEntry = async (entry: DocEntry) => {
@@ -42,5 +42,6 @@ const openEntry = async (entry: DocEntry) => {
         </div>
       </template>
     </Drag>
+    {{ docType }}
   </div>
 </template>

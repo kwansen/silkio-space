@@ -11,6 +11,13 @@ import { emitTo } from "@tauri-apps/api/event";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
+import { useUiStore } from "@/stores/uiStore";
+
+const editorStore = useEditorStore();
+const uiStore = useUiStore();
+const { id, docEntries, content, docType, key, oldContent, name } =
+  storeToRefs(editorStore);
+const { setDoc, setDocEntries } = editorStore;
 
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
@@ -24,8 +31,10 @@ onMounted(async () => {
       const t = data.type;
       if (t === "doc") {
         const doc = await docSvc.getById(data.id);
+        uiStore.setEditorMode("doc");
         setDoc(doc);
       } else if (t === "archive") {
+        uiStore.setEditorMode("archive");
         const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
         try {
           name.value = await fdSvc.getArchiveName({ id: data.id });
@@ -81,16 +90,11 @@ const onContentSave = (
   if (!id.value) return;
   delayedSaveContent(id.value, content, plain_text, word_count);
 };
-
-const editorStore = useEditorStore();
-const { id, docEntries, content, docType, key, oldContent, name } =
-  storeToRefs(editorStore);
-const { setDoc, setDocEntries } = editorStore;
 </script>
 
 <template>
   <div class="w-full h-full flex">
-    <LeftBar v-if="docEntries" v-model="docEntries" />
+    <LeftBar v-if="uiStore.editorMode === 'archive'" v-model="docEntries" />
     <div class="flex-1 min-w-0 px-2 pb-2">
       <div class="w-full h-full bg-white rounded-lg overflow-hidden">
         <RichText

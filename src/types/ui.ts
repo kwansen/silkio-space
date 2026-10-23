@@ -14,3 +14,5 @@ type ThemeOption = "light" | "dark";
 type SettingTabOption = "normal" | "shortcut" | "sync" | "about";
 // 用于打开richtext的dialog
 type RichTextDialog = "link" | "math" | "image" | "";
+// 用于编辑器的模式
+type EditorMode = "archive" | "doc";

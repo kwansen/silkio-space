@@ -37,6 +37,11 @@ export const useUiStore = defineStore("ui", () => {
     openId.value = v;
   };
 
+  const editorMode = ref<EditorMode>("doc");
+  const setEditorMode = (v: EditorMode) => {
+    editorMode.value = v;
+  };
+
   return {
     currentMode,
     setMode,
@@ -50,5 +55,7 @@ export const useUiStore = defineStore("ui", () => {
     setRichtextDialog,
     openId,
     setOpenId,
+    editorMode,
+    setEditorMode,
   };
 });
