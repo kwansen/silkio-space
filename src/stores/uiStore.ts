@@ -47,6 +47,22 @@ export const useUiStore = defineStore("ui", () => {
     leftbarOption.value = v;
   };
 
+  const showLeftbar = ref<boolean>(true);
+  const setLeftbarShow = (v: boolean) => {
+    showLeftbar.value = v;
+  };
+  const toggleLeftbar = () => {
+    showLeftbar.value = !showLeftbar.value;
+  };
+
+  const showRightbar = ref<boolean>(true);
+  const setRightbarShow = (v: boolean) => {
+    showRightbar.value = v;
+  };
+  const toggleRightbar = () => {
+    showRightbar.value = !showRightbar.value;
+  };
+
   return {
     appMode,
     setAppMode,
@@ -64,5 +80,11 @@ export const useUiStore = defineStore("ui", () => {
     setEditorMode,
     leftbarOption,
     setLeftbarOption,
+    showLeftbar,
+    setLeftbarShow,
+    toggleLeftbar,
+    showRightbar,
+    setRightbarShow,
+    toggleRightbar,
   };
 });

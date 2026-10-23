@@ -31,7 +31,10 @@ onUnmounted(() => {
   <div
     class="w-screen h-screen flex flex-col overflow-hidden bg-gray-200 scrollbar-thumb-red-400"
   >
-    <WindowControl v-if="label === 'main' || label === 'editor'" />
+    <WindowControl
+      v-if="label === 'main' || label === 'editor'"
+      :label="label"
+    />
     <div class="flex-1 min-h-0 scrollbar-thumb-red-400">
       <MainView v-if="label === 'main'" />
       <EditorView v-else-if="label === 'editor'" />

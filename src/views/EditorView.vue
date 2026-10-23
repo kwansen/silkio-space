@@ -95,7 +95,7 @@ const onContentSave = (
 
 <template>
   <div class="w-full h-full flex">
-    <LeftBar v-if="uiStore.editorMode === 'archive'" v-model="docEntries" />
+    <LeftBar v-if="uiStore.showLeftbar" v-model="docEntries" />
     <div class="flex-1 min-w-0 px-2 pb-2">
       <div class="w-full h-full bg-white rounded-lg overflow-hidden">
         <RichText
