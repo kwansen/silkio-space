@@ -57,12 +57,13 @@ import { CustomLink } from "./extensions/CustomLink.ts";
 import { CustomShortcut } from "./extensions/customShortcut.ts";
 import FindAndReplace from "@tiptap/extension-find-and-replace";
 import { nextTick } from "vue";
+import { useEditorStore } from "@/stores/editorStore.ts";
+import type { OverlayScrollbars } from "overlayscrollbars";
 
 const node = ref<Node>();
 const pos = ref<number>(0);
 const block = ref<boolean>(false);
-
-const toc = ref([]);
+const editorStore = useEditorStore();
 
 const uiStore = useUiStore();
 const { richtextDialog: dialog } = storeToRefs(uiStore);
@@ -147,7 +148,8 @@ const createEditor = (v: any): Editor => {
       TableOfContents.configure({
         getIndex: getHierarchicalIndexes,
         onUpdate: (content) => {
-          toc.value = content;
+          editorStore.toc = content;
+          console.dir(content);
         },
       }),
     ],
@@ -171,6 +173,18 @@ watch(
   },
   { flush: "post" },
 );
+
+// 编辑区滚动发生在 OverlayScrollbars 视口里而非 window，
+// 而 table-of-contents 扩展默认监听 window 滚动来计算 isActive，
+// 导致 toc 项的 isActive 永远为 false、目录高亮不生效。
+// 这里手动同步滚动位置并触发目录重算。
+const onScrollViewport = (os: OverlayScrollbars) => {
+  if (!editor.value) return;
+  const storage = editor.value.storage.tableOfContents;
+  if (!storage) return;
+  storage.scrollPosition = os.elements().viewport.scrollTop;
+  editor.value.commands.updateTableOfContents();
+};
 
 interface Props {
   content: string;
@@ -206,7 +220,7 @@ onBeforeUnmount(() => {
   <div class="w-full h-full flex flex-col">
     <RichTextToolbar :editor="editor" />
     <div class="flex-1 min-h-0">
-      <ScrollArea class="relative">
+      <ScrollArea class="relative" @os-scroll="onScrollViewport">
         <div class="w-full max-w-176 mx-auto relative">
           <RichTextTitle :editor="editor" />
           <EditorContent :editor="editor" class="" />

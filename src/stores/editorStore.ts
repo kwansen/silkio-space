@@ -1,4 +1,5 @@
 import { Doc, DocEntry, DocType } from "@/types/doc";
+import { TableOfContentData } from "@tiptap/extension-table-of-contents";
 import { acceptHMRUpdate, defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -53,6 +54,10 @@ export const useEditorStore = defineStore("editor", () => {
   const setArchiveId = (v: string | undefined) => {
     archiveId.value = v;
   };
+  const toc = ref<TableOfContentData>([]);
+  const setToc = (v: TableOfContentData) => {
+    toc.value = v;
+  };
   return {
     id,
     setId,
@@ -73,6 +78,8 @@ export const useEditorStore = defineStore("editor", () => {
     setName,
     archiveId,
     setArchiveId,
+    toc,
+    setToc,
   };
 });
 

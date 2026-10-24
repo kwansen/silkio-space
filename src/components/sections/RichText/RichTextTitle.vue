@@ -8,7 +8,6 @@ import { useDebounceFn } from "@vueuse/core";
 import { ref, watch } from "vue";
 import { onMounted, useTemplateRef } from "vue";
 
-const title = ref<string>("");
 const oldTitle = ref<string>("");
 
 const store = useEditorStore();
@@ -25,9 +24,7 @@ const titleAreaRef =
 
 onMounted(() => {
   titleAreaRef.value?.focus();
-  const t = store.title;
-  title.value = t;
-  oldTitle.value = t;
+  oldTitle.value = store.title;
 });
 
 const delayedSaveTitle = useDebounceFn(async (docId: string, v: string) => {
@@ -39,7 +36,7 @@ const delayedSaveTitle = useDebounceFn(async (docId: string, v: string) => {
 }, 1000);
 
 watch(
-  () => title.value,
+  () => store.title,
   (v) => {
     const id = store.id;
     if (!id) return;
@@ -61,7 +58,7 @@ const focusFirstLineStart = () => {
 <template>
   <TitleArea
     ref="titleAreaRef"
-    v-model="title"
+    v-model="store.title"
     placeholder="请输入标题"
     @on-enter="insertAtFirst"
     @on-tab="focusFirstLineStart"
