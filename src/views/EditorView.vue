@@ -5,7 +5,7 @@ import RichText from "@/components/sections/RichText/RichText.vue";
 import { useFdSvc } from "@/services/folder";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { onMounted, onUnmounted, ref } from "vue";
+import { nextTick, onMounted, onUnmounted } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import { emitTo } from "@tauri-apps/api/event";
 import { useDocSvc } from "@/services/document";
@@ -22,14 +22,11 @@ const { setDoc, setDocEntries, setArchiveId } = editorStore;
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
 const docSvc = useDocSvc();
-// 是否收到过 open 事件：启动时 EditorEmpty 也会触发 onReady，需拦截以免窗口在启动时被显示
-const hasOpened = ref(false);
 
 onMounted(async () => {
   stopOnOpen = await listen<{ type: "doc" | "archive"; id: string }>(
     "open",
     async (event) => {
-      hasOpened.value = true;
       const data = event.payload;
       const t = data.type;
       if (t === "doc") {
@@ -53,14 +50,18 @@ onMounted(async () => {
           ? await docSvc.getById(docEntries[0].id)
           : null;
         setDoc(doc);
+        // 空归档没有富文本视图挂载、不会有就绪信号，渲染完成后直接显示窗口
+        if (!doc) {
+          await nextTick();
+          showWindow();
+        }
       }
     },
   );
 });
 
-const ready = () => {
-  // 只有收到过 open 事件后才允许显示窗口，避免启动时被 EditorEmpty 的 onReady 提前显示
-  if (!hasOpened.value) return;
+// 显示窗口：由 RichText 的就绪信号或空态渲染完成后调用
+const showWindow = () => {
   getCurrentWindow().unminimize();
   getCurrentWindow().show();
   getCurrentWindow().setFocus();
@@ -109,10 +110,10 @@ const onContentSave = (
           v-if="docType === 'richText'"
           :content="content"
           :key="key"
-          @on-ready="ready"
+          @on-ready="showWindow"
           @on-content-save="onContentSave"
         />
-        <EditorEmpty v-if="!docType" :key="key" @on-ready="ready" />
+        <EditorEmpty v-if="!docType" />
         <!-- <MindMap />
         <FlowChart /> -->
       </div>
