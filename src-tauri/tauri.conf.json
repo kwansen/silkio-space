@@ -43,7 +43,7 @@
   },
   "plugins": {
     "sql": {
-      "preload": ["sqlite:keyflow.db", "sqlite:keyflowdev.db"]
+      "preload": ["sqlite:keyflow.db"]
     }
   },
   "bundle": {

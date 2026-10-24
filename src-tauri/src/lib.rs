@@ -12,7 +12,6 @@ pub fn run() {
         .plugin(
             tauri_plugin_sql::Builder::default()
                 .add_migrations("sqlite:keyflow.db", migrations::get_migrations())
-                .add_migrations("sqlite:keyflowdev.db", migrations::get_migrations())
                 .build(),
         )
         .plugin(tauri_plugin_opener::init())
