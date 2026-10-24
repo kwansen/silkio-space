@@ -5,6 +5,7 @@ import CloseBtn from "./CloseBtn.vue";
 import Side from "@/components/icons/Side.vue";
 import SideMian from "@/components/icons/SideMian.vue";
 import { useUiStore } from "@/stores/uiStore.ts";
+import Setting from "@/components/icons/Setting.vue";
 
 const uiStore = useUiStore();
 
@@ -52,6 +53,13 @@ const props = defineProps<Props>();
     >
       <SideMian v-if="uiStore.showRightbar" class="size-5 rotate-180" />
       <Side v-else class="size-5" />
+    </div>
+    <div
+      v-if="label === 'main'"
+      class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
+      @click="uiStore.toggleRightbar"
+    >
+      <Setting class="size-5" />
     </div>
     <MinimizeBtn />
     <MaximizeBtn />

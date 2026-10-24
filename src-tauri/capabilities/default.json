@@ -19,6 +19,7 @@
     "sql:allow-execute",
     "fs:default",
     "fs:allow-write-file",
-    "fs:allow-read-file"
+    "fs:allow-read-file",
+    "autostart:default"
   ]
 }

@@ -17,6 +17,7 @@ import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import { type Component, computed, ref, useTemplateRef } from "vue";
 import { emitTo } from "@tauri-apps/api/event";
+import Close from "@/components/icons/Close.vue";
 
 const store = useEditorStore();
 const { docEntries, name, id, docType, archiveId } = storeToRefs(store);
@@ -49,6 +50,30 @@ const createDoc = async (newType: DocType) => {
     const doc = await docSvc.getById(docId);
     if (doc) setDoc(doc);
     await emitTo("main", "refresh");
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+// 点击关闭：仅将文档移出当前归档（不删除文档本体），并刷新左侧目录
+const removeEntry = async (entry: DocEntry) => {
+  try {
+    if (!archiveId.value) return;
+    await fdSvc.removeDocFromFolder({
+      folderId: archiveId.value,
+      docId: entry.id,
+    });
+    setDocEntries(await fdSvc.getArchiveDocEntries({ id: archiveId.value }));
+    // 若移出的正是当前打开的文档，则切换到列表中的第一个文档并加载（无则清空编辑区）
+    if (id.value === entry.id) {
+      const next = docEntries.value[0];
+      if (next) {
+        const doc = await docSvc.getById(next.id);
+        if (doc) setDoc(doc);
+      } else {
+        setDoc(null);
+      }
+    }
   } catch (e) {
     console.error(e);
   }
@@ -138,6 +163,7 @@ const handleClickBtn = () => {
       <span>{{ i.text }}</span>
     </div>
   </div>
+  <div class="h-2"></div>
   <Drag
     :list="docEntries"
     :animation="200"
@@ -147,7 +173,7 @@ const handleClickBtn = () => {
   >
     <template #item="{ element }: { element: DocEntry }">
       <div
-        class="flex items-center gap-1 py-0.5 px-4"
+        class="flex items-center gap-1 py-0.5 px-4 relative group"
         :class="id === element.id ? 'bg-purple-200' : 'hover:bg-gray-50'"
         @click="openEntry(element)"
       >
@@ -158,6 +184,12 @@ const handleClickBtn = () => {
         />
         <Doc v-if="element.doc_type === 'richText'" class="size-4" />
         <span>{{ element.title || "未命名标题" }}</span>
+        <div
+          class="absolute cursor-pointer aspect-square hover:text-red-700 right-0.5 place-items-center h-full hidden group-hover:grid"
+          @click.stop="removeEntry(element)"
+        >
+          <Close class="size-4" />
+        </div>
       </div>
     </template>
   </Drag>

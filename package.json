@@ -25,6 +25,7 @@
     "@splicetree/plugin-dnd": "^3.1.1",
     "@tailwindcss/vite": "^4.3.3",
     "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/plugin-autostart": "~2.7.0",
     "@tauri-apps/plugin-fs": "^2.7.1",
     "@tauri-apps/plugin-opener": "^2.7.2",
     "@tauri-apps/plugin-sql": "~2.6.0",
