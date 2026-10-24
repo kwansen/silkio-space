@@ -159,6 +159,21 @@ export const useFdSvc = () => {
   };
   //#endregion
 
+  //#region CHECKED：重排序归档内文档
+  /***
+   * 按传入文档 id 顺序批量重写该归档内文档 sort_order（0,1,2...），用于左侧目录拖拽排序持久化
+   * @param params.folderId     必须，归档 id
+   * @param params.documentIds  必须，目标顺序的文档 id 数组（须为该归档内全部直接关联文档）
+   ***/
+  const reorderDocs = async (params: {
+    folderId: string;
+    documentIds: string[];
+  }): Promise<void> => {
+    const db = getDb();
+    return folderDocumentDb.reorder(db, params.folderId, params.documentIds);
+  };
+  //#endregion
+
   //#region CKECKED：获取归档
   /***
    * 获取全部根归档（仅 parent_id 为空的归档展示于主窗口，数量少，不分页，按 sort_order 升序）
@@ -461,6 +476,7 @@ export const useFdSvc = () => {
     getArchiveChildren,
     reorderChildren,
     reorderFolders,
+    reorderDocs,
     getArchives,
     getSortedFolders,
     moveFolderInto,

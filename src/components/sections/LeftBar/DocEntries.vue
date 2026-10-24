@@ -30,6 +30,15 @@ const openEntry = async (entry: DocEntry) => {
 
 const { setDoc, setDocEntries } = store;
 
+// 拖拽结束持久化新顺序：vuedraggable 已通过 :list 原地更新 docEntries，此处仅写库
+const dragEnd = () => {
+  if (!archiveId.value) return;
+  fdSvc.reorderDocs({
+    folderId: archiveId.value,
+    documentIds: docEntries.value.map((e) => e.id),
+  });
+};
+
 // 在当前归档下创建文档：加入归档 → 刷新左侧目录 → 在已打开的编辑区展示新文档
 const createDoc = async (newType: DocType) => {
   try {
@@ -129,7 +138,13 @@ const handleClickBtn = () => {
       <span>{{ i.text }}</span>
     </div>
   </div>
-  <Drag :list="docEntries" :animation="200" ghost-class="ghost" item-key="id">
+  <Drag
+    :list="docEntries"
+    :animation="200"
+    ghost-class="ghost"
+    item-key="id"
+    @end="dragEnd"
+  >
     <template #item="{ element }: { element: DocEntry }">
       <div
         class="flex items-center gap-1 py-0.5 px-4"
