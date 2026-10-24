@@ -31,6 +31,36 @@
         "backgroundColor": "#e5e7eb",
         "decorations": false,
         "dragDropEnabled": false
+      },
+      {
+        "label": "search",
+        "width": 800,
+        "height": 600,
+        "visible": false,
+        "backgroundColor": "#e5e7eb",
+        "decorations": false,
+        "dragDropEnabled": false,
+        "resizable": false
+      },
+      {
+        "label": "tool",
+        "width": 800,
+        "height": 600,
+        "visible": false,
+        "backgroundColor": "#e5e7eb",
+        "decorations": false,
+        "dragDropEnabled": false,
+        "resizable": false
+      },
+      {
+        "label": "insert",
+        "width": 800,
+        "height": 600,
+        "visible": false,
+        "backgroundColor": "#e5e7eb",
+        "decorations": false,
+        "dragDropEnabled": false,
+        "resizable": false
       }
     ],
     "security": {
