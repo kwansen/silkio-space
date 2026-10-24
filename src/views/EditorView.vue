@@ -32,9 +32,11 @@ onMounted(async () => {
       if (t === "doc") {
         const doc = await docSvc.getById(data.id);
         uiStore.setEditorMode("doc");
+        uiStore.setLeftbarOption("toc");
         setDoc(doc);
       } else if (t === "archive") {
         uiStore.setEditorMode("archive");
+        uiStore.setLeftbarOption("docEntries");
         setArchiveId(data.id);
         const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
         try {

@@ -16,7 +16,26 @@ const props = defineProps<Props>();
 </script>
 
 <template>
-  <div class="h-10 flex items-center">
+  <div class="h-10 flex items-center pl-1.5 select-none">
+    <div
+      v-if="label === 'editor' && uiStore.editorMode === 'archive'"
+      class="flex gap-2 bg-white p-1 rounded-md"
+    >
+      <div
+        class="px-2 rounded-sm"
+        @click="uiStore.setLeftbarOption('docEntries')"
+        :class="uiStore.leftbarOption === 'docEntries' ? 'bg-gray-200' : ''"
+      >
+        目录
+      </div>
+      <div
+        class="px-2 rounded-sm"
+        @click="uiStore.setLeftbarOption('toc')"
+        :class="uiStore.leftbarOption === 'toc' ? 'bg-gray-200' : ''"
+      >
+        大纲
+      </div>
+    </div>
     <div class="flex-1 h-full flex items-center desktop-draggable"></div>
     <div
       v-if="label === 'editor'"

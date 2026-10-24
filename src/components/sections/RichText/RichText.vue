@@ -10,6 +10,10 @@ import Highlight from "@tiptap/extension-highlight";
 import Image from "@tiptap/extension-image";
 import Italic from "@tiptap/extension-italic";
 import {
+  getHierarchicalIndexes,
+  TableOfContents,
+} from "@tiptap/extension-table-of-contents";
+import {
   BulletList,
   ListItem,
   ListKeymap,
@@ -57,6 +61,8 @@ import { nextTick } from "vue";
 const node = ref<Node>();
 const pos = ref<number>(0);
 const block = ref<boolean>(false);
+
+const toc = ref([]);
 
 const uiStore = useUiStore();
 const { richtextDialog: dialog } = storeToRefs(uiStore);
@@ -138,6 +144,12 @@ const createEditor = (v: any): Editor => {
       TableRow,
       Gapcursor,
       TrailingNode,
+      TableOfContents.configure({
+        getIndex: getHierarchicalIndexes,
+        onUpdate: (content) => {
+          toc.value = content;
+        },
+      }),
     ],
     onUpdate: ({ editor }) => {
       content.value = JSON.stringify(editor.getJSON());

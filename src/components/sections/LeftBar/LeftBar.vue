@@ -7,9 +7,7 @@ const uiStore = useUiStore();
 
 <template>
   <div class="w-65 h-full select-none">
-    <DocEntries v-if="uiStore.editorMode === 'archive'" />
-    <Toc
-      v-if="uiStore.editorMode === 'doc' || uiStore.leftbarOption === 'toc'"
-    />
+    <DocEntries v-if="uiStore.leftbarOption === 'docEntries'" />
+    <Toc v-else />
   </div>
 </template>
