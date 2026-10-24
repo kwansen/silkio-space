@@ -19,14 +19,15 @@ const indentOf = (level: number) =>
 </script>
 
 <template>
-  <div class="h-11 pl-4 flex items-center">
+  <div class="h-11 pl-4 flex items-center gap-1 border-b border-purple-300">
     <Doc class="size=5" />
     <span>{{ editorStore.title }}</span>
   </div>
+  <div class="h-2"></div>
   <a
     :href="`#${item.id}`"
     v-for="item in editorStore.toc"
-    class="block cursor-pointer"
+    class="block cursor-pointer py-0.5"
     :style="{ paddingLeft: indentOf(item.originalLevel) }"
     :class="item.isActive ? 'text-purple-700' : ''"
   >

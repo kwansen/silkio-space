@@ -25,7 +25,7 @@ const { docsThisPage: docs } = storeToRefs(store);
     v-for="doc in docs"
     :item-key="doc.id"
     :title="doc.title || '未命名标题'"
-    :content="doc.plain_text || '暂无内容'"
+    :content="doc.plain_text?.trim() || '暂无内容'"
     :icon="getIcon(doc)"
   />
 </template>
