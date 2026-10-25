@@ -1,5 +1,6 @@
 import { ref } from "vue";
 
+//#region code声明
 const F = [
   "F1",
   "F2",
@@ -86,6 +87,7 @@ const Letter = [
   "KeyZ",
 ];
 const Arrow = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+//#endregion
 
 const mainKeyList = [
   ...F,
@@ -101,16 +103,19 @@ const isMainKey = (event: KeyboardEvent) => {
   return mainKeyList.includes(code);
 };
 
-interface Key {
+export interface Key {
   id: string;
   show: string;
 }
 
+// 全局同一时间只允许一个录制器处于录制状态
+let activeRecorder: { end: () => void } | null = null;
+
 export function useShortcutRecorder() {
   const isRecording = ref<boolean>(false);
   const shortcutList = ref<Key[]>([]);
-  const onEndHandlers = new Set<() => void>();
-  const onEnd = (fn: () => void) => {
+  const onEndHandlers = new Set<(keys: Key[]) => void>();
+  const onEnd = (fn: (keys: Key[]) => void) => {
     onEndHandlers.add(fn);
     return () => onEndHandlers.delete(fn);
   };
@@ -140,19 +145,25 @@ export function useShortcutRecorder() {
   };
   const start = () => {
     if (isRecording.value) return;
+    activeRecorder?.end();
+    activeRecorder = { end };
     isRecording.value = true;
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("keyup", handleKeyUp);
   };
   const end = () => {
+    if (!isRecording.value) return;
+    if (activeRecorder?.end === end) activeRecorder = null;
     isRecording.value = false;
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
+    const keys = shortcutList.value;
     shortcutList.value = [];
-    onEndHandlers.forEach((fn) => fn());
+    onEndHandlers.forEach((fn) => fn(keys));
   };
 
   return {
+    isRecording,
     shortcutList,
     start,
     end,

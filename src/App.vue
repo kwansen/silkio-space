@@ -4,6 +4,8 @@ import WindowControl from "./components/sections/WindowControl/WindowControl.vue
 import { onMounted, onUnmounted } from "vue";
 import MainView from "./views/MainView.vue";
 import EditorView from "./views/EditorView.vue";
+import SearchView from "./views/SearchView.vue";
+import ToolView from "./views/ToolView.vue";
 
 const label = getCurrentWindow().label;
 
@@ -38,9 +40,9 @@ onUnmounted(() => {
     <div class="flex-1 min-h-0 scrollbar-thumb-red-400">
       <MainView v-if="label === 'main'" />
       <EditorView v-else-if="label === 'editor'" />
-      <!-- <SearchView v-else-if="label === 'search'" />
-      <InsertView v-else-if="label === 'insert'" />
-      <ToolView v-else-if="label === 'tool'" /> -->
+      <SearchView v-else-if="label === 'search'" />
+      <ToolView v-else-if="label === 'tool'" />
+      <!-- <InsertView v-else-if="label === 'insert'" /> -->
     </div>
 
     <!-- <ArchivePickerDialog />
