@@ -63,6 +63,11 @@ export const useUiStore = defineStore("ui", () => {
     showRightbar.value = !showRightbar.value;
   };
 
+  const showSettingDialog = ref<boolean>(false);
+  const setSettingDialogShow = (v: boolean) => {
+    showSettingDialog.value = v;
+  };
+
   return {
     appMode,
     setAppMode,
@@ -86,5 +91,7 @@ export const useUiStore = defineStore("ui", () => {
     showRightbar,
     setRightbarShow,
     toggleRightbar,
+    showSettingDialog,
+    setSettingDialogShow,
   };
 });

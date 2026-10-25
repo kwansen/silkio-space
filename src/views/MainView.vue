@@ -60,5 +60,5 @@ onUnmounted(() => {
     </div>
   </div>
   <ArchivePickerDialog v-if="store.openId" :id="store.openId" />
-  <SettingDialog />
+  <SettingDialog v-if="store.showSettingDialog" />
 </template>

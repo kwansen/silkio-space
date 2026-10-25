@@ -7,6 +7,7 @@ import Common from "./Common.vue";
 import Shortcut from "./Shortcut.vue";
 import Sync from "./Sync.vue";
 import { ref } from "vue";
+import { useUiStore } from "@/stores/uiStore.ts";
 
 type NavKey = "common" | "shortcut" | "sync" | "about";
 
@@ -18,6 +19,11 @@ const navList: { key: NavKey; show: string }[] = [
 ];
 
 const nav = ref<NavKey>("common");
+
+const uiStore = useUiStore();
+const close = () => {
+  uiStore.setSettingDialogShow(false);
+};
 </script>
 
 <template>
@@ -30,6 +36,7 @@ const nav = ref<NavKey>("common");
       >
         设置
         <div
+          @click="close"
           class="size-7 hover:bg-red-200 hover:text-white grid place-items-center rounded-full"
         >
           <Close class="size-5" />
@@ -46,7 +53,7 @@ const nav = ref<NavKey>("common");
             {{ item.show }}
           </div>
         </div>
-        <div class="flex-1">
+        <div class="flex-1 bg-gray-50">
           <ScrollArea class="p-4">
             <Sync v-if="nav === 'sync'" />
             <Shortcut v-if="nav === 'shortcut'" />
