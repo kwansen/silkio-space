@@ -4,12 +4,20 @@ import { Shortcut } from "@/types/setting";
 
 export const useSettingStore = defineStore("setting", () => {
   const openSearchWindow = useLocalStorage<Shortcut>("openSearchWindow", {
-    name: "Alt + -",
-    code: "Alt + Minus",
+    ctrl: false,
+    shift: false,
+    alt: true,
+    meta: false,
+    key: "K",
+    code: "KeyK",
   });
   const openToolWindow = useLocalStorage<Shortcut>("openToolWindow", {
-    name: "Alt + ,",
-    code: "Alt + Comma",
+    ctrl: false,
+    shift: false,
+    alt: true,
+    meta: false,
+    key: "N",
+    code: "KeyN",
   });
 
   return { openSearchWindow, openToolWindow };

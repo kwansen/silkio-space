@@ -1,6 +1,7 @@
+import { Shortcut } from "@/types/setting";
 import { ref } from "vue";
 
-//#region code声明
+//#region code
 const F = [
   "F1",
   "F2",
@@ -26,18 +27,6 @@ const Digit = [
   "Digit7",
   "Digit8",
   "Digit9",
-];
-const Numpad = [
-  "Numpad0",
-  "Numpad1",
-  "Numpad2",
-  "Numpad3",
-  "Numpad4",
-  "Numpad5",
-  "Numpad6",
-  "Numpad7",
-  "Numpad8",
-  "Numpad9",
 ];
 
 const Punctuation = [
@@ -89,23 +78,22 @@ const Letter = [
 const Arrow = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 //#endregion
 
-const mainKeyList = [
-  ...F,
-  ...Digit,
-  ...Numpad,
-  ...Punctuation,
-  ...Letter,
-  ...Arrow,
-];
+const mainKeyList = [...F, ...Digit, ...Punctuation, ...Letter, ...Arrow];
 
 const isMainKey = (event: KeyboardEvent) => {
   const code = event.code;
   return mainKeyList.includes(code);
 };
 
-export interface Key {
-  id: string;
-  show: string;
+export function fromKeyboardEvent(e: KeyboardEvent): Shortcut {
+  return {
+    ctrl: e.ctrlKey,
+    shift: e.shiftKey,
+    alt: e.altKey,
+    meta: e.metaKey,
+    code: e.code,
+    key: e.key,
+  };
 }
 
 // 全局同一时间只允许一个录制器处于录制状态
@@ -113,29 +101,18 @@ let activeRecorder: { end: () => void } | null = null;
 
 export function useShortcutRecorder() {
   const isRecording = ref<boolean>(false);
-  const shortcutList = ref<Key[]>([]);
-  const onEndHandlers = new Set<(keys: Key[]) => void>();
-  const onEnd = (fn: (keys: Key[]) => void) => {
+  const shortcut = ref<Shortcut>();
+  const onEndHandlers = new Set<(shortcut: Shortcut) => void>();
+  const onEnd = (fn: (shortcut: Shortcut) => void) => {
     onEndHandlers.add(fn);
     return () => onEndHandlers.delete(fn);
   };
   const handleKeyDown = (event: KeyboardEvent) => {
     event.stopPropagation();
     event.preventDefault();
-    let mainKey;
     if (isMainKey(event)) {
-      mainKey = {
-        id: event.code,
-        show: event.key.toUpperCase(),
-      };
+      shortcut.value = fromKeyboardEvent(event);
     }
-    const mods = [];
-    if (event.ctrlKey) mods.push({ id: "ctrl", show: "Ctrl" });
-    if (event.shiftKey) mods.push({ id: "shift", show: "Shift" });
-    if (event.altKey) mods.push({ id: "alt", show: "Alt" });
-    if (event.metaKey) mods.push({ id: "meta", show: "Meta" });
-    if (mainKey) mods.push(mainKey);
-    shortcutList.value = mods;
   };
 
   const handleKeyUp = (event: KeyboardEvent) => {
@@ -157,14 +134,15 @@ export function useShortcutRecorder() {
     isRecording.value = false;
     document.removeEventListener("keydown", handleKeyDown);
     document.removeEventListener("keyup", handleKeyUp);
-    const keys = shortcutList.value;
-    shortcutList.value = [];
+    if (!shortcut.value) return;
+    const keys = shortcut.value;
+    shortcut.value = undefined;
     onEndHandlers.forEach((fn) => fn(keys));
   };
 
   return {
     isRecording,
-    shortcutList,
+    shortcut,
     start,
     end,
     onEnd,

@@ -1,4 +1,8 @@
 export interface Shortcut {
-  name: string;
+  ctrl: boolean;
+  shift: boolean;
+  alt: boolean;
+  meta: boolean;
+  key: string;
   code: string;
 }

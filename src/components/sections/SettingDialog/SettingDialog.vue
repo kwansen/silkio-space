@@ -55,10 +55,10 @@ const close = () => {
         </div>
         <div class="flex-1 bg-gray-50">
           <ScrollArea class="p-4">
-            <Sync v-if="nav === 'sync'" />
-            <Shortcut v-if="nav === 'shortcut'" />
-            <Common v-if="nav === 'common'" />
-            <About v-if="nav === 'about'" />
+            <Sync key="sync" v-if="nav === 'sync'" />
+            <Shortcut key="shortcut" v-if="nav === 'shortcut'" />
+            <Common key="common" v-if="nav === 'common'" />
+            <About key="about" v-if="nav === 'about'" />
           </ScrollArea>
         </div>
       </div>
