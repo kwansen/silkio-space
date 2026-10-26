@@ -7,4 +7,13 @@ onKeyStroke("Escape", () => {
   getCurrentWindow().hide();
 });
 </script>
-<template></template>
+<template>
+  <div class="p-1">
+    <div class="h-20 bg-white p-4 rounded-2xl">
+      <input
+        type="text"
+        class="w-full h-full px-4 outline-none border border-gray-200 focus:border-purple-300"
+      />
+    </div>
+  </div>
+</template>

@@ -33,7 +33,7 @@
 /* 与应用根节点 bg-gray-200 保持一致，避免窗口 resize（最大化/还原）时 WebView2 未重绘区域闪白 */
 html,
 body {
-  background-color: var(--color-gray-200);
+  background-color: rgba(0, 0, 0, 0);
 }
 
 body {

@@ -1,7 +1,7 @@
 pub mod migrations;
 pub mod search;
 pub mod tray;
-pub mod window_manager;
+pub mod window;
 
 use tauri::Manager;
 
@@ -26,7 +26,7 @@ pub fn run() {
         ])
         .setup(|app| {
             tray::setup_tray(app)?;
-            // window_manager::init_editor_window(app)?;
+            window::create_search_window(app)?;
             // 初始化搜索状态（writer 仅启动时创建一次）并托管给 tauri 状态
             let state = search::init_search_state(app.handle())?;
             app.manage(state);

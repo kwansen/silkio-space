@@ -30,9 +30,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    class="w-screen h-screen flex flex-col overflow-hidden bg-gray-200 scrollbar-thumb-red-400"
-  >
+  <div class="w-screen h-screen flex flex-col overflow-hidden">
     <WindowControl
       v-if="label === 'main' || label === 'editor'"
       :label="label"
