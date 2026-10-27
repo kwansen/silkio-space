@@ -2,25 +2,18 @@
 import { useDocAction } from "@/actions/docAction";
 import Doc from "@/components/icons/Doc.vue";
 import { useDocSearchStore } from "@/stores/docSearchStore";
-import { getCurrentWindow, LogicalSize } from "@tauri-apps/api/window";
-import { onKeyStroke, useResizeObserver } from "@vueuse/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { onKeyStroke } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { computed, nextTick, watch } from "vue";
+import { watch } from "vue";
 import { onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
 import Search from "@/components/icons/Search.vue";
-import { getCurrentWebview } from "@tauri-apps/api/webview";
 const store = useDocSearchStore();
 const { setPageSize, setDocs, setQuery } = store;
-const {
-  query,
-  searchedDocs,
-  currentPage,
-  docsThisPage,
-  totalPages,
-  activeIndex,
-} = storeToRefs(store);
+const { query, currentPage, docsThisPage, totalPages, activeIndex } =
+  storeToRefs(store);
 const action = useDocAction();
 
 // ESC 关闭
@@ -28,20 +21,24 @@ onKeyStroke("Escape", () => {
   getCurrentWindow().hide();
 });
 
-const heights = [112, 176, 240, 304, 368, 432, 496, 560, 624];
-let target = 0;
-
 onKeyStroke("ArrowDown", async (event) => {
   event.preventDefault();
-  // target++;
-  // const height = heights[target % 9];
   action.activateSearchedNext();
-  // await getCurrentWindow().setSize(new LogicalSize(720, height));
 });
 
 onKeyStroke("ArrowUp", (event) => {
   event.preventDefault();
   action.activateSearchedPrev();
+});
+
+onKeyStroke("PageUp", (event) => {
+  event.preventDefault();
+  action.goSearchedPrev();
+});
+
+onKeyStroke("PageDown", (event) => {
+  event.preventDefault();
+  action.goSearchedNext();
 });
 
 let stopOnFocus: (() => void) | null = null;
@@ -62,57 +59,18 @@ watch(
   },
 );
 
-// 单行高度 / 容器上下 padding 之和
-const ROW_HEIGHT = 64;
-const PADDING_Y = 48;
-
-const height = computed(() => {
-  const length = docsThisPage.value.length;
-  const hasQuery = !!query.value?.trim();
-
-  // 行数：基础输入框 1 行
-  // - 有内容：输入框 + 内容列表 + 底部帮助
-  // - 空列表 + 有查询词：加载中(仅输入框) 或 无结果提示(输入框 + 提示)
-  // - 空列表 + 无查询词：仅输入框
-  let rows: number;
-  if (length > 0) {
-    rows = length + 2;
-  } else if (hasQuery) {
-    rows = 2;
-  } else {
-    rows = 1;
+// 窗口固定尺寸（创建时 720x800），不做动态 resize：
+// Windows + WebView2 上任何可见期间的 setSize 都会让 webview 表面按新尺寸
+// 重建/重新合成，新帧就绪前的空帧就是闪烁，JS 侧无法消除。
+// 卡片固定顶部，下方为透明区域，点击卡片外即关闭。
+const onDocPointerDown = (e: PointerEvent) => {
+  if (!(e.target as HTMLElement | null)?.closest("[data-card]")) {
+    getCurrentWindow().hide();
   }
-
-  return rows * ROW_HEIGHT + PADDING_Y;
-});
-const box = useTemplateRef("box");
-
-let lastHeight = 0;
-let resizing = false;
-
-useResizeObserver(box, async (entries) => {
-  const height = Math.ceil(entries[0].contentRect.height);
-
-  if (resizing || height === lastHeight) {
-    return;
-  }
-
-  resizing = true;
-  lastHeight = height;
-
-  try {
-    await getCurrentWindow().setSize(new LogicalSize(720, height));
-  } finally {
-    resizing = false;
-  }
-});
+};
 
 onMounted(async () => {
   setPageSize(7);
-  // getCurrentWindow().setSize(new LogicalSize(720, 640));
-  const webview = getCurrentWebview();
-
-  await webview.setAutoResize(false);
   stopOnFocus = await getCurrentWindow().onFocusChanged(
     ({ payload: focused }) => {
       if (focused) {
@@ -123,17 +81,20 @@ onMounted(async () => {
       }
     },
   );
+  document.addEventListener("pointerdown", onDocPointerDown);
 });
 
 onUnmounted(() => {
   stopOnFocus?.();
+  document.removeEventListener("pointerdown", onDocPointerDown);
 });
 </script>
 
 <template>
-  <div ref="box" class="w-180 px-6 select-none">
+  <div class="w-180 px-6 select-none">
     <div class="h-6"></div>
     <div
+      data-card
       class="bg-white rounded-2xl overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.1)]"
     >
       <div class="flex">
@@ -171,10 +132,10 @@ onUnmounted(() => {
         </div>
         <div class="flex-1 px-4 min-w-0">
           <div class="truncate">
-            {{ d.title }}
+            {{ d.title || "未命名标题" }}
           </div>
           <div class="truncate text-xs text-neutral-400 mt-0.5">
-            {{ d.plain_text }}
+            {{ d.plain_text?.trim() || "暂无内容" }}
           </div>
         </div>
         <div class="text-neutral-300 text-xs">Ctrl + {{ index + 1 }}</div>
