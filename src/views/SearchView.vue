@@ -3,43 +3,59 @@ import { useDocAction } from "@/actions/docAction";
 import Doc from "@/components/icons/Doc.vue";
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { onKeyStroke } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
 import { onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
 import Search from "@/components/icons/Search.vue";
+import { ScoredDoc } from "@/types/doc";
 const store = useDocSearchStore();
 const { setPageSize, setDocs, setQuery } = store;
 const { query, currentPage, docsThisPage, totalPages, activeIndex } =
   storeToRefs(store);
 const action = useDocAction();
 
-// ESC 关闭
-onKeyStroke("Escape", () => {
+// 打开选中文档后隐藏搜索窗
+const openResult = async (d: ScoredDoc | undefined) => {
+  if (!d) return;
+  await action.openDoc(d.id);
   getCurrentWindow().hide();
-});
+};
 
-onKeyStroke("ArrowDown", async (event) => {
-  event.preventDefault();
-  action.activateSearchedNext();
-});
-
-onKeyStroke("ArrowUp", (event) => {
-  event.preventDefault();
-  action.activateSearchedPrev();
-});
-
-onKeyStroke("PageUp", (event) => {
-  event.preventDefault();
-  action.goSearchedPrev();
-});
-
-onKeyStroke("PageDown", (event) => {
-  event.preventDefault();
-  action.goSearchedNext();
-});
+// 统一键盘处理：↑↓ 选择、PgUp/PgDn 翻页、Esc 关闭、回车打开、Ctrl+1~7 快速打开
+const handleKeyDown = (event: KeyboardEvent) => {
+  const { key, ctrlKey } = event;
+  if (ctrlKey && /^[1-7]$/.test(key)) {
+    event.preventDefault();
+    openResult(docsThisPage.value[Number(key) - 1]);
+    return;
+  }
+  switch (key) {
+    case "Escape":
+      getCurrentWindow().hide();
+      break;
+    case "ArrowDown":
+      event.preventDefault();
+      action.activateSearchedNext();
+      break;
+    case "ArrowUp":
+      event.preventDefault();
+      action.activateSearchedPrev();
+      break;
+    case "PageUp":
+      event.preventDefault();
+      action.goSearchedPrev();
+      break;
+    case "PageDown":
+      event.preventDefault();
+      action.goSearchedNext();
+      break;
+    case "Enter":
+      openResult(store.searchedDocs[activeIndex.value]);
+      break;
+  }
+};
 
 let stopOnFocus: (() => void) | null = null;
 
@@ -71,6 +87,7 @@ const onDocPointerDown = (e: PointerEvent) => {
 
 onMounted(async () => {
   setPageSize(7);
+  window.addEventListener("keydown", handleKeyDown);
   stopOnFocus = await getCurrentWindow().onFocusChanged(
     ({ payload: focused }) => {
       if (focused) {
@@ -86,6 +103,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
   stopOnFocus?.();
+  window.removeEventListener("keydown", handleKeyDown);
   document.removeEventListener("pointerdown", onDocPointerDown);
 });
 </script>
@@ -124,6 +142,7 @@ onUnmounted(() => {
         :class="
           activeIndex % 7 === index ? 'bg-purple-100' : 'hover:bg-gray-100'
         "
+        @click="openResult(d)"
       >
         <div class="size-8 bg-gray-50 grid place-items-center rounded-md">
           <doc class="size-5" v-if="d.doc_type === 'richText'" />
