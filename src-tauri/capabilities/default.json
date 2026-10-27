@@ -25,6 +25,8 @@
     "global-shortcut:allow-register-all",
     "global-shortcut:allow-register",
     "global-shortcut:allow-unregister",
-    "global-shortcut:allow-is-registered"
+    "global-shortcut:allow-is-registered",
+    "core:window:allow-set-size",
+    "core:webview:allow-set-webview-auto-resize"
   ]
 }

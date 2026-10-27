@@ -12,7 +12,7 @@ pub fn create_search_window(app: &mut tauri::App) -> tauri::Result<()> {
 
     // 2. 定义窗口的逻辑尺寸 (窗口在 100% 缩放下的尺寸)
     let window_width_logical = 720.0;
-    let window_height_logical = 600.0;
+    let window_height_logical = 800.0;
 
     // 3. 将屏幕工作区转换为逻辑尺寸
     // 这样屏幕坐标和窗口坐标就在同一个世界了，不需要反复乘除
@@ -41,7 +41,7 @@ pub fn create_search_window(app: &mut tauri::App) -> tauri::Result<()> {
         )
         .decorations(false)
         .shadow(false)
-        .background_color("#00000000".parse().unwrap())
+        .background_color("#000000".parse().unwrap())
         .always_on_top(true)
         .transparent(true)
         .visible(false)

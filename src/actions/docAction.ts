@@ -78,6 +78,20 @@ export const useDocAction = () => {
     }
   };
 
+  const activateSearchedPrev = () => {
+    const i = searchStore.activeIndex;
+    if (i > 0) {
+      searchStore.setActiveIndex(i - 1);
+    }
+  };
+
+  const activateSearchedNext = () => {
+    const count = searchStore.activeIndex + 1;
+    if (count < searchStore.searchedDocs.length) {
+      searchStore.setActiveIndex(count);
+    }
+  };
+
   const getSortedDocs = async (option: DocSortOption, page: number) => {
     const sortField = toBackendSort(option);
     const result = await svc.getSortedInPage(sortField, page);
@@ -116,6 +130,8 @@ export const useDocAction = () => {
     goToSearchedPage,
     goSearchedPrev,
     goSearchedNext,
+    activateSearchedPrev,
+    activateSearchedNext,
     getSortedDocs,
     refreshSorted,
     goToSortedPage,

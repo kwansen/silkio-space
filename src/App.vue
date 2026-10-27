@@ -35,7 +35,7 @@ onUnmounted(() => {
       v-if="label === 'main' || label === 'editor'"
       :label="label"
     />
-    <div class="flex-1 min-h-0 scrollbar-thumb-red-400">
+    <div class="flex-1 min-h-0">
       <MainView v-if="label === 'main'" />
       <EditorView v-else-if="label === 'editor'" />
       <SearchView v-else-if="label === 'search'" />
