@@ -19,7 +19,8 @@ const action = useDocAction();
 // 打开选中文档后隐藏搜索窗
 const openResult = async (d: ScoredDoc | undefined) => {
   if (!d) return;
-  await action.openDoc(d.id);
+  // search 窗口无法直接刷新 main 的数据，通过 emitTo 通知 main 自行 refresh
+  await action.openDoc(d.id, { notifyMain: true });
   getCurrentWindow().hide();
 };
 
