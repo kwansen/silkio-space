@@ -16,7 +16,9 @@ const pages = computed(() =>
 </script>
 
 <template>
-  <div class="h-14 bg-white flex justify-center items-center gap-2">
+  <div
+    class="h-16 bg-white flex justify-center items-center gap-2 border-t border-gray-100"
+  >
     <!-- 上一页 -->
     <div
       @click="goSearchedPrev"

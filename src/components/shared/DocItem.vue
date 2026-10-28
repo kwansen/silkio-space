@@ -91,16 +91,16 @@ const list: ListItem[] = [
 </script>
 <template>
   <div
-    class="h-14 grid grid-cols-[2.75rem_1fr_auto] border-b border-gray-100 select-none relative group"
+    class="h-16 grid grid-cols-[4rem_1fr_auto] border-t border-gray-100 select-none relative group"
     :class="hoverKey === itemKey || openedKey === itemKey ? 'bg-gray-100' : ''"
     @mouseenter="hover(itemKey)"
     @mouseleave="unHover"
     @click="openDoc(itemKey)"
   >
     <!-- 图标 -->
-    <div class="w-full flex items-center">
-      <div class="mr-4 h-7 w-7 bg-gray-200 rounded-md grid place-items-center">
-        <component :is="icon" />
+    <div class="w-full h-full grid place-items-center">
+      <div class="h-7 w-7 bg-gray-50 rounded-md grid place-items-center">
+        <component :is="icon" class="size-5 text-neutral-400" />
       </div>
     </div>
 
@@ -115,7 +115,7 @@ const list: ListItem[] = [
     <!-- 数据 -->
     <div
       v-if="meta"
-      class="whitespace-nowrap pl-4 text-right text-xs text-neutral-400 flex items-center"
+      class="whitespace-nowrap px-4 text-right text-xs text-neutral-400 flex items-center"
     >
       {{ meta }}
     </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDocAction } from "@/actions/docAction";
+import Search from "@/components/icons/Search.vue";
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { storeToRefs } from "pinia";
 import { onMounted, useTemplateRef, watch } from "vue";
@@ -28,11 +29,16 @@ watch(
 </script>
 
 <template>
-  <input
-    ref="inputRef"
-    v-model="query"
-    class="mb-1 h-14 w-full bg-white ring ring-gray-300 outline-none focus:ring-purple-400 px-4"
-    type="text"
-    placeholder="搜索文档标题与内容"
-  />
+  <div class="flex h-16">
+    <div class="size-16 grid place-items-center">
+      <Search class="size-5" />
+    </div>
+    <input
+      ref="inputRef"
+      v-model="query"
+      class="h-16 flex-1 bg-white outline-none pr-4"
+      type="text"
+      placeholder="搜索文档标题与内容"
+    />
+  </div>
 </template>
