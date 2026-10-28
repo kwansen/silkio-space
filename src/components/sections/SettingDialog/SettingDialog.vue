@@ -29,7 +29,7 @@ const close = () => {
 <template>
   <div class="fixed inset-0 bg-black/10 grid place-items-center select-none">
     <FocusScope
-      class="w-full max-w-2xl h-180 bg-white rounded-2xl flex flex-col"
+      class="w-full max-w-2xl h-180 bg-white rounded-2xl overflow-hidden flex flex-col"
     >
       <div
         class="h-16 flex items-center justify-between px-4 text-2xl border-b border-purple-300"

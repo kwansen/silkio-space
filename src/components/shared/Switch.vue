@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const v = defineModel<boolean>({ default: false });
 
@@ -15,6 +15,14 @@ const padding = ref(1);
 const width = ref(32);
 const height = ref(16);
 const tx = computed(() => width.value - height.value);
+
+const ready = ref(false);
+onMounted(() => {
+  // 下一帧再启用 transition，避免首帧过渡
+  requestAnimationFrame(() => {
+    ready.value = true;
+  });
+});
 </script>
 
 <template>
@@ -29,7 +37,8 @@ const tx = computed(() => width.value - height.value);
     @click="click"
   >
     <div
-      class="h-full aspect-square bg-white rounded-full transition duration-200"
+      class="h-full aspect-square bg-white rounded-full"
+      :class="ready ? 'transition duration-200' : ''"
       :style="{ transform: v ? `translateX(${tx}px)` : '' }"
     ></div>
   </div>
