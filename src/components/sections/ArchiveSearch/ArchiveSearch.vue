@@ -10,7 +10,7 @@ const { searchedArchives: archives, query } = storeToRefs(store);
 </script>
 
 <template>
-  <div class="bg-white rounded-2xl p-4">
+  <div class="bg-white rounded-2xl">
     <ArchiveSearchInput />
     <ArchiveSearchEmpty v-if="archives.length === 0 && query" />
     <ArchiveSearchList />

@@ -18,6 +18,14 @@ const dragEnd = () => {
 
 // 正在重命名的 archive id,null 表示没有;编辑时禁用拖拽
 const editingKey = ref<string>("");
+
+const dtf = new Intl.DateTimeFormat("zh-CN", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+});
 </script>
 
 <template>
@@ -37,9 +45,7 @@ const editingKey = ref<string>("");
           :editing="editingKey === element.id"
           @update:editing="(v) => (editingKey = v ? element.id : '')"
           :meta="
-            sort === 'viewedAt'
-              ? new Date(element.viewed_at).toLocaleString()
-              : ''
+            sort === 'viewedAt' ? dtf.format(new Date(element.viewed_at)) : ''
           "
         />
       </template>
