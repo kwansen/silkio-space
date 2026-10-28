@@ -60,7 +60,7 @@ onClickOutside(box, () => {
 <template>
   <div
     ref="box"
-    class="h-full flex items-center gap-4 pr-4 focus-within:bg-gray-50"
+    class="h-full flex items-center gap-4 pr-4 focus-within:bg-gray-100"
   >
     <input
       v-model="name"

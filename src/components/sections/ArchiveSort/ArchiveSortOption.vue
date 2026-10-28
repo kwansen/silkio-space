@@ -27,14 +27,18 @@ const { setShow } = archiveSortStore;
 
 <template>
   <div
-    class="flex items-center py-2 gap-4 border-b border-purple-300 sticky top-0 z-10 bg-white"
+    class="flex items-center h-16 px-4 gap-4 border-b border-purple-300 sticky top-0 z-10 bg-white"
   >
-    <div v-for="i in list" class="select-none" @click="handleClick(i.key)">
+    <div
+      v-for="i in list"
+      class="select-none relative"
+      @click="handleClick(i.key)"
+    >
       <span :class="i.key === sort ? 'text-purple-700' : ''">
         {{ i.show }}
       </span>
       <div
-        class="w-full h-1 rounded-full"
+        class="absolute top-full w-full h-1 rounded-full"
         :class="i.key === sort ? 'bg-purple-200' : ''"
       />
     </div>

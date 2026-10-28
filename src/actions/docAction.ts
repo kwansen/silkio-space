@@ -46,8 +46,39 @@ export const useDocAction = () => {
   };
 
   const remove = async (id: string) => {
+    // 刷新后 activeId 会随列表变化（由列表派生），需先记录被删项的激活状态与位置
+    const wasSearchActive = searchStore.activeId === id;
+    const searchIndex = searchStore.activeIndex;
+    const wasSortActive = sortStore.activeId === id;
+    const sortIndex = sortStore.activeIndex;
+    const sortPage = sortStore.currentPage;
+
     await svc.remove(id);
     await refreshAll();
+
+    // 被删的是搜索激活项：选中前一项；index 最小为 0，不能越过首项
+    if (wasSearchActive) {
+      searchStore.setActiveIndex(
+        Math.max(
+          0,
+          Math.min(searchIndex - 1, searchStore.searchedDocs.length - 1),
+        ),
+      );
+    }
+    // 被删的是列表激活项：选中前一项；index 最小为 0，不能越过首项
+    if (wasSortActive) {
+      sortStore.setActiveIndex(
+        Math.max(0, Math.min(sortIndex - 1, sortStore.total - 1)),
+      );
+    }
+    // 删除后当前页已删空（如末页仅剩被删项）：光标退到末项，页码随之回退到前一页
+    if (sortStore.total > 0 && sortStore.sortedDocs.length === 0) {
+      sortStore.setActiveIndex(sortStore.total - 1);
+    }
+    // 光标所在页与已拉取页不一致时重新拉取对应页（如翻回前一页）
+    if (sortStore.currentPage !== sortPage) {
+      await refreshSorted(sortStore.currentPage);
+    }
   };
 
   // 元函数：按关键词搜索文档
@@ -58,13 +89,14 @@ export const useDocAction = () => {
     searchStore.setPage(1);
   };
 
-  // 元函数：按最后一次关键词重新搜索（供增删改后刷新），保持当前页，无关键词时跳过
+  // 元函数：按最后一次关键词重新搜索（供增删改后刷新），光标尽量停在原位，结果变少时收敛到末项
   const refreshSearched = async () => {
     if (!searchStore.query) return;
-    const page = searchStore.currentPage;
+    const index = searchStore.activeIndex;
     await searchDocs(searchStore.query);
-    // 结果变少时回退到最后一页
-    searchStore.setPage(Math.max(1, Math.min(page, searchStore.totalPages)));
+    searchStore.setActiveIndex(
+      Math.max(0, Math.min(index, searchStore.searchedDocs.length - 1)),
+    );
   };
 
   const goToSearchedPage = (v: number) => {

@@ -19,6 +19,9 @@ export const useDocSearchStore = defineStore("docSearch", () => {
   const setDocs = (v: ScoredDoc[]) => {
     searchedDocs.value = v;
   };
+  const activeId = computed(() => {
+    return searchedDocs.value[activeIndex.value]?.id;
+  });
   const totalPages = computed(() =>
     Math.ceil(searchedDocs.value.length / pageSize.value),
   );
@@ -37,6 +40,7 @@ export const useDocSearchStore = defineStore("docSearch", () => {
   });
   return {
     activeIndex,
+    activeId,
     setActiveIndex,
     pageSize,
     setPageSize,

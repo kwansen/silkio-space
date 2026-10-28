@@ -11,6 +11,9 @@ export const useDocSortStore = defineStore("docSort", () => {
   const setDocs = (v: Doc[]) => {
     sortedDocs.value = v;
   };
+  const activeId = computed(() => {
+    return sortedDocs.value[activeIndex.value % 10]?.id;
+  });
   const total = ref<number>(0);
   const setTotal = (v: number) => {
     total.value = v;
@@ -22,6 +25,7 @@ export const useDocSortStore = defineStore("docSort", () => {
   return {
     activeIndex,
     setActiveIndex,
+    activeId,
     sortedDocs,
     setDocs,
     total,
