@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDocAction } from "@/actions/docAction";
 import DocIcon from "@/components/icons/Doc.vue";
 import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
@@ -6,7 +7,7 @@ import DocItem from "@/components/shared/DocItem.vue";
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { DocType, ScoredDoc } from "@/types/doc";
 import { storeToRefs } from "pinia";
-import { Component } from "vue";
+import { Component, onMounted, onUnmounted } from "vue";
 
 const iconMap: Record<DocType, Component> = {
   mindMap: Mindmap,
@@ -17,12 +18,55 @@ const iconMap: Record<DocType, Component> = {
 const getIcon = (doc: ScoredDoc) => iconMap[doc.doc_type] ?? DocIcon;
 
 const store = useDocSearchStore();
-const { docsThisPage: docs } = storeToRefs(store);
+const { docsThisPage: docs, activeIndex, searchedDocs } = storeToRefs(store);
+const action = useDocAction();
+
+const openResult = async (d: ScoredDoc | undefined) => {
+  if (!d) return;
+  await action.openDoc(d.id);
+};
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  const { key } = event;
+  switch (key) {
+    case "Escape":
+      store.setQuery("");
+      break;
+    case "ArrowDown":
+      event.preventDefault();
+      action.activateSearchedNext();
+      break;
+    case "ArrowUp":
+      event.preventDefault();
+      action.activateSearchedPrev();
+      break;
+    case "PageUp":
+      event.preventDefault();
+      action.goSearchedPrev();
+      break;
+    case "PageDown":
+      event.preventDefault();
+      action.goSearchedNext();
+      break;
+    case "Enter":
+      openResult(searchedDocs.value[activeIndex.value]);
+      break;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeyDown);
+});
 </script>
 
 <template>
   <DocItem
-    v-for="doc in docs"
+    v-for="(doc, index) in docs"
+    :active="activeIndex % 10 === index"
     :item-key="doc.id"
     :title="doc.title || '未命名标题'"
     :content="doc.plain_text?.trim() || '暂无内容'"

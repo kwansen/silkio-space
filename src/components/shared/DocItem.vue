@@ -15,8 +15,10 @@ import Archive from "../icons/Archive.vue";
 import Delete from "../icons/Delete.vue";
 import { useDocAction } from "@/actions/docAction.ts";
 import { useUiStore } from "@/stores/uiStore.ts";
+import { isActive } from "@tiptap/core";
 
 interface Props {
+  active: boolean;
   itemKey: string;
   title: string;
   content: string;
@@ -88,11 +90,24 @@ const list: ListItem[] = [
     class: "hover:bg-red-100",
   },
 ];
+
+const getClass = () => {
+  if (props.active) {
+    return "bg-purple-100";
+  } else if (
+    hoverKey.value === props.itemKey ||
+    openedKey.value === props.itemKey
+  ) {
+    return "bg-gray-100";
+  } else {
+    return "";
+  }
+};
 </script>
 <template>
   <div
     class="h-16 grid grid-cols-[4rem_1fr_auto] border-t border-gray-100 select-none relative group"
-    :class="hoverKey === itemKey || openedKey === itemKey ? 'bg-gray-100' : ''"
+    :class="getClass()"
     @mouseenter="hover(itemKey)"
     @mouseleave="unHover"
     @click="openDoc(itemKey)"

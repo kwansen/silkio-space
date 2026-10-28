@@ -100,10 +100,8 @@ export const useDocAction = () => {
   const getSortedDocs = async (option: DocSortOption, page: number) => {
     const sortField = toBackendSort(option);
     const result = await svc.getSortedInPage(sortField, page);
-    console.log(result.list);
     sortStore.setDocs(result.list);
     sortStore.setTotal(result.total);
-    sortStore.setPage(page);
   };
 
   // 元函数：按当前排序重新拉取列表，默认当前页（供增删改后刷新）
@@ -113,13 +111,40 @@ export const useDocAction = () => {
   const goToSortedPage = (page: number) => getSortedDocs(uiStore.docSort, page);
 
   const goSortedPrev = async () => {
-    if (sortStore.currentPage > 1)
+    if (sortStore.currentPage > 1) {
       await getSortedDocs(uiStore.docSort, sortStore.currentPage - 1);
+      const index = sortStore.activeIndex;
+      sortStore.setActiveIndex(index - 10 - (index % 10));
+    }
   };
 
   const goSortedNext = async () => {
-    if (sortStore.currentPage < sortStore.totalPages)
+    if (sortStore.currentPage < sortStore.totalPages) {
       await getSortedDocs(uiStore.docSort, sortStore.currentPage + 1);
+      const index = sortStore.activeIndex;
+      sortStore.setActiveIndex(index + 10 - (index % 10));
+    }
+  };
+
+  // 移动 activeIndex；跨页时派生页码变化，需重新拉取对应页数据（保留光标）
+  const activateSortedPrev = async () => {
+    const page = sortStore.currentPage;
+    const i = sortStore.activeIndex;
+    if (i > 0) {
+      sortStore.setActiveIndex(i - 1);
+      if (sortStore.currentPage !== page)
+        await getSortedDocs(uiStore.docSort, sortStore.currentPage);
+    }
+  };
+
+  const activateSortedNext = async () => {
+    const prevPage = sortStore.currentPage;
+    const count = sortStore.activeIndex + 1;
+    if (count < sortStore.total) {
+      sortStore.setActiveIndex(count);
+      if (sortStore.currentPage !== prevPage)
+        await getSortedDocs(uiStore.docSort, sortStore.currentPage);
+    }
   };
 
   const refreshAll = async () => {
@@ -142,5 +167,7 @@ export const useDocAction = () => {
     goToSortedPage,
     goSortedPrev,
     goSortedNext,
+    activateSortedPrev,
+    activateSortedNext,
   };
 };

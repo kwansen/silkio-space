@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDocAction } from "@/actions/docAction";
 import DocIcon from "@/components/icons/Doc.vue";
 import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
@@ -7,11 +8,12 @@ import { useDocSortStore } from "@/stores/docSortStore";
 import { useUiStore } from "@/stores/uiStore";
 import { Doc, DocType } from "@/types/doc";
 import { storeToRefs } from "pinia";
-import { Component } from "vue";
+import { Component, onMounted, onUnmounted } from "vue";
 const docSortStore = useDocSortStore();
-const { sortedDocs: docs } = storeToRefs(docSortStore);
+const { sortedDocs: docs, activeIndex } = storeToRefs(docSortStore);
 const uiStore = useUiStore();
 const { docSort: sort } = storeToRefs(uiStore);
+const action = useDocAction();
 
 const dtf = new Intl.DateTimeFormat("zh-CN", {
   year: "numeric",
@@ -37,11 +39,50 @@ const iconMap: Record<DocType, Component> = {
 };
 
 const getIcon = (doc: Doc) => iconMap[doc.doc_type] ?? DocIcon;
+
+const openResult = async (d: Doc | undefined) => {
+  if (!d) return;
+  await action.openDoc(d.id);
+};
+
+const handleKeyDown = (event: KeyboardEvent) => {
+  const { key } = event;
+  switch (key) {
+    case "ArrowDown":
+      event.preventDefault();
+      action.activateSortedNext();
+      break;
+    case "ArrowUp":
+      event.preventDefault();
+      action.activateSortedPrev();
+      break;
+    case "PageUp":
+      event.preventDefault();
+      action.goSortedPrev();
+      break;
+    case "PageDown":
+      event.preventDefault();
+      action.goSortedNext();
+      break;
+    case "Enter":
+      openResult(docs.value[activeIndex.value % 10]);
+      break;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeyDown);
+});
 </script>
 
 <template>
   <DocItem
-    v-for="doc in docs"
+    v-for="(doc, index) in docs"
+    :active="activeIndex % 10 === index"
     :item-key="doc.id"
     :title="doc.title || '未命名标题'"
     :content="doc.plain_text?.trim() || '暂无内容'"
