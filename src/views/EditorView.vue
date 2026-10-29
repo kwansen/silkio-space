@@ -7,7 +7,7 @@ import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { nextTick, onMounted, onUnmounted } from "vue";
 import { useDebounceFn } from "@vueuse/core";
-import { emitTo } from "@tauri-apps/api/event";
+import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
@@ -21,7 +21,7 @@ const { setDoc, setDocEntries, setArchiveId } = editorStore;
 
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
-let stopOnDelete: (() => void) | null = null;
+let stopOnDataChanged: (() => void) | null = null;
 const docSvc = useDocSvc();
 
 onMounted(async () => {
@@ -34,6 +34,11 @@ onMounted(async () => {
         const doc = await docSvc.getById(data.id);
         uiStore.setEditorMode("doc");
         uiStore.setLeftbarOption("toc");
+        // 切到独立文档视图必须清掉归档态，否则对账逻辑仍挂在旧归档上，
+        // 会把不在该归档目录中的当前文档误判为失效并回切到目录首项
+        setArchiveId(undefined);
+        setDocEntries([]);
+        name.value = "";
         setDoc(doc);
       } else if (t === "archive") {
         uiStore.setEditorMode("archive");
@@ -60,28 +65,28 @@ onMounted(async () => {
     },
   );
 
-  // 监听 main 窗口的文档删除事件（删除落库时关联已随之清理，是否刷新依据本地目录判断）
-  stopOnDelete = await listen<{ type: "doc"; id: string }>(
-    "delete",
-    async (event) => {
-      const deletedId = event.payload.id;
-      // 被删文档有关联且在当前归档目录中：刷新左侧目录
-      if (archiveId.value && docEntries.value.some((e) => e.id === deletedId)) {
-        setDocEntries(
-          await fdSvc.getArchiveDocEntries({ id: archiveId.value }),
-        );
+  // 数据事实统一入口：任何写操作后与 DB 对账（不盲改当前文档，避免打断编辑）
+  stopOnDataChanged = await listen("data:changed", async () => {
+    // 归档模式：重拉目录与归档名
+    if (archiveId.value) {
+      setDocEntries(await fdSvc.getArchiveDocEntries({ id: archiveId.value }));
+      try {
+        name.value = await fdSvc.getArchiveName({ id: archiveId.value });
+      } catch (e) {
+        console.error(e);
       }
-      // 展示的正是被删文档：切到目录首项，无则清空编辑区
-      if (id.value === deletedId) {
-        const next = docEntries.value[0];
-        if (next) {
-          setDoc(await docSvc.getById(next.id));
-        } else {
-          setDoc(null);
-        }
-      }
-    },
-  );
+    }
+    // 当前文档已失效（被删，或已不在所在归档目录）：切到首项，无则清空编辑区
+    const stale = id.value
+      ? archiveId.value
+        ? !docEntries.value.some((e) => e.id === id.value)
+        : !(await docSvc.getById(id.value))
+      : false;
+    if (stale) {
+      const next = docEntries.value[0];
+      setDoc(next ? await docSvc.getById(next.id) : null);
+    }
+  });
 });
 
 // 显示窗口：由 RichText 的就绪信号或空态渲染完成后调用
@@ -89,12 +94,12 @@ const showWindow = () => {
   getCurrentWindow().unminimize();
   getCurrentWindow().show();
   getCurrentWindow().setFocus();
-  emitTo("main", "refresh");
+  notifyDataChanged();
 };
 
 onUnmounted(() => {
   stopOnOpen?.();
-  stopOnDelete?.();
+  stopOnDataChanged?.();
 });
 
 const delayedSaveContent = useDebounceFn(
@@ -111,8 +116,8 @@ const delayedSaveContent = useDebounceFn(
       word_count: word_count,
     });
     oldContent.value = content;
-    // 等保存落库完成后再通知主窗口刷新，否则主窗口会查到旧数据
-    emitTo("main", "refresh");
+    // 等保存落库完成后再广播变更事实，否则其他窗口会查到旧数据
+    notifyDataChanged();
   },
   1000,
 );

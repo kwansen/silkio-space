@@ -16,7 +16,7 @@ import FlowchartMian from "@/components/icons/FlowchartMian.vue";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import { type Component, computed, ref, useTemplateRef } from "vue";
-import { emitTo } from "@tauri-apps/api/event";
+import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
 import Close from "@/components/icons/Close.vue";
 
 const store = useEditorStore();
@@ -49,7 +49,7 @@ const createDoc = async (newType: DocType) => {
     setDocEntries(await fdSvc.getArchiveDocEntries({ id: archiveId.value }));
     const doc = await docSvc.getById(docId);
     if (doc) setDoc(doc);
-    await emitTo("main", "refresh");
+    await notifyDataChanged();
   } catch (e) {
     console.error(e);
   }

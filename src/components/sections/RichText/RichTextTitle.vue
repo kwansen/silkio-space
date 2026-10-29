@@ -2,7 +2,7 @@
 import TitleArea from "@/components/shared/TitleArea.vue";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
-import { emitTo } from "@tauri-apps/api/event";
+import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
 import { Editor } from "@tiptap/vue-3";
 import { useDebounceFn } from "@vueuse/core";
 import { ref, watch } from "vue";
@@ -31,8 +31,8 @@ const delayedSaveTitle = useDebounceFn(async (docId: string, v: string) => {
   if (v === oldTitle.value) return;
   await docSvc.update(docId, { title: v });
   oldTitle.value = v;
-  // 等保存落库完成后再通知主窗口刷新，否则主窗口会查到旧数据
-  emitTo("main", "refresh");
+  // 等保存落库完成后再广播变更事实，否则其他窗口会查到旧数据
+  notifyDataChanged();
 }, 1000);
 
 watch(

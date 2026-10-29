@@ -1,5 +1,8 @@
 import { useDocSvc } from "@/services/document";
-import { emitTo } from "@tauri-apps/api/event";
+import {
+  notifyDataChanged,
+  notifyEditorOpen,
+} from "@/infrastructure/api/windowEvent";
 
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { useUiStore } from "@/stores/uiStore";
@@ -24,16 +27,17 @@ export const useDocAction = () => {
   const sortStore = useDocSortStore();
 
   const openDoc = async (id: string) => {
-    await emitTo("editor", "open", { type: "doc", id });
+    await notifyEditorOpen("doc", id);
     await svc.update(id, { viewed_at: Date.now() });
+    notifyDataChanged();
   };
 
   // 创建富文本后刷新列表（排序保持当前页，搜索按最后关键词重查）
   const createRichtext = async () => {
     try {
       const id = await svc.create({ doc_type: "richText" });
-      await refreshAll();
-      await emitTo("editor", "open", { type: "doc", id });
+      notifyDataChanged();
+      await notifyEditorOpen("doc", id);
     } catch (e) {
       console.error(e);
     }
@@ -48,7 +52,7 @@ export const useDocAction = () => {
     const sortPage = sortStore.currentPage;
 
     await svc.remove(id);
-    emitTo("editor", "delete", { type: "doc", id: id });
+    notifyDataChanged();
     await refreshAll();
     // 被删的是搜索激活项：选中前一项；index 最小为 0，不能越过首项
     if (wasSearchActive) {

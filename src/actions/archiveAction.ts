@@ -1,7 +1,10 @@
 import { useFdSvc } from "@/services/folder";
 import { useArchiveStore } from "@/stores/archiveStore";
 import { useUiStore } from "@/stores/uiStore";
-import { emitTo } from "@tauri-apps/api/event";
+import {
+  notifyDataChanged,
+  notifyEditorOpen,
+} from "@/infrastructure/api/windowEvent";
 import { storeToRefs } from "pinia";
 
 export const useArchiveAction = () => {
@@ -41,11 +44,13 @@ export const useArchiveAction = () => {
 
   const updateName = async (id: string, name: string) => {
     await svc.renameFolder({ id, name });
+    notifyDataChanged();
     await refresh();
   };
 
   const remove = async (id: string) => {
     await svc.deleteFolder({ id });
+    notifyDataChanged();
     await refresh();
   };
 
@@ -68,10 +73,11 @@ export const useArchiveAction = () => {
       docId: docId,
       folderIds: archiveIds,
     });
+    notifyDataChanged();
   };
 
   const openArchive = async (id: string) => {
-    await emitTo("editor", "open", { type: "archive", id });
+    await notifyEditorOpen("archive", id);
     await svc.update({ id: id, viewedAt: Date.now() });
     await refresh();
   };

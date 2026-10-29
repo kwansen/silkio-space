@@ -10,7 +10,6 @@ import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
 import Search from "@/components/icons/Search.vue";
 import { ScoredDoc } from "@/types/doc";
-import { emitTo } from "@tauri-apps/api/event";
 const store = useDocSearchStore();
 const { setPageSize, setDocs, setQuery } = store;
 const { query, currentPage, docsThisPage, totalPages, activeIndex } =
@@ -21,7 +20,6 @@ const action = useDocAction();
 const openResult = async (d: ScoredDoc | undefined) => {
   if (!d) return;
   await action.openDoc(d.id);
-  emitTo("main", "refresh");
   getCurrentWindow().hide();
 };
 
