@@ -10,6 +10,7 @@ import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
 import Search from "@/components/icons/Search.vue";
 import { ScoredDoc } from "@/types/doc";
+import { emitTo } from "@tauri-apps/api/event";
 const store = useDocSearchStore();
 const { setPageSize, setDocs, setQuery } = store;
 const { query, currentPage, docsThisPage, totalPages, activeIndex } =
@@ -19,8 +20,8 @@ const action = useDocAction();
 // 打开选中文档后隐藏搜索窗
 const openResult = async (d: ScoredDoc | undefined) => {
   if (!d) return;
-  // search 窗口无法直接刷新 main 的数据，通过 emitTo 通知 main 自行 refresh
-  await action.openDoc(d.id, { notifyMain: true });
+  await action.openDoc(d.id);
+  emitTo("main", "refresh");
   getCurrentWindow().hide();
 };
 

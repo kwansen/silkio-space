@@ -65,6 +65,7 @@ const showWindow = () => {
   getCurrentWindow().unminimize();
   getCurrentWindow().show();
   getCurrentWindow().setFocus();
+  emitTo("main", "refresh");
 };
 
 onUnmounted(() => {

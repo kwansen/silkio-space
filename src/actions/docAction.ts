@@ -23,15 +23,9 @@ export const useDocAction = () => {
   const searchStore = useDocSearchStore();
   const sortStore = useDocSortStore();
 
-  // 非 main 窗口（如 search）调用时需 notifyMain，由 main 监听 refresh 自行刷新
-  const openDoc = async (id: string, opts?: { notifyMain?: boolean }) => {
+  const openDoc = async (id: string) => {
     await emitTo("editor", "open", { type: "doc", id });
     await svc.update(id, { viewed_at: Date.now() });
-    if (opts?.notifyMain) {
-      await emitTo("main", "refresh");
-    } else {
-      await refreshAll();
-    }
   };
 
   // 创建富文本后刷新列表（排序保持当前页，搜索按最后关键词重查）
@@ -201,5 +195,6 @@ export const useDocAction = () => {
     goSortedNext,
     activateSortedPrev,
     activateSortedNext,
+    refreshAll,
   };
 };
