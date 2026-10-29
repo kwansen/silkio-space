@@ -12,8 +12,10 @@ const { show, sortedArchives } = storeToRefs(store);
 <template>
   <div>
     <ArchiveSortOption />
-    <ArchiveInput v-if="show" />
-    <ArchiveSortEmpty v-if="!show && sortedArchives.length === 0" />
-    <ArchiveSortList />
+    <div class="p-1">
+      <ArchiveInput v-if="show" />
+      <ArchiveSortEmpty v-if="!show && sortedArchives.length === 0" />
+      <ArchiveSortList />
+    </div>
   </div>
 </template>

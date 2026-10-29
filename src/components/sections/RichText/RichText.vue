@@ -46,7 +46,14 @@ import RichTextMathInsertDialog from "./RichTextMathInsertDialog.vue";
 import RichTextMathUpdateDialog from "./RichTextMathUpdateDialog.vue";
 import { storeToRefs } from "pinia";
 import "katex/dist/katex.min.css";
-import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  shallowRef,
+  watch,
+} from "vue";
 import type { Node } from "@tiptap/pm/model";
 import RichtextImageDialog from "./RichtextImageDialog.vue";
 import RichTextTitle from "./RichTextTitle.vue";
@@ -84,6 +91,27 @@ const emit = defineEmits<{
   onReady: [];
   onContentSave: [content: string, plain_text: string, word_count: number];
 }>();
+
+const editorReady = ref<boolean>(false);
+const tocReady = ref<boolean>(false);
+
+const allReady = computed(() => {
+  if (!editorReady.value) return false;
+  else if (!tocReady.value) return false;
+  else return true;
+});
+
+// 保证渲染完成后再打开，否则闪烁
+watch(
+  () => allReady.value,
+  async (v) => {
+    if (!v) return;
+    await nextTick(); // 等 sidebar/toc 渲染提交
+    await new Promise((r) => requestAnimationFrame(r));
+    await new Promise((r) => requestAnimationFrame(r)); // 等 paint
+    emit("onReady");
+  },
+);
 
 const createEditor = (v: any): Editor => {
   return new Editor({
@@ -149,7 +177,7 @@ const createEditor = (v: any): Editor => {
         getIndex: getHierarchicalIndexes,
         onUpdate: (content) => {
           editorStore.toc = content;
-          console.dir(content);
+          tocReady.value = true;
         },
       }),
     ],
@@ -158,6 +186,10 @@ const createEditor = (v: any): Editor => {
       const text = editor.getText();
       const length = text.length;
       emit("onContentSave", content.value, text, length);
+    },
+    onCreate: () => {
+      editorReady.value = true;
+      // emit("onReady");
     },
   });
 };
@@ -207,8 +239,8 @@ onMounted(async () => {
   }
   editor.value = createEditor(v);
   // 等待dom加载完毕,再通知父组件打开窗口，否则打开新文档时，dom未加载完毕，窗口打开有dom的闪烁
-  await nextTick();
-  emit("onReady");
+  // await nextTick();
+  // emit("onReady");
 });
 
 onBeforeUnmount(() => {

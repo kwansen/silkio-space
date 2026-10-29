@@ -34,6 +34,7 @@ const dtf = new Intl.DateTimeFormat("zh-CN", {
       :list="store.sortedArchives"
       item-key="id"
       :animation="200"
+      class="space-y-1"
       ghost-class="ghost"
       :disabled="sort !== 'manual' || editingKey"
       @end="dragEnd"

@@ -6,8 +6,10 @@ import Side from "@/components/icons/Side.vue";
 import SideMian from "@/components/icons/SideMian.vue";
 import { useUiStore } from "@/stores/uiStore.ts";
 import Setting from "@/components/icons/Setting.vue";
+import { useEditorStore } from "@/stores/editorStore.ts";
 
 const uiStore = useUiStore();
+const editorStore = useEditorStore();
 
 interface Props {
   label: string;
@@ -18,8 +20,11 @@ const props = defineProps<Props>();
 
 <template>
   <div class="h-10 flex items-center pl-1.5 select-none">
+    <!-- 必须是编辑器窗口的archive模式以及有激活的id -->
     <div
-      v-if="label === 'editor' && uiStore.editorMode === 'archive'"
+      v-if="
+        label === 'editor' && uiStore.editorMode === 'archive' && editorStore.id
+      "
       class="flex gap-1 bg-white p-0.5 rounded-md"
     >
       <div

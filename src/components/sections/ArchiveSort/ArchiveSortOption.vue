@@ -27,7 +27,7 @@ const { setShow } = archiveSortStore;
 
 <template>
   <div
-    class="flex items-center h-16 px-4 gap-4 border-b border-purple-300 sticky top-0 z-10 bg-white"
+    class="flex items-center h-16 px-5 gap-4 border-b border-purple-300 sticky top-0 z-10 bg-white"
   >
     <div
       v-for="i in list"

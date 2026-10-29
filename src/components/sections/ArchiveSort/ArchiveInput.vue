@@ -63,13 +63,13 @@ onKeyStroke("Enter", () => {
     />
     <button
       :disabled="!name"
-      class="w-7 h-7 enabled:hover:bg-gray-200 disabled:opacity-30 grid place-items-center rounded-md"
+      class="w-7 h-7 enabled:hover:bg-gray-200 enabled:cursor-pointer disabled:opacity-30 grid place-items-center rounded-md"
       @click="handleClick"
     >
       <Check class="w-5 h-5" />
     </button>
     <div
-      class="w-7 h-7 hover:bg-gray-200 grid place-items-center rounded-md"
+      class="w-7 h-7 hover:bg-red-200 cursor-pointer grid place-items-center rounded-md"
       @click="setShow(false)"
     >
       <Close class="w-5 h-5" />

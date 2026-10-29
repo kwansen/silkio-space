@@ -1,3 +1,4 @@
+/* 0 偏移、0 模糊、4px 扩散、颜色 */
 .ghost {
-  background-color: var(--color-orange-200);
+  box-shadow: 0 0 0 1px var(--color-blue-300);
 }
