@@ -15,7 +15,6 @@ import Archive from "../icons/Archive.vue";
 import Delete from "../icons/Delete.vue";
 import { useDocAction } from "@/actions/docAction.ts";
 import { useUiStore } from "@/stores/uiStore.ts";
-import { isActive } from "@tiptap/core";
 
 interface Props {
   active: boolean;
@@ -106,7 +105,7 @@ const getClass = () => {
 </script>
 <template>
   <div
-    class="h-16 grid grid-cols-[4rem_1fr_auto] border-t border-gray-100 select-none relative group"
+    class="h-16 cursor-pointer grid grid-cols-[4rem_1fr_auto] border-t border-gray-100 select-none relative group"
     :class="getClass()"
     @mouseenter="hover(itemKey)"
     @mouseleave="unHover"
@@ -137,7 +136,8 @@ const getClass = () => {
     <!-- 悬浮按钮 -->
     <div
       v-if="hoverKey === itemKey || openedKey === itemKey"
-      class="h-full aspect-square bg-gray-100 absolute top-0 right-0 grid place-items-center"
+      :class="active ? 'bg-purple-100' : 'bg-gray-100'"
+      class="h-full aspect-square absolute top-0 right-0 grid place-items-center"
     >
       <div
         ref="target"

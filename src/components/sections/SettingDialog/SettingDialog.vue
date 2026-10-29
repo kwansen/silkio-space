@@ -29,7 +29,7 @@ const close = () => {
 <template>
   <div class="fixed inset-0 bg-black/10 grid place-items-center select-none">
     <FocusScope
-      class="w-full max-w-2xl h-180 bg-white rounded-2xl overflow-hidden flex flex-col"
+      class="w-full max-w-2xl h-120 bg-white rounded-2xl overflow-hidden flex flex-col"
     >
       <div
         class="h-16 flex items-center justify-between px-4 text-2xl border-b border-purple-300"
@@ -37,7 +37,7 @@ const close = () => {
         设置
         <div
           @click="close"
-          class="size-7 hover:bg-red-200 hover:text-white grid place-items-center rounded-full"
+          class="size-7 hover:bg-red-200 grid place-items-center rounded-md cursor-pointer"
         >
           <Close class="size-5" />
         </div>
@@ -46,7 +46,7 @@ const close = () => {
         <div class="w-65 h-full bg-gray-100 p-2">
           <div
             v-for="item in navList"
-            class="py-2 px-4 rounded-md"
+            class="py-2 px-4 rounded-md cursor-pointer"
             :class="item.key === nav ? 'bg-purple-200' : 'hover:bg-gray-200 '"
             @click="nav = item.key"
           >
@@ -55,10 +55,10 @@ const close = () => {
         </div>
         <div class="flex-1 bg-gray-50">
           <ScrollArea class="p-4">
-            <Sync key="sync" v-if="nav === 'sync'" />
-            <Shortcut key="shortcut" v-if="nav === 'shortcut'" />
-            <Common key="common" v-if="nav === 'common'" />
-            <About key="about" v-if="nav === 'about'" />
+            <Sync v-if="nav === 'sync'" />
+            <Shortcut v-if="nav === 'shortcut'" />
+            <Common v-if="nav === 'common'" />
+            <About v-if="nav === 'about'" />
           </ScrollArea>
         </div>
       </div>

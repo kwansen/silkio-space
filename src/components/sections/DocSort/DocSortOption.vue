@@ -82,7 +82,7 @@ const handleClickBtn = () => {
   <div class="flex items-center h-16 px-4.5 gap-4 border-b border-purple-300">
     <div
       v-for="i in list"
-      class="select-none relative"
+      class="select-none relative cursor-pointer"
       @click="handleClick(i.key)"
     >
       <span :class="i.key === sort ? 'text-purple-700' : ''">
@@ -97,7 +97,7 @@ const handleClickBtn = () => {
     <div class="flex-1"></div>
     <div
       ref="target"
-      class="w-7 h-7 grid place-items-center rounded-md"
+      class="w-7 h-7 grid place-items-center rounded-md cursor-pointer"
       :class="show ? 'bg-gray-200' : 'bg-gray-100 hover:bg-gray-200'"
       @click="handleClickBtn"
     >

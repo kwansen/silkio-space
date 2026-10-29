@@ -52,7 +52,7 @@ onKeyStroke("Enter", () => {
 <template>
   <div
     ref="box"
-    class="h-10 focus-within:bg-gray-50 flex items-center gap-4 pr-4"
+    class="h-10 focus-within:bg-gray-100 flex items-center gap-4 pr-4"
   >
     <input
       ref="input"

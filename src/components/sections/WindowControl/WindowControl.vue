@@ -20,19 +20,27 @@ const props = defineProps<Props>();
   <div class="h-10 flex items-center pl-1.5 select-none">
     <div
       v-if="label === 'editor' && uiStore.editorMode === 'archive'"
-      class="flex gap-2 bg-white p-1 rounded-md"
+      class="flex gap-1 bg-white p-0.5 rounded-md"
     >
       <div
-        class="px-2 rounded-sm"
+        class="px-2 rounded-sm cursor-pointer"
         @click="uiStore.setLeftbarOption('docEntries')"
-        :class="uiStore.leftbarOption === 'docEntries' ? 'bg-gray-200' : ''"
+        :class="
+          uiStore.leftbarOption === 'docEntries'
+            ? 'bg-purple-200'
+            : 'hover:bg-gray-100'
+        "
       >
         目录
       </div>
       <div
-        class="px-2 rounded-sm"
+        class="px-2 rounded-sm cursor-pointer"
         @click="uiStore.setLeftbarOption('toc')"
-        :class="uiStore.leftbarOption === 'toc' ? 'bg-gray-200' : ''"
+        :class="
+          uiStore.leftbarOption === 'toc'
+            ? 'bg-purple-200'
+            : 'hover:bg-gray-100'
+        "
       >
         大纲
       </div>

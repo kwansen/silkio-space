@@ -105,7 +105,7 @@ const action = useArchiveAction();
     />
     <div
       v-else
-      class="h-10 px-4 grid grid-cols-[1fr_auto] select-none relative group"
+      class="h-10 px-4 grid grid-cols-[1fr_auto] select-none relative group cursor-pointer"
       :class="
         hoverKey === itemKey || openedKey === itemKey ? 'bg-gray-100' : ''
       "

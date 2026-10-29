@@ -20,10 +20,16 @@ const indentOf = (level: number) =>
 
 <template>
   <div class="h-11 pl-4 flex items-center gap-1 border-b border-purple-300">
-    <Doc class="size=5" />
-    <span>{{ editorStore.title }}</span>
+    <Doc class="size-4" />
+    <span>{{ editorStore.title || "未命名标题" }}</span>
   </div>
   <div class="h-2"></div>
+  <div
+    v-if="editorStore.toc.length === 0"
+    class="h-11 flex items-center justify-center text-xs text-neutral-400"
+  >
+    空空如也
+  </div>
   <a
     :href="`#${item.id}`"
     v-for="item in editorStore.toc"

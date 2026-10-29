@@ -31,7 +31,7 @@ const { setShow } = archiveSortStore;
   >
     <div
       v-for="i in list"
-      class="select-none relative"
+      class="select-none relative cursor-pointer"
       @click="handleClick(i.key)"
     >
       <span :class="i.key === sort ? 'text-purple-700' : ''">
@@ -48,7 +48,7 @@ const { setShow } = archiveSortStore;
       ref="target"
       id="addArchiveBtn"
       @click="setShow(true)"
-      class="w-7 h-7 grid place-items-center rounded-md hover:bg-gray-200"
+      class="w-7 h-7 bg-gray-100 cursor-pointer grid place-items-center rounded-md hover:bg-gray-200"
     >
       <Add />
     </div>

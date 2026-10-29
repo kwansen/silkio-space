@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
 
 const v = defineModel<boolean>({ default: false });
 
@@ -14,14 +14,19 @@ const click = () => {
 const padding = ref(1);
 const width = ref(32);
 const height = ref(16);
+// padding最后都会抵消，所以变成这个公式
 const tx = computed(() => width.value - height.value);
 
 const ready = ref(false);
-onMounted(() => {
-  // 下一帧再启用 transition，避免首帧过渡
-  requestAnimationFrame(() => {
-    ready.value = true;
-  });
+
+import { useDebounceFn } from "@vueuse/core";
+
+const handle = useDebounceFn(() => {
+  ready.value = true;
+}, 200);
+
+onMounted(async () => {
+  handle();
 });
 </script>
 
@@ -38,8 +43,10 @@ onMounted(() => {
   >
     <div
       class="h-full aspect-square bg-white rounded-full"
-      :class="ready ? 'transition duration-200' : ''"
-      :style="{ transform: v ? `translateX(${tx}px)` : '' }"
+      :class="ready ? 'duration-200' : ''"
+      :style="{
+        transform: v ? `translateX(${tx}px)` : 'translateX(0)',
+      }"
     ></div>
   </div>
 </template>

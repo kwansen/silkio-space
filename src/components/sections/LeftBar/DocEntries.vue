@@ -136,13 +136,13 @@ const handleClickBtn = () => {
 </script>
 
 <template>
-  <div class="h-11 flex items-center pl-4 gap-1 border-b border-purple-300">
+  <div class="h-11 flex items-center pl-4 gap-1 border-b border-gray-100">
     <Archive class="size-4" />{{ name }}
     <div class="flex-1"></div>
     <div
       ref="target"
-      class="size-7 grid place-items-center rounded-md"
-      :class="show ? 'bg-gray-200' : 'bg-gray-50 hover:bg-gray-200'"
+      class="size-7 grid place-items-center rounded-md cursor-pointer"
+      :class="show ? 'bg-gray-100' : 'bg-gray-50 hover:bg-gray-100'"
       @click="handleClickBtn"
     >
       <Add class="size-5" />
