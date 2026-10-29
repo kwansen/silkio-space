@@ -15,12 +15,13 @@ import { useUiStore } from "@/stores/uiStore";
 
 const editorStore = useEditorStore();
 const uiStore = useUiStore();
-const { id, docEntries, content, docType, key, oldContent, name } =
+const { id, docEntries, content, docType, key, oldContent, name, archiveId } =
   storeToRefs(editorStore);
 const { setDoc, setDocEntries, setArchiveId } = editorStore;
 
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
+let stopOnDelete: (() => void) | null = null;
 const docSvc = useDocSvc();
 
 onMounted(async () => {
@@ -58,6 +59,29 @@ onMounted(async () => {
       }
     },
   );
+
+  // 监听 main 窗口的文档删除事件（删除落库时关联已随之清理，是否刷新依据本地目录判断）
+  stopOnDelete = await listen<{ type: "doc"; id: string }>(
+    "delete",
+    async (event) => {
+      const deletedId = event.payload.id;
+      // 被删文档有关联且在当前归档目录中：刷新左侧目录
+      if (archiveId.value && docEntries.value.some((e) => e.id === deletedId)) {
+        setDocEntries(
+          await fdSvc.getArchiveDocEntries({ id: archiveId.value }),
+        );
+      }
+      // 展示的正是被删文档：切到目录首项，无则清空编辑区
+      if (id.value === deletedId) {
+        const next = docEntries.value[0];
+        if (next) {
+          setDoc(await docSvc.getById(next.id));
+        } else {
+          setDoc(null);
+        }
+      }
+    },
+  );
 });
 
 // 显示窗口：由 RichText 的就绪信号或空态渲染完成后调用
@@ -70,6 +94,7 @@ const showWindow = () => {
 
 onUnmounted(() => {
   stopOnOpen?.();
+  stopOnDelete?.();
 });
 
 const delayedSaveContent = useDebounceFn(
@@ -103,7 +128,13 @@ const onContentSave = (
 </script>
 
 <template>
-  <div class="w-full h-full flex">
+  <div
+    class="w-full h-full grid place-items-center"
+    v-if="uiStore.editorMode === 'doc' && !id"
+  >
+    空空如也
+  </div>
+  <div class="w-full h-full flex" v-else>
     <LeftBar v-if="uiStore.showLeftbar" v-model="docEntries" />
     <div class="flex-1 min-w-0 px-2 pb-2">
       <div class="w-full h-full bg-white rounded-lg overflow-hidden">

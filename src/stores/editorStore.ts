@@ -35,7 +35,11 @@ export const useEditorStore = defineStore("editor", () => {
   };
   // 上次落库的内容快照，用于跳过无变化的保存
   const oldContent = ref("");
-  // 元函数：整册替换当前文档（id/title/content/docType），并重置内容快照与重挂载 key
+  const toc = ref<TableOfContentData>([]);
+  const setToc = (v: TableOfContentData) => {
+    toc.value = v;
+  };
+  // 元函数：整册替换当前文档（id/title/content/docType），并重置内容快照、目录与重挂载 key
   const setDoc = (doc: Doc | null) => {
     setId(doc?.id);
     const c = doc?.content || "";
@@ -44,6 +48,8 @@ export const useEditorStore = defineStore("editor", () => {
     setContent(c);
     setDocType(doc?.doc_type);
     setKey(Date.now().toString());
+    // 目录随文档清空：空态下 RichText 已卸载、不会回填新 toc，不清会残留上一文档的旧标题
+    setToc([]);
   };
   const name = ref("");
   const setName = (v: string) => {
@@ -53,10 +59,6 @@ export const useEditorStore = defineStore("editor", () => {
   const archiveId = ref<string>();
   const setArchiveId = (v: string | undefined) => {
     archiveId.value = v;
-  };
-  const toc = ref<TableOfContentData>([]);
-  const setToc = (v: TableOfContentData) => {
-    toc.value = v;
   };
   return {
     id,

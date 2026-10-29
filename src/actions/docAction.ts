@@ -48,8 +48,8 @@ export const useDocAction = () => {
     const sortPage = sortStore.currentPage;
 
     await svc.remove(id);
+    emitTo("editor", "delete", { type: "doc", id: id });
     await refreshAll();
-
     // 被删的是搜索激活项：选中前一项；index 最小为 0，不能越过首项
     if (wasSearchActive) {
       searchStore.setActiveIndex(
