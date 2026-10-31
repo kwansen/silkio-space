@@ -4,6 +4,7 @@ import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
 import RichText from "@/components/sections/RichText/RichText.vue";
 import { useEditorAction } from "@/actions/editorAction";
 import { useFdSvc } from "@/services/folder";
+import { notifyDocChanged } from "@/infrastructure/api/windowEvent";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { nextTick, onMounted, onUnmounted } from "vue";
@@ -22,6 +23,9 @@ const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
 let stopOnDocChanged: (() => void) | null = null;
 let stopOnArchiveChanged: (() => void) | null = null;
+// openDoc 落库 viewed_at 后不广播，改由本窗口显示后补发 doc:changed，
+// 避免 main 在 editor 未显示时先刷新而闪烁；空归档路径不置位、不补发
+let pendingDocChanged = false;
 const docSvc = useDocSvc();
 
 // stale 对账：当前文档已失效（被删，或已不在所在归档目录）→ 切到首项，无则清空编辑区
@@ -53,6 +57,8 @@ onMounted(async () => {
         setDocEntries([]);
         name.value = "";
         setDoc(doc);
+        // viewed_at 变化由本窗口显示后补发广播（见 showWindow）
+        pendingDocChanged = true;
       } else if (t === "archive") {
         editorStore.setEditorMode("archive");
         uiStore.setLeftbarOption("docEntries");
@@ -105,11 +111,16 @@ onMounted(async () => {
   });
 });
 
-// 显示窗口：由 RichText 的就绪信号或空态渲染完成后调用（数据同步由各写操作自己广播，此处无需发）
+// 显示窗口：由 RichText 的就绪信号或空态渲染完成后调用；
+// viewed_at 等待同步广播在此补发，保证 main 刷新发生在 editor 已显示之后
 const showWindow = () => {
   getCurrentWindow().unminimize();
   getCurrentWindow().show();
   getCurrentWindow().setFocus();
+  if (pendingDocChanged) {
+    pendingDocChanged = false;
+    notifyDocChanged();
+  }
 };
 
 onUnmounted(() => {

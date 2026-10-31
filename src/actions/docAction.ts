@@ -13,10 +13,11 @@ export const useDocAction = () => {
   const searchStore = useDocSearchStore();
   const sortStore = useDocSortStore();
 
+  // 只发打开指令与落库 viewed_at，不在此广播 doc:changed：
+  // main 的刷新由 editor 窗口显示后补发，避免 editor 未显示时 main 先刷新闪烁
   const openDoc = async (id: string) => {
     await notifyEditorOpen("doc", id);
     await svc.update(id, { viewed_at: Date.now() });
-    notifyDocChanged();
   };
 
   // 创建富文本后刷新列表（排序保持当前页，搜索按最后关键词重查）
