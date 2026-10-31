@@ -42,14 +42,5 @@ onUnmounted(() => {
       <ToolView v-else-if="label === 'tool'" />
       <!-- <InsertView v-else-if="label === 'insert'" /> -->
     </div>
-
-    <!-- <ArchivePickerDialog />
-    <ArchiveRenameDialog />
-    <DocRemoveDialog />
-    <FolderRemoveDialog />
-    <DocPopover />
-    <ArchivePopover />
-    <DocAddPopover />
-    <NavAddPopover /> -->
   </div>
 </template>

@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import TitleArea from "@/components/shared/TitleArea.vue";
-import { useDocSvc } from "@/services/document";
+import { useEditorAction } from "@/actions/editorAction";
 import { useEditorStore } from "@/stores/editorStore";
-import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
 import { Editor } from "@tiptap/vue-3";
-import { useDebounceFn } from "@vueuse/core";
-import { ref, watch } from "vue";
-import { onMounted, useTemplateRef } from "vue";
-
-const oldTitle = ref<string>("");
+import { onMounted, useTemplateRef, watch } from "vue";
 
 const store = useEditorStore();
-const docSvc = useDocSvc();
+const { saveTitle } = useEditorAction();
 
 interface Props {
   editor: Editor | undefined;
@@ -24,16 +19,7 @@ const titleAreaRef =
 
 onMounted(() => {
   titleAreaRef.value?.focus();
-  oldTitle.value = store.title;
 });
-
-const delayedSaveTitle = useDebounceFn(async (docId: string, v: string) => {
-  if (v === oldTitle.value) return;
-  await docSvc.update(docId, { title: v });
-  oldTitle.value = v;
-  // 等保存落库完成后再广播变更事实，否则其他窗口会查到旧数据
-  notifyDataChanged();
-}, 1000);
 
 watch(
   () => store.title,
@@ -42,7 +28,7 @@ watch(
     if (!id) return;
     // 实时同步左侧目录列表中该文档的标题
     store.updateDocEntryTitle(id, v);
-    delayedSaveTitle(id, v);
+    saveTitle(v);
   },
 );
 

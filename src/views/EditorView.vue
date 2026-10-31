@@ -2,11 +2,11 @@
 import EditorEmpty from "@/components/sections/EditorEmpty.vue";
 import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
 import RichText from "@/components/sections/RichText/RichText.vue";
+import { useEditorAction } from "@/actions/editorAction";
 import { useFdSvc } from "@/services/folder";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { nextTick, onMounted, onUnmounted } from "vue";
-import { useDebounceFn } from "@vueuse/core";
 import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
@@ -15,7 +15,7 @@ import { useUiStore } from "@/stores/uiStore";
 
 const editorStore = useEditorStore();
 const uiStore = useUiStore();
-const { id, docEntries, content, docType, key, oldContent, name, archiveId } =
+const { id, docEntries, content, docType, key, name, archiveId } =
   storeToRefs(editorStore);
 const { setDoc, setDocEntries, setArchiveId } = editorStore;
 
@@ -102,34 +102,7 @@ onUnmounted(() => {
   stopOnDataChanged?.();
 });
 
-const delayedSaveContent = useDebounceFn(
-  async (
-    docId: string,
-    content: string,
-    plain_text: string,
-    word_count: number,
-  ) => {
-    if (content === oldContent.value) return;
-    await docSvc.update(docId, {
-      content: content,
-      plain_text: plain_text,
-      word_count: word_count,
-    });
-    oldContent.value = content;
-    // 等保存落库完成后再广播变更事实，否则其他窗口会查到旧数据
-    notifyDataChanged();
-  },
-  1000,
-);
-
-const onContentSave = (
-  content: string,
-  plain_text: string,
-  word_count: number,
-) => {
-  if (!id.value) return;
-  delayedSaveContent(id.value, content, plain_text, word_count);
-};
+const { saveContent } = useEditorAction();
 </script>
 
 <template>
@@ -148,7 +121,7 @@ const onContentSave = (
           :content="content"
           :key="key"
           @on-ready="showWindow"
-          @on-content-save="onContentSave"
+          @on-content-save="saveContent"
         />
         <EditorEmpty v-if="!docType" />
         <!-- <MindMap />

@@ -44,15 +44,18 @@ export const useEditorStore = defineStore("editor", () => {
   };
   // 上次落库的内容快照，用于跳过无变化的保存
   const oldContent = ref("");
+  // 上次落库的标题快照，用于跳过无变化的保存
+  const oldTitle = ref("");
   const toc = ref<TableOfContentData>([]);
   const setToc = (v: TableOfContentData) => {
     toc.value = v;
   };
-  // 元函数：整册替换当前文档（id/title/content/docType），并重置内容快照、目录与重挂载 key
+  // 元函数：整册替换当前文档（id/title/content/docType），并重置内容/标题快照、目录与重挂载 key
   const setDoc = (doc: Doc | null) => {
     setId(doc?.id);
     const c = doc?.content || "";
     oldContent.value = c;
+    oldTitle.value = doc?.title || "";
     setTitle(doc?.title || "");
     setContent(c);
     setDocType(doc?.doc_type);
@@ -88,6 +91,7 @@ export const useEditorStore = defineStore("editor", () => {
     key,
     setKey,
     oldContent,
+    oldTitle,
     setDoc,
     name,
     setName,
