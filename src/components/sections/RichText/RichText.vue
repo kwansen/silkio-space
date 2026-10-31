@@ -137,9 +137,6 @@ onMounted(async () => {
     v = c;
   }
   editor.value = createEditor(v);
-  // 等待dom加载完毕,再通知父组件打开窗口，否则打开新文档时，dom未加载完毕，窗口打开有dom的闪烁
-  // await nextTick();
-  // emit("onReady");
 });
 
 onBeforeUnmount(() => {
