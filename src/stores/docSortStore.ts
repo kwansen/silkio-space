@@ -29,6 +29,7 @@ export const useDocSortStore = defineStore("docSort", () => {
     activeId.value = v;
   };
   const sortedDocs = ref<Doc[]>([]);
+  const loaded = ref(false); // 首次拉取完成前不渲染空态，避免初始化闪烁
   const activeIndex = computed(() =>
     sortedDocs.value.findIndex((item) => item.id === activeId.value),
   );
@@ -47,6 +48,7 @@ export const useDocSortStore = defineStore("docSort", () => {
     const result = await svc.getSortedInPage(toBackendSort(option), page);
     sortedDocs.value = result.list;
     total.value = result.total;
+    loaded.value = true;
   };
 
   // 元函数：跳转页码（拉数据 + 同步页码 + 激活首条）
@@ -99,6 +101,7 @@ export const useDocSortStore = defineStore("docSort", () => {
     activeId,
     setActiveId,
     sortedDocs,
+    loaded,
     activeIndex,
     total,
     totalPages,
