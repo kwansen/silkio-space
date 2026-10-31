@@ -21,7 +21,7 @@ const store = useDocSearchStore();
 const { docsThisPage: docs, activeId } = storeToRefs(store);
 const action = useDocAction();
 
-const openResult = async (id: string | undefined) => {
+const openResult = async (id: string | null | undefined) => {
   if (!id) return;
   await action.openDoc(id);
 };

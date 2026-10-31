@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useArchiveAction } from "@/actions/archiveAction";
 import Add from "@/components/icons/Add.vue";
 import { useArchiveStore } from "@/stores/archiveStore";
 import { useUiStore } from "@/stores/uiStore";
@@ -8,7 +7,8 @@ import { storeToRefs } from "pinia";
 const store = useUiStore();
 const { archiveSort: sort } = storeToRefs(store);
 const { setArchiveSort } = store;
-const action = useArchiveAction();
+const archiveSortStore = useArchiveStore();
+const { setShow } = archiveSortStore;
 
 const list: { key: ArchiveSortOption; show: string }[] = [
   { key: "manual", show: "手动排序" },
@@ -18,11 +18,8 @@ const list: { key: ArchiveSortOption; show: string }[] = [
 
 const handleClick = (option: ArchiveSortOption) => {
   setArchiveSort(option);
-  action.getSortedArchives(option);
+  archiveSortStore.getSortedArchives(option);
 };
-
-const archiveSortStore = useArchiveStore();
-const { setShow } = archiveSortStore;
 </script>
 
 <template>

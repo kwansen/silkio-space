@@ -15,7 +15,6 @@ const store = useUiStore();
 const { docSort: sort } = storeToRefs(store);
 const { setDocSort } = store;
 const sortStore = useDocSortStore();
-const action = useDocAction();
 const list: { key: DocSortOption; show: string }[] = [
   { key: "viewedAt", show: "最近浏览" },
   { key: "updatedAt", show: "最近更新" },

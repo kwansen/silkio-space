@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 const v = defineModel<boolean>({ default: false });
 

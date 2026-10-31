@@ -1,11 +1,27 @@
+import { useFdSvc } from "@/services/folder";
 import { Archive } from "@/types/archive";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const useArchiveStore = defineStore("archiveSort", () => {
+  const svc = useFdSvc();
+
   const sortedArchives = ref<Archive[]>([]);
-  const setSortedArchives = (v: Archive[]) => {
-    sortedArchives.value = v;
+
+  // 元函数：按排序选项拉取归档列表并落状态（manual 不排序，viewedAt 按最近打开，其余按名称）
+  const getSortedArchives = async (v: ArchiveSortOption) => {
+    const results = await svc.getArchives();
+    if (v === "viewedAt") {
+      results.sort((a, b) => {
+        if (a.viewed_at === null && b.viewed_at === null) return 0;
+        if (a.viewed_at === null) return 1;
+        if (b.viewed_at === null) return -1;
+        return b.viewed_at - a.viewed_at;
+      });
+    } else if (v !== "manual") {
+      results.sort((a, b) => a.name.localeCompare(b.name));
+    }
+    sortedArchives.value = results;
   };
 
   const query = ref("");
@@ -33,7 +49,7 @@ export const useArchiveStore = defineStore("archiveSort", () => {
   };
   return {
     sortedArchives,
-    setSortedArchives,
+    getSortedArchives,
     searchedArchives,
     query,
     setQuery,

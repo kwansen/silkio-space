@@ -11,30 +11,11 @@ export const useArchiveAction = () => {
   const svc = useFdSvc();
   const store = useArchiveStore();
   const uiStore = useUiStore();
-  const { setSortedArchives } = store;
   const { archiveSort: sort } = storeToRefs(uiStore);
-  const getSortedArchives = async (v: ArchiveSortOption) => {
-    let archives;
-    const results = await svc.getArchives();
-    if (v === "manual") {
-      archives = results;
-    } else if (v === "viewedAt") {
-      results.sort((a, b) => {
-        if (a.viewed_at === null && b.viewed_at === null) return 0;
-        if (a.viewed_at === null) return 1;
-        if (b.viewed_at === null) return -1;
-        return b.viewed_at - a.viewed_at;
-      });
-      archives = results;
-    } else {
-      results.sort((a, b) => a.name.localeCompare(b.name));
-      archives = results;
-    }
-    setSortedArchives(archives);
-  };
 
+  // 元函数：按当前排序重新拉取归档列表（供增删改后刷新）
   const refresh = async () => {
-    await getSortedArchives(sort.value);
+    await store.getSortedArchives(sort.value);
   };
 
   const createArchive = async (v: string) => {
@@ -83,7 +64,6 @@ export const useArchiveAction = () => {
   };
 
   return {
-    getSortedArchives,
     refresh,
     createArchive,
     updateName,

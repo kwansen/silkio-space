@@ -35,7 +35,6 @@ import { Editor } from "@tiptap/vue-3";
 import { useUiStore } from "@/stores/uiStore";
 import Eraser from "@/components/icons/Eraser.vue";
 import Divider from "@/components/icons/Divider.vue";
-import Search from "@/components/icons/Search.vue";
 import { Btn, Group } from "./type.ts";
 import RSToolbarBtn from "./RSToolbarBtn.vue";
 const uiStore = useUiStore();
@@ -325,17 +324,6 @@ const clear: Btn = {
   icon: Eraser,
   shortcut: "Ctrl + \\",
   action: () => props.editor?.chain().focus().unsetAllMarks().run(),
-  disabled: () => false,
-  active: () => false,
-};
-//#endregion
-
-//#region 搜索与替换
-const search: Btn = {
-  name: "搜索与替换",
-  icon: Search,
-  shortcut: "Ctrl + H",
-  action: () => {},
   disabled: () => false,
   active: () => false,
 };

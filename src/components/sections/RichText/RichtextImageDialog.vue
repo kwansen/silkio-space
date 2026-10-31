@@ -8,7 +8,7 @@ import { ref } from "vue";
 interface Props {
   editor: Editor | undefined;
 }
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const isOnline = ref(true);
 </script>

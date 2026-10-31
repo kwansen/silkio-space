@@ -151,5 +151,9 @@ export const useDocSearchStore = defineStore("docSearch", () => {
     goToPage,
     searchDocs,
     removeDoc,
+    prevPage,
+    nextPage,
+    activatePrev,
+    activateNext,
   };
 });
