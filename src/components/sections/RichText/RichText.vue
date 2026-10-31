@@ -39,7 +39,6 @@ import {
   TableHeader,
   TableRow,
 } from "@tiptap/extension-table";
-import { useUiStore } from "@/stores/uiStore.ts";
 import RichTextLinkDialog from "./RichTextLinkDialog.vue";
 import RichTextTableToolbar from "./RichTextTableToolbar.vue";
 import RichTextMathInsertDialog from "./RichTextMathInsertDialog.vue";
@@ -72,8 +71,7 @@ const pos = ref<number>(0);
 const block = ref<boolean>(false);
 const editorStore = useEditorStore();
 
-const uiStore = useUiStore();
-const { richtextDialog: dialog } = storeToRefs(uiStore);
+const { richtextDialog: dialog } = storeToRefs(editorStore);
 
 const openMathDialog = (n: Node, p: number, b: boolean) => {
   node.value = n;

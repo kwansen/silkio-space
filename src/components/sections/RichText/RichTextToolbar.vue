@@ -32,13 +32,12 @@ import UnorderList from "@/components/icons/UnorderList.vue";
 import RSToolbarDropdown from "./RSToolbarDropdown.vue";
 import RTSearchPopover from "./RTSearchPopover.vue";
 import { Editor } from "@tiptap/vue-3";
-import { useUiStore } from "@/stores/uiStore";
+import { useEditorStore } from "@/stores/editorStore";
 import Eraser from "@/components/icons/Eraser.vue";
 import Divider from "@/components/icons/Divider.vue";
 import { Btn, Group } from "./type.ts";
 import RSToolbarBtn from "./RSToolbarBtn.vue";
-const uiStore = useUiStore();
-const { setRichtextDialog } = uiStore;
+const { setRichtextDialog } = useEditorStore();
 
 interface Props {
   editor: Editor | undefined;

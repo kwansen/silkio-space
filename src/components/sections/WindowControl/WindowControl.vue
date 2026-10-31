@@ -23,7 +23,7 @@ defineProps<Props>();
     <!-- 必须是编辑器窗口的archive模式以及有激活的id -->
     <div
       v-if="
-        label === 'editor' && uiStore.editorMode === 'archive' && editorStore.id
+        label === 'editor' && editorStore.editorMode === 'archive' && editorStore.id
       "
       class="flex gap-1 bg-white p-0.5 rounded-md"
     >

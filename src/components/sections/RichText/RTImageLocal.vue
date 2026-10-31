@@ -7,7 +7,7 @@ import { writeFile, BaseDirectory } from "@tauri-apps/plugin-fs";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { Editor } from "@tiptap/vue-3";
-import { useUiStore } from "@/stores/uiStore";
+import { useEditorStore } from "@/stores/editorStore";
 
 interface Props {
   editor: Editor | undefined;
@@ -20,7 +20,7 @@ const data = shallowRef<Uint8Array | null>(null);
 const fileName = ref<string>("");
 const previewUrl = ref<string | null>(null);
 
-const { setRichtextDialog } = useUiStore();
+const { setRichtextDialog } = useEditorStore();
 
 const handleClick = () => {
   uploader.value?.click();

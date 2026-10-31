@@ -32,7 +32,7 @@ onMounted(async () => {
       const t = data.type;
       if (t === "doc") {
         const doc = await docSvc.getById(data.id);
-        uiStore.setEditorMode("doc");
+        editorStore.setEditorMode("doc");
         uiStore.setLeftbarOption("toc");
         // 切到独立文档视图必须清掉归档态，否则对账逻辑仍挂在旧归档上，
         // 会把不在该归档目录中的当前文档误判为失效并回切到目录首项
@@ -41,7 +41,7 @@ onMounted(async () => {
         name.value = "";
         setDoc(doc);
       } else if (t === "archive") {
-        uiStore.setEditorMode("archive");
+        editorStore.setEditorMode("archive");
         uiStore.setLeftbarOption("docEntries");
         setArchiveId(data.id);
         const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
@@ -135,7 +135,7 @@ const onContentSave = (
 <template>
   <div
     class="w-full h-full grid place-items-center"
-    v-if="uiStore.editorMode === 'doc' && !id"
+    v-if="editorStore.editorMode === 'doc' && !id"
   >
     空空如也
   </div>

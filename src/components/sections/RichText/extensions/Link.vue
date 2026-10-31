@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import Unlink from "@/components/icons/Unlink.vue";
 import { MarkViewContent, markViewProps } from "@tiptap/vue-3";
-import { useUiStore } from "@/stores/uiStore";
+import { useEditorStore } from "@/stores/editorStore";
 import { ref } from "vue";
 import Pencil from "@/components/icons/Pencil.vue";
 
 const props = defineProps(markViewProps);
 
-const { setRichtextDialog } = useUiStore();
+const { setRichtextDialog } = useEditorStore();
 
 const hover = ref(false);
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useUiStore } from "@/stores/uiStore";
+import { useEditorStore } from "@/stores/editorStore";
 import { Editor } from "@tiptap/vue-3";
 import { FocusScope } from "@zhencai/vue-focus-scope";
 import { ref } from "vue";
@@ -8,7 +8,7 @@ interface Props {
   editor: Editor | undefined;
 }
 
-const { setRichtextDialog } = useUiStore();
+const { setRichtextDialog } = useEditorStore();
 
 const latex = ref<string>("");
 

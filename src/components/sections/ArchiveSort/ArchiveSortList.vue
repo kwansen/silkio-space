@@ -2,15 +2,13 @@
 import ArchiveItem from "@/components/shared/ArchiveItem.vue";
 import { useFdSvc } from "@/services/folder";
 import { useArchiveStore } from "@/stores/archiveStore";
-import { useUiStore } from "@/stores/uiStore";
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
 import draggable from "vuedraggable";
 
 const store = useArchiveStore();
 const svc = useFdSvc();
-const uiStore = useUiStore();
-const { archiveSort: sort } = storeToRefs(uiStore);
+const { archiveSort: sort } = storeToRefs(store);
 const dragEnd = () => {
   const ids = store.sortedArchives.map((a) => a.id);
   svc.reorderFolders(ids);

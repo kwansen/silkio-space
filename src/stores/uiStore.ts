@@ -1,47 +1,22 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
+// 全局 UI 状态：跨域导航与窗口布局（各域自身状态在对应域 store 中）
 export const useUiStore = defineStore("ui", () => {
-  //#region mode的切换
-  const appMode = ref<AppModeOption>("document");
-  const setAppMode = (v: AppModeOption) => {
-    appMode.value = v;
-  };
-  //#endregion
   //#region docTab的切换
   const docTab = ref<DocTabOption>("docSort");
   const setDocTab = (v: DocTabOption) => {
     docTab.value = v;
   };
   //#endregion
-  //#region docSort的切换
-  const docSort = ref<DocSortOption>("viewedAt");
-  const setDocSort = (v: DocSortOption) => {
-    docSort.value = v;
-  };
-  //#endregion
-  //#region archiveSort的切换
-  const archiveSort = ref<ArchiveSortOption>("manual");
-  const setArchiveSort = (v: ArchiveSortOption) => {
-    archiveSort.value = v;
-  };
-  //#endregion
 
-  const richtextDialog = ref<RichTextDialog>("");
-  const setRichtextDialog = (v: RichTextDialog) => {
-    richtextDialog.value = v;
-  };
-
+  // 归档选择弹窗的目标文档 id（"" 为关闭）
   const openId = ref("");
   const setOpenId = (v: string) => {
     openId.value = v;
   };
 
-  const editorMode = ref<EditorMode>("doc");
-  const setEditorMode = (v: EditorMode) => {
-    editorMode.value = v;
-  };
-
+  //#region 左侧栏
   const leftbarOption = ref<LeftBarOption>("docEntries");
   const setLeftbarOption = (v: LeftBarOption) => {
     leftbarOption.value = v;
@@ -54,7 +29,9 @@ export const useUiStore = defineStore("ui", () => {
   const toggleLeftbar = () => {
     showLeftbar.value = !showLeftbar.value;
   };
+  //#endregion
 
+  //#region 右侧栏
   const showRightbar = ref<boolean>(true);
   const setRightbarShow = (v: boolean) => {
     showRightbar.value = v;
@@ -62,6 +39,7 @@ export const useUiStore = defineStore("ui", () => {
   const toggleRightbar = () => {
     showRightbar.value = !showRightbar.value;
   };
+  //#endregion
 
   const showSettingDialog = ref<boolean>(false);
   const setSettingDialogShow = (v: boolean) => {
@@ -69,20 +47,10 @@ export const useUiStore = defineStore("ui", () => {
   };
 
   return {
-    appMode,
-    setAppMode,
     docTab,
     setDocTab,
-    docSort,
-    setDocSort,
-    archiveSort,
-    setArchiveSort,
-    richtextDialog,
-    setRichtextDialog,
     openId,
     setOpenId,
-    editorMode,
-    setEditorMode,
     leftbarOption,
     setLeftbarOption,
     showLeftbar,
