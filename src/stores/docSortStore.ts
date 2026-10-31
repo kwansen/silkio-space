@@ -20,7 +20,7 @@ export const useDocSortStore = defineStore("docSort", () => {
     total.value = v;
   };
   const totalPages = computed(() => Math.ceil(total.value / PAGE_SIZE));
-  const currentPage = ref<number>(0);
+  const currentPage = ref<number>(1);
   const setPage = (v: number) => {
     currentPage.value = v;
   };
@@ -28,33 +28,43 @@ export const useDocSortStore = defineStore("docSort", () => {
   const prevDoc = () => {
     const prevIndex = activeIndex.value - 1;
     if (prevIndex >= 0) {
+      // 同页内上移
       setActiveId(sortedDocs.value[prevIndex].id);
+      return;
     }
+    // 跨页：sortedDocs 已是上一页数据，回退页码并激活末条
+    if (currentPage.value <= 1) return; // 首页无上一页
+    setPage(currentPage.value - 1);
+    const last = sortedDocs.value[sortedDocs.value.length - 1];
+    if (last) setActiveId(last.id);
   };
 
   const nextDoc = () => {
     const nextIndex = activeIndex.value + 1;
-    if (nextIndex < total.value) {
+    if (nextIndex < sortedDocs.value.length) {
+      // 同页内下移
       setActiveId(sortedDocs.value[nextIndex].id);
+      return;
     }
+    // 跨页：sortedDocs 将变为下一页数据，前进页码并激活首条
+    if (currentPage.value >= totalPages.value) return; // 末页无下一页
+    setPage(currentPage.value + 1);
+    const first = sortedDocs.value[0];
+    if (first) setActiveId(first.id);
   };
 
   const prevPage = () => {
-    const targetIndex =
-      Math.floor(activeIndex.value / PAGE_SIZE) * PAGE_SIZE - 1;
-
-    if (targetIndex >= 0) {
-      setActiveId(sortedDocs.value[targetIndex].id);
-    }
+    if (currentPage.value <= 1) return; // 首页无上一页
+    setPage(currentPage.value - 1);
+    const first = sortedDocs.value[0];
+    if (first) setActiveId(first.id);
   };
 
   const nextPage = () => {
-    const targetIndex =
-      (Math.floor(activeIndex.value / PAGE_SIZE) + 1) * PAGE_SIZE;
-
-    if (targetIndex < sortedDocs.value.length) {
-      setActiveId(sortedDocs.value[targetIndex].id);
-    }
+    if (currentPage.value >= totalPages.value) return; // 末页无下一页
+    setPage(currentPage.value + 1);
+    const first = sortedDocs.value[0];
+    if (first) setActiveId(first.id);
   };
 
   const activateFirst = () => {
@@ -66,6 +76,7 @@ export const useDocSortStore = defineStore("docSort", () => {
     setActiveId,
     sortedDocs,
     setDocs,
+    activeIndex,
     total,
     setTotal,
     totalPages,

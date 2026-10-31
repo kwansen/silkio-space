@@ -50,12 +50,6 @@ export const useDocAction = () => {
   };
 
   // 元函数：按关键词搜索文档
-  const searchDocs = async (q: string) => {
-    searchStore.setQuery(q);
-    const results = await svc.search(q);
-    searchStore.setDocs(results);
-    searchStore.setPage(1);
-  };
 
   // 元函数：按最后一次关键词重新搜索（供增删改后刷新），光标尽量停在原位，结果变少时收敛到末项
   const refreshSearched = async () => {
@@ -65,36 +59,6 @@ export const useDocAction = () => {
     searchStore.setActiveIndex(
       Math.max(0, Math.min(index, searchStore.searchedDocs.length - 1)),
     );
-  };
-
-  const goToSearchedPage = (v: number) => {
-    searchStore.setPage(v);
-  };
-
-  const goSearchedPrev = async () => {
-    if (searchStore.currentPage > 1) {
-      searchStore.setPage(searchStore.currentPage - 1);
-    }
-  };
-
-  const goSearchedNext = async () => {
-    if (searchStore.currentPage < searchStore.totalPages) {
-      searchStore.setPage(searchStore.currentPage + 1);
-    }
-  };
-
-  const activateSearchedPrev = () => {
-    const i = searchStore.activeIndex;
-    if (i > 0) {
-      searchStore.setActiveIndex(i - 1);
-    }
-  };
-
-  const activateSearchedNext = () => {
-    const count = searchStore.activeIndex + 1;
-    if (count < searchStore.searchedDocs.length) {
-      searchStore.setActiveIndex(count);
-    }
   };
 
   const getSortedDocs = async (option: DocSortOption, page: number) => {
@@ -128,20 +92,21 @@ export const useDocAction = () => {
 
   // 移动 activeIndex；跨页时派生页码变化，需重新拉取对应页数据（保留光标）
   const activateSortedPrev = async () => {
-    console.log("上一个");
     const page = sortStore.currentPage;
-    sortStore.prevDoc();
-    if (sortStore.currentPage !== page) {
-      await getSortedDocs(uiStore.docSort, sortStore.currentPage);
+    // 已在页首且非第一页：先拉上一页数据，prevDoc 内部会回退页码并激活末条
+    if (sortStore.activeIndex <= 0 && page > 1) {
+      await getSortedDocs(uiStore.docSort, page - 1);
     }
+    sortStore.prevDoc();
   };
 
   const activateSortedNext = async () => {
-    console.log("下一个");
     const page = sortStore.currentPage;
     sortStore.nextDoc();
+    // nextDoc 跨页时已前进页码：重拉新页数据并激活首条
     if (sortStore.currentPage !== page) {
       await getSortedDocs(uiStore.docSort, sortStore.currentPage);
+      sortStore.activateFirst();
     }
   };
 
@@ -153,13 +118,7 @@ export const useDocAction = () => {
     openDoc,
     createRichtext,
     remove,
-    searchDocs,
     refreshSearched,
-    goToSearchedPage,
-    goSearchedPrev,
-    goSearchedNext,
-    activateSearchedPrev,
-    activateSearchedNext,
     getSortedDocs,
     refreshSorted,
     goToSortedPage,
