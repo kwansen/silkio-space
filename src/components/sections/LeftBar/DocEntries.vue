@@ -16,7 +16,10 @@ import FlowchartMian from "@/components/icons/FlowchartMian.vue";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import { type Component, computed, ref, useTemplateRef } from "vue";
-import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
+import {
+  notifyArchiveChanged,
+  notifyDocChanged,
+} from "@/infrastructure/api/windowEvent";
 import Close from "@/components/icons/Close.vue";
 
 const store = useEditorStore();
@@ -31,13 +34,15 @@ const openEntry = async (entry: DocEntry) => {
 
 const { setDoc, setDocEntries } = store;
 
-// 拖拽结束持久化新顺序：vuedraggable 已通过 :list 原地更新 docEntries，此处仅写库
-const dragEnd = () => {
+// 拖拽结束持久化新顺序：vuedraggable 已通过 :list 原地更新 docEntries，此处写库后
+// 广播 archive:changed（归档内文档排序属归档成员关系域），其他窗口按需刷新
+const dragEnd = async () => {
   if (!archiveId.value) return;
-  fdSvc.reorderDocs({
+  await fdSvc.reorderDocs({
     folderId: archiveId.value,
     documentIds: docEntries.value.map((e) => e.id),
   });
+  notifyArchiveChanged();
 };
 
 // 在当前归档下创建文档：加入归档 → 刷新左侧目录 → 在已打开的编辑区展示新文档
@@ -49,7 +54,9 @@ const createDoc = async (newType: DocType) => {
     setDocEntries(await fdSvc.getArchiveDocEntries({ id: archiveId.value }));
     const doc = await docSvc.getById(docId);
     if (doc) setDoc(doc);
-    await notifyDataChanged();
+    // 动了两个域：新建文档本体广播 doc:changed，归入归档广播 archive:changed
+    notifyDocChanged();
+    notifyArchiveChanged();
   } catch (e) {
     console.error(e);
   }
@@ -63,6 +70,7 @@ const removeEntry = async (entry: DocEntry) => {
       folderId: archiveId.value,
       docId: entry.id,
     });
+    notifyArchiveChanged();
     setDocEntries(await fdSvc.getArchiveDocEntries({ id: archiveId.value }));
     // 若移出的正是当前打开的文档，则切换到列表中的第一个文档并加载（无则清空编辑区）
     if (id.value === entry.id) {

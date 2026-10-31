@@ -1,5 +1,5 @@
 import { useDebounceFn } from "@vueuse/core";
-import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
+import { notifyDocChanged } from "@/infrastructure/api/windowEvent";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
@@ -18,7 +18,7 @@ export const useEditorAction = () => {
         word_count,
       });
       oldContent.value = content;
-      notifyDataChanged();
+      notifyDocChanged();
     },
     1000,
   );
@@ -27,7 +27,7 @@ export const useEditorAction = () => {
     if (!id.value || v === oldTitle.value) return;
     await docSvc.update(id.value, { title: v });
     oldTitle.value = v;
-    notifyDataChanged();
+    notifyDocChanged();
   }, 1000);
 
   return { saveContent, saveTitle };

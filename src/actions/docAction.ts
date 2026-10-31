@@ -1,6 +1,7 @@
 import { useDocSvc } from "@/services/document";
 import {
-  notifyDataChanged,
+  notifyArchiveChanged,
+  notifyDocChanged,
   notifyEditorOpen,
 } from "@/infrastructure/api/windowEvent";
 
@@ -15,23 +16,25 @@ export const useDocAction = () => {
   const openDoc = async (id: string) => {
     await notifyEditorOpen("doc", id);
     await svc.update(id, { viewed_at: Date.now() });
-    notifyDataChanged();
+    notifyDocChanged();
   };
 
   // 创建富文本后刷新列表（排序保持当前页，搜索按最后关键词重查）
   const createRichtext = async () => {
     try {
       const id = await svc.create({ doc_type: "richText" });
-      notifyDataChanged();
+      notifyDocChanged();
       await notifyEditorOpen("doc", id);
     } catch (e) {
       console.error(e);
     }
   };
 
+  // 删除文档动了两个域：本体删除广播 doc:changed，级联清理归档关联广播 archive:changed
   const remove = async (id: string) => {
     await svc.remove(id);
-    notifyDataChanged();
+    notifyDocChanged();
+    notifyArchiveChanged();
     await refreshAll();
   };
 

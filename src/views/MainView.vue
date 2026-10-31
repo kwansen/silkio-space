@@ -24,7 +24,8 @@ const docAction = useDocAction();
 const archiveAction = useArchiveAction();
 const settingStore = useSettingStore();
 
-let stopOnDataChanged: (() => void) | null = null;
+let stopOnDocChanged: (() => void) | null = null;
+let stopOnArchiveChanged: (() => void) | null = null;
 
 const showWindow = async (label: string) => {
   const win = await Window.getByLabel(label);
@@ -49,16 +50,16 @@ onMounted(async () => {
     showWindow("tool"),
   );
 
-  // 数据事实统一入口：任何写操作后失效本地缓存，重查文档与归档列表
-  const refreshViews = async () => {
-    await docAction.refreshAll();
-    await archiveAction.refresh();
-  };
-  stopOnDataChanged = await listen("data:changed", refreshViews);
+  // 数据事实按域订阅：文档域变化刷新文档列表，归档域变化刷新归档列表
+  stopOnDocChanged = await listen("doc:changed", () => docAction.refreshAll());
+  stopOnArchiveChanged = await listen("archive:changed", () =>
+    archiveAction.refresh(),
+  );
 });
 
 onUnmounted(() => {
-  stopOnDataChanged?.();
+  stopOnDocChanged?.();
+  stopOnArchiveChanged?.();
 });
 </script>
 

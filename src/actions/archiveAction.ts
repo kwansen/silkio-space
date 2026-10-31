@@ -1,7 +1,7 @@
 import { useFdSvc } from "@/services/folder";
 import { useArchiveStore } from "@/stores/archiveStore";
 import {
-  notifyDataChanged,
+  notifyArchiveChanged,
   notifyEditorOpen,
 } from "@/infrastructure/api/windowEvent";
 import { storeToRefs } from "pinia";
@@ -18,18 +18,19 @@ export const useArchiveAction = () => {
 
   const createArchive = async (v: string) => {
     await svc.createFolder({ name: v });
+    notifyArchiveChanged();
     await refresh();
   };
 
   const updateName = async (id: string, name: string) => {
     await svc.renameFolder({ id, name });
-    notifyDataChanged();
+    notifyArchiveChanged();
     await refresh();
   };
 
   const remove = async (id: string) => {
     await svc.deleteFolder({ id });
-    notifyDataChanged();
+    notifyArchiveChanged();
     await refresh();
   };
 
@@ -52,7 +53,7 @@ export const useArchiveAction = () => {
       docId: docId,
       folderIds: archiveIds,
     });
-    notifyDataChanged();
+    notifyArchiveChanged();
   };
 
   const openArchive = async (id: string) => {

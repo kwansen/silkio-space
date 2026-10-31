@@ -7,7 +7,6 @@ import { useFdSvc } from "@/services/folder";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { nextTick, onMounted, onUnmounted } from "vue";
-import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
@@ -21,8 +20,22 @@ const { setDoc, setDocEntries, setArchiveId } = editorStore;
 
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
-let stopOnDataChanged: (() => void) | null = null;
+let stopOnDocChanged: (() => void) | null = null;
+let stopOnArchiveChanged: (() => void) | null = null;
 const docSvc = useDocSvc();
+
+// stale 对账：当前文档已失效（被删，或已不在所在归档目录）→ 切到首项，无则清空编辑区
+const reconcileStale = async () => {
+  const stale = id.value
+    ? archiveId.value
+      ? !docEntries.value.some((e) => e.id === id.value)
+      : !(await docSvc.getById(id.value))
+    : false;
+  if (stale) {
+    const next = docEntries.value[0];
+    setDoc(next ? await docSvc.getById(next.id) : null);
+  }
+};
 
 onMounted(async () => {
   stopOnOpen = await listen<{ type: "doc" | "archive"; id: string }>(
@@ -65,41 +78,44 @@ onMounted(async () => {
     },
   );
 
-  // 数据事实统一入口：任何写操作后与 DB 对账（不盲改当前文档，避免打断编辑）
-  stopOnDataChanged = await listen("data:changed", async () => {
-    // 归档模式：重拉目录与归档名
+  // 数据事实按域订阅，收到后与 DB 对账（不盲改当前文档，避免打断编辑）
+  // doc:changed：文档本体变化。归档模式下目录里的文档可能被删/改名，重拉目录
+  stopOnDocChanged = await listen("doc:changed", async () => {
     if (archiveId.value) {
-      setDocEntries(await fdSvc.getArchiveDocEntries({ id: archiveId.value }));
+      setDocEntries(
+        await fdSvc.getArchiveDocEntries({ id: archiveId.value }),
+      );
+    }
+    await reconcileStale();
+  });
+
+  // archive:changed：归档本体或成员变化。归档模式下重拉目录与归档名
+  stopOnArchiveChanged = await listen("archive:changed", async () => {
+    if (archiveId.value) {
+      setDocEntries(
+        await fdSvc.getArchiveDocEntries({ id: archiveId.value }),
+      );
       try {
         name.value = await fdSvc.getArchiveName({ id: archiveId.value });
       } catch (e) {
         console.error(e);
       }
     }
-    // 当前文档已失效（被删，或已不在所在归档目录）：切到首项，无则清空编辑区
-    const stale = id.value
-      ? archiveId.value
-        ? !docEntries.value.some((e) => e.id === id.value)
-        : !(await docSvc.getById(id.value))
-      : false;
-    if (stale) {
-      const next = docEntries.value[0];
-      setDoc(next ? await docSvc.getById(next.id) : null);
-    }
+    await reconcileStale();
   });
 });
 
-// 显示窗口：由 RichText 的就绪信号或空态渲染完成后调用
+// 显示窗口：由 RichText 的就绪信号或空态渲染完成后调用（数据同步由各写操作自己广播，此处无需发）
 const showWindow = () => {
   getCurrentWindow().unminimize();
   getCurrentWindow().show();
   getCurrentWindow().setFocus();
-  notifyDataChanged();
 };
 
 onUnmounted(() => {
   stopOnOpen?.();
-  stopOnDataChanged?.();
+  stopOnDocChanged?.();
+  stopOnArchiveChanged?.();
 });
 
 const { saveContent } = useEditorAction();

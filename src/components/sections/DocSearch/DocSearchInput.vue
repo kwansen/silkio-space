@@ -36,7 +36,7 @@ watch(
       v-model="query"
       class="h-16 flex-1 bg-white outline-none pr-4"
       type="text"
-      placeholder="搜索文档标题与内容"
+      placeholder="搜索文档"
     />
   </div>
 </template>
