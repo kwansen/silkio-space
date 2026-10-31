@@ -20,7 +20,7 @@ import { notifyDataChanged } from "@/infrastructure/api/windowEvent";
 import Close from "@/components/icons/Close.vue";
 
 const store = useEditorStore();
-const { docEntries, name, id, docType, archiveId } = storeToRefs(store);
+const { docEntries, name, id, archiveId } = storeToRefs(store);
 const docSvc = useDocSvc();
 const fdSvc = useFdSvc();
 

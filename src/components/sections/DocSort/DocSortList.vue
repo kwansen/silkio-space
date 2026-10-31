@@ -10,7 +10,7 @@ import { Doc, DocType } from "@/types/doc";
 import { storeToRefs } from "pinia";
 import { Component, onMounted, onUnmounted } from "vue";
 const docSortStore = useDocSortStore();
-const { sortedDocs: docs, activeIndex } = storeToRefs(docSortStore);
+const { sortedDocs: docs, activeId } = storeToRefs(docSortStore);
 const uiStore = useUiStore();
 const { docSort: sort } = storeToRefs(uiStore);
 const action = useDocAction();
@@ -40,9 +40,9 @@ const iconMap: Record<DocType, Component> = {
 
 const getIcon = (doc: Doc) => iconMap[doc.doc_type] ?? DocIcon;
 
-const openResult = async (d: Doc | undefined) => {
-  if (!d) return;
-  await action.openDoc(d.id);
+const openResult = async (id: string | undefined) => {
+  if (!id) return;
+  await action.openDoc(id);
 };
 
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -65,7 +65,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
       action.goSortedNext();
       break;
     case "Enter":
-      openResult(docs.value[activeIndex.value % 10]);
+      openResult(activeId.value);
       break;
   }
 };
@@ -81,8 +81,8 @@ onUnmounted(() => {
 
 <template>
   <DocItem
-    v-for="(doc, index) in docs"
-    :active="activeIndex % 10 === index"
+    v-for="doc in docs"
+    :active="activeId === doc.id"
     :item-key="doc.id"
     :title="doc.title || '未命名标题'"
     :content="doc.plain_text?.trim() || '暂无内容'"

@@ -18,12 +18,12 @@ const iconMap: Record<DocType, Component> = {
 const getIcon = (doc: ScoredDoc) => iconMap[doc.doc_type] ?? DocIcon;
 
 const store = useDocSearchStore();
-const { docsThisPage: docs, activeIndex, searchedDocs } = storeToRefs(store);
+const { docsThisPage: docs, activeId } = storeToRefs(store);
 const action = useDocAction();
 
-const openResult = async (d: ScoredDoc | undefined) => {
-  if (!d) return;
-  await action.openDoc(d.id);
+const openResult = async (id: string | undefined) => {
+  if (!id) return;
+  await action.openDoc(id);
 };
 
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -49,7 +49,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
       action.goSearchedNext();
       break;
     case "Enter":
-      openResult(searchedDocs.value[activeIndex.value]);
+      openResult(activeId.value);
       break;
   }
 };
@@ -65,8 +65,8 @@ onUnmounted(() => {
 
 <template>
   <DocItem
-    v-for="(doc, index) in docs"
-    :active="activeIndex % 10 === index"
+    v-for="doc in docs"
+    :active="activeId === doc.id"
     :item-key="doc.id"
     :title="doc.title || '未命名标题'"
     :content="doc.plain_text?.trim() || '暂无内容'"
