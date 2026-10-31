@@ -8,6 +8,15 @@ export const useEditorStore = defineStore("editor", () => {
   const setId = (v: string | undefined) => {
     id.value = v;
   };
+  const editorMode = ref<EditorMode>("doc");
+  const setEditorMode = (v: EditorMode) => {
+    editorMode.value = v;
+  };
+  // 当前打开的富文本弹窗类型（"" 为关闭）：link / math / image
+  const richtextDialog = ref<RichTextDialog>("");
+  const setRichtextDialog = (v: RichTextDialog) => {
+    richtextDialog.value = v;
+  };
   const title = ref("");
   const setTitle = (v: string) => {
     title.value = v;
@@ -63,6 +72,10 @@ export const useEditorStore = defineStore("editor", () => {
   return {
     id,
     setId,
+    editorMode,
+    setEditorMode,
+    richtextDialog,
+    setRichtextDialog,
     title,
     setTitle,
     content,

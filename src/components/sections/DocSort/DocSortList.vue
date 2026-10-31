@@ -5,14 +5,11 @@ import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
 import DocItem from "@/components/shared/DocItem.vue";
 import { useDocSortStore } from "@/stores/docSortStore";
-import { useUiStore } from "@/stores/uiStore";
 import { Doc, DocType } from "@/types/doc";
 import { storeToRefs } from "pinia";
 import { Component, onMounted, onUnmounted } from "vue";
 const docSortStore = useDocSortStore();
-const { sortedDocs: docs, activeId } = storeToRefs(docSortStore);
-const uiStore = useUiStore();
-const { docSort: sort } = storeToRefs(uiStore);
+const { sortedDocs: docs, activeId, docSort: sort } = storeToRefs(docSortStore);
 const action = useDocAction();
 
 const dtf = new Intl.DateTimeFormat("zh-CN", {

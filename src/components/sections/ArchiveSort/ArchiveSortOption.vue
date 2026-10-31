@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import Add from "@/components/icons/Add.vue";
 import { useArchiveStore } from "@/stores/archiveStore";
-import { useUiStore } from "@/stores/uiStore";
 import { storeToRefs } from "pinia";
 
-const store = useUiStore();
-const { archiveSort: sort } = storeToRefs(store);
-const { setArchiveSort } = store;
 const archiveSortStore = useArchiveStore();
-const { setShow } = archiveSortStore;
+const { archiveSort: sort } = storeToRefs(archiveSortStore);
+const { setArchiveSort, setShow } = archiveSortStore;
 
 const list: { key: ArchiveSortOption; show: string }[] = [
   { key: "manual", show: "手动排序" },

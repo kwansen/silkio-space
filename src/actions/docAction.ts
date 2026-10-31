@@ -5,12 +5,10 @@ import {
 } from "@/infrastructure/api/windowEvent";
 
 import { useDocSearchStore } from "@/stores/docSearchStore";
-import { useUiStore } from "@/stores/uiStore";
 import { useDocSortStore } from "@/stores/docSortStore";
 
 export const useDocAction = () => {
   const svc = useDocSvc();
-  const uiStore = useUiStore();
   const searchStore = useDocSearchStore();
   const sortStore = useDocSortStore();
 
@@ -49,7 +47,7 @@ export const useDocAction = () => {
 
   // 元函数：按当前排序重新拉取列表，默认当前页（供增删改后刷新），只同步数据与光标、不挪页码
   const refreshSorted = async (page: number = sortStore.currentPage) => {
-    await sortStore.getSortedDocs(uiStore.docSort, page);
+    await sortStore.getSortedDocs(sortStore.docSort, page);
     sortStore.activateFirst();
   };
 

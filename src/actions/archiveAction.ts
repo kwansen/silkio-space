@@ -1,6 +1,5 @@
 import { useFdSvc } from "@/services/folder";
 import { useArchiveStore } from "@/stores/archiveStore";
-import { useUiStore } from "@/stores/uiStore";
 import {
   notifyDataChanged,
   notifyEditorOpen,
@@ -10,8 +9,7 @@ import { storeToRefs } from "pinia";
 export const useArchiveAction = () => {
   const svc = useFdSvc();
   const store = useArchiveStore();
-  const uiStore = useUiStore();
-  const { archiveSort: sort } = storeToRefs(uiStore);
+  const { archiveSort: sort } = storeToRefs(store);
 
   // 元函数：按当前排序重新拉取归档列表（供增删改后刷新）
   const refresh = async () => {

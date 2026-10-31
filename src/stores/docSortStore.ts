@@ -1,5 +1,4 @@
 import { useDocSvc } from "@/services/document";
-import { useUiStore } from "@/stores/uiStore";
 import { Doc, SortField } from "@/types/doc";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
@@ -19,7 +18,11 @@ function toBackendSort(sort: DocSortOption): SortField {
 
 export const useDocSortStore = defineStore("docSort", () => {
   const svc = useDocSvc();
-  const uiStore = useUiStore();
+
+  const docSort = ref<DocSortOption>("viewedAt");
+  const setDocSort = (v: DocSortOption) => {
+    docSort.value = v;
+  };
 
   const activeId = ref<string>();
   const setActiveId = (v: string | undefined) => {
@@ -48,7 +51,7 @@ export const useDocSortStore = defineStore("docSort", () => {
 
   // 元函数：跳转页码（拉数据 + 同步页码 + 激活首条）
   const goToSortedPage = async (page: number) => {
-    await getSortedDocs(uiStore.docSort, page);
+    await getSortedDocs(docSort.value, page);
     currentPage.value = page;
     activateFirst();
   };
@@ -71,7 +74,7 @@ export const useDocSortStore = defineStore("docSort", () => {
       return;
     }
     if (currentPage.value <= 1) return; // 首页无上一页
-    await getSortedDocs(uiStore.docSort, currentPage.value - 1);
+    await getSortedDocs(docSort.value, currentPage.value - 1);
     currentPage.value -= 1;
     const last = sortedDocs.value[sortedDocs.value.length - 1];
     if (last) setActiveId(last.id);
@@ -85,12 +88,14 @@ export const useDocSortStore = defineStore("docSort", () => {
       return;
     }
     if (currentPage.value >= totalPages.value) return; // 末页无下一页
-    await getSortedDocs(uiStore.docSort, currentPage.value + 1);
+    await getSortedDocs(docSort.value, currentPage.value + 1);
     currentPage.value += 1;
     activateFirst();
   };
 
   return {
+    docSort,
+    setDocSort,
     activeId,
     setActiveId,
     sortedDocs,

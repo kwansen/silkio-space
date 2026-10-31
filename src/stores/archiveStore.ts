@@ -6,6 +6,11 @@ import { computed, ref } from "vue";
 export const useArchiveStore = defineStore("archiveSort", () => {
   const svc = useFdSvc();
 
+  const archiveSort = ref<ArchiveSortOption>("manual");
+  const setArchiveSort = (v: ArchiveSortOption) => {
+    archiveSort.value = v;
+  };
+
   const sortedArchives = ref<Archive[]>([]);
 
   // 元函数：按排序选项拉取归档列表并落状态（manual 不排序，viewedAt 按最近打开，其余按名称）
@@ -48,6 +53,8 @@ export const useArchiveStore = defineStore("archiveSort", () => {
     show.value = v;
   };
   return {
+    archiveSort,
+    setArchiveSort,
     sortedArchives,
     getSortedArchives,
     searchedArchives,

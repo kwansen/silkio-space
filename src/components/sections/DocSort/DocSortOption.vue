@@ -5,16 +5,14 @@ import DocMian from "@/components/icons/DocMian.vue";
 import FlowchartMian from "@/components/icons/FlowchartMian.vue";
 import MindmapMian from "@/components/icons/MindmapMian.vue";
 import { useDocSortStore } from "@/stores/docSortStore";
-import { useUiStore } from "@/stores/uiStore";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { type Component, computed, ref, useTemplateRef } from "vue";
 
-const store = useUiStore();
-const { docSort: sort } = storeToRefs(store);
-const { setDocSort } = store;
 const sortStore = useDocSortStore();
+const { docSort: sort } = storeToRefs(sortStore);
+const { setDocSort } = sortStore;
 const list: { key: DocSortOption; show: string }[] = [
   { key: "viewedAt", show: "最近浏览" },
   { key: "updatedAt", show: "最近更新" },
