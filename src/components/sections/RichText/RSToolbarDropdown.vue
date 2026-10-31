@@ -37,7 +37,7 @@ onClickOutside(
     :class="show ? 'bg-gray-200' : 'hover:bg-gray-200'"
     @click="show = !show"
   >
-    <component :is="icon" class="w-5 h-5" />
+    <component :is="icon" class="size-5" />
     <ArrowDown />
   </div>
   <div
@@ -56,7 +56,7 @@ onClickOutside(
       ]"
       @click="!b.disabled() && (b.action(), (show = false))"
     >
-      <component :is="b.icon" class="w-5 h-5 mr-2" />
+      <component :is="b.icon" class="size-5 mr-2" />
       <span class="text-xs">{{ b.name }}</span>
       <span class="text-[10px] ml-auto pl-6">{{ b.shortcut }}</span>
     </div>

@@ -167,7 +167,7 @@ const handleClickBtn = () => {
       class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md hover:bg-gray-100"
       @click="i.action()"
     >
-      <component :is="i.icon" class="w-5 h-5" />
+      <component :is="i.icon" class="size-5" />
       <span>{{ i.text }}</span>
     </div>
   </div>

@@ -42,7 +42,7 @@ const handleClick = (option: ArchiveSortOption) => {
       ref="target"
       id="addArchiveBtn"
       @click="setShow(true)"
-      class="w-7 h-7 bg-gray-100 cursor-pointer grid place-items-center rounded-md hover:bg-gray-200"
+      class="size-7 bg-gray-100 cursor-pointer grid place-items-center rounded-md hover:bg-gray-200"
     >
       <Add />
     </div>

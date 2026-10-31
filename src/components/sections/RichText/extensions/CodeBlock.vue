@@ -28,11 +28,11 @@ const copy = async () => {
         @click="copy"
         type="button"
         :disabled="success"
-        class="w-7 h-7 grid place-items-center"
+        class="size-7 grid place-items-center"
         :class="success ? '' : 'hover:bg-gray-200 '"
       >
-        <Success class="w-5 h-5 text-green-500" v-if="success" />
-        <Copy class="w-5 h-5" v-else />
+        <Success class="size-5 text-green-500" v-if="success" />
+        <Copy class="size-5" v-else />
       </button>
     </div>
     <pre

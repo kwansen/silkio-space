@@ -7,8 +7,8 @@ import Add from "@/components/icons/Add.vue";
     <div class="h-9 flex items-center hover:bg-gray-100 px-2 rounded-md">
       <div>税务知识库</div>
       <div class="flex-1"></div>
-      <div class="w-7 h-7 rounded-md hover:bg-gray-200 grid place-items-center">
-        <Add class="w-5 h-5" />
+      <div class="size-7 rounded-md hover:bg-gray-200 grid place-items-center">
+        <Add class="size-5" />
       </div>
     </div>
   </div>

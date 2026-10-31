@@ -142,12 +142,12 @@ const btnList: SelfBtn[] = [
     <div
       v-for="btn in btnList"
       :key="btn.name"
-      class="w-7 h-7 rounded-md grid place-items-center"
+      class="size-7 rounded-md grid place-items-center"
       :class="btn.disabled() ? 'opacity-30 cursor-not-allowed' : btn.class"
       :title="btn.name"
       @click="btn.action()"
     >
-      <component :is="btn.icon" class="w-5 h-5" />
+      <component :is="btn.icon" class="size-5" />
     </div>
   </div>
 </template>

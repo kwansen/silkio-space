@@ -44,19 +44,19 @@ const mouseleave = () => {
       class="p-2 text-neutral-700 select-none flex items-center gap-2 cursor-default absolute left-1/2 top-full -translate-x-1/2 bg-white shadow-md rounded-md"
     >
       <div
-        class="w-7 h-7 hover:bg-gray-100 grid place-items-center rounded-md"
+        class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
         @click.stop="
           props.editor.chain().focus().extendMarkRange('link').run();
           setRichtextDialog('link');
         "
       >
-        <Pencil class="w-5 h-5" />
+        <Pencil class="size-5" />
       </div>
       <div
-        class="w-7 h-7 hover:bg-gray-100 grid place-items-center rounded-md"
+        class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
         @click.stop="props.editor.chain().focus().unsetLink().run()"
       >
-        <Unlink class="w-5 h-5" />
+        <Unlink class="size-5" />
       </div>
     </div>
   </a>

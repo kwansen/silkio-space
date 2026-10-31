@@ -26,9 +26,9 @@ const show = ref(false);
     ref="traget"
     @click="show = !show"
     :class="show ? 'bg-gray-200' : 'hover:bg-gray-200'"
-    class="w-7 h-7 rounded-md mx-1 grid place-items-center select-none"
+    class="size-7 rounded-md mx-1 grid place-items-center select-none"
   >
-    <Search class="w-5 h-5" />
+    <Search class="size-5" />
   </div>
   <div v-if="show" ref="floating" :style="floatingStyles">
     <RTSearchPopoverPanel :editor="editor" @close="show = false" />

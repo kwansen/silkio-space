@@ -31,6 +31,6 @@ const unhover = () => {
     @mouseleave="unhover"
     @click="handleClick"
   >
-    <Minimize class="w-5 h-5" />
+    <Minimize class="size-5" />
   </div>
 </template>

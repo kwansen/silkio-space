@@ -141,7 +141,7 @@ const getClass = () => {
     >
       <div
         ref="target"
-        class="w-7 h-7 grid place-items-center rounded-md relative"
+        class="size-7 grid place-items-center rounded-md relative"
         :class="openedKey === itemKey ? 'bg-gray-200' : 'hover:bg-gray-200'"
         @click.stop="handleClickBtn"
       >
@@ -162,7 +162,7 @@ const getClass = () => {
       :class="i.class"
       @click="i.action"
     >
-      <component :is="i.icon" class="w-5 h-5" />
+      <component :is="i.icon" class="size-5" />
       <span>{{ i.text }}</span>
     </div>
   </div>

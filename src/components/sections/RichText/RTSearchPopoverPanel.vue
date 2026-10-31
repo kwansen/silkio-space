@@ -82,7 +82,7 @@ onUnmounted(() => {
         <div class="flex justify-end">
           <div
             @click="emit('close')"
-            class="grid place-items-center hover:bg-red-200 w-5 h-5 bg-gray-200 rounded-full"
+            class="grid place-items-center hover:bg-red-200 size-5 bg-gray-200 rounded-full"
           >
             <Close />
           </div>
@@ -100,10 +100,10 @@ onUnmounted(() => {
           <div
             v-for="item in list"
             @click="item.action"
-            class="w-5 h-5 grid place-items-center mr-1 rounded-xs"
+            class="size-5 grid place-items-center mr-1 rounded-xs"
             :class="item.state() ? 'bg-purple-200' : 'hover:bg-gray-200'"
           >
-            <component :is="item.icon" class="w-4 h-4" />
+            <component :is="item.icon" class="size-4" />
           </div>
         </div>
         <div
@@ -130,17 +130,17 @@ onUnmounted(() => {
           </div>
           <div class="flex-1"></div>
           <div
-            class="w-7 h-7 grid place-items-center hover:bg-gray-100 mr-2 rounded-md"
+            class="size-7 grid place-items-center hover:bg-gray-100 mr-2 rounded-md"
             @click="editor?.commands.goToPreviousResult()"
           >
-            <ArrowTop class="w-5 h-5" />
+            <ArrowTop class="size-5" />
           </div>
 
           <div
-            class="w-7 h-7 grid place-items-center hover:bg-gray-100 rounded-md"
+            class="size-7 grid place-items-center hover:bg-gray-100 rounded-md"
             @click="editor?.commands.goToNextResult()"
           >
-            <ArrowDown class="w-5 h-5" />
+            <ArrowDown class="size-5" />
           </div>
         </div>
       </div>

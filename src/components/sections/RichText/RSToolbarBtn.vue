@@ -22,7 +22,7 @@ defineProps<Prop>();
 <template>
   <div
     ref="target"
-    class="group w-7 h-7 mx-1 rounded-md grid place-items-center relative"
+    class="group size-7 mx-1 rounded-md grid place-items-center relative"
     :class="[
       b.active() ? 'bg-purple-200 text-purple-700' : '',
       !b.active() && !b.disabled() ? 'hover:bg-gray-200' : '',
@@ -32,7 +32,7 @@ defineProps<Prop>();
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
   >
-    <component :is="b.icon" class="w-5 h-5" />
+    <component :is="b.icon" class="size-5" />
     <!-- <Teleport to="body"> -->
     <div
       :style="floatingStyles"

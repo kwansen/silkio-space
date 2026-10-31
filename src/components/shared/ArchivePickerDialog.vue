@@ -59,8 +59,8 @@ onKeyStroke("Enter", () => {
               class="h-10 hover:bg-gray-100 rounded-md flex px-2 gap-2 items-center cursor-pointer"
               @click="a.checked = !a.checked"
             >
-              <CheckBoxMian v-if="a.checked" class="w-5 h-5 text-purple-700" />
-              <CheckBoxEmpty v-else class="w-5 h-5" />
+              <CheckBoxMian v-if="a.checked" class="size-5 text-purple-700" />
+              <CheckBoxEmpty v-else class="size-5" />
               <span>{{ a.name }}</span>
             </div>
           </div>

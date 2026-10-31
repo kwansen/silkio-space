@@ -70,16 +70,16 @@ onClickOutside(box, () => {
     />
     <button
       :disabled="name === props.name || !name"
-      class="w-7 h-7 enabled:hover:bg-gray-200 enabled:cursor-pointer rounded-md grid place-items-center disabled:opacity-30"
+      class="size-7 enabled:hover:bg-gray-200 enabled:cursor-pointer rounded-md grid place-items-center disabled:opacity-30"
       @click="handleClick"
     >
-      <Check class="w-5 h-5" />
+      <Check class="size-5" />
     </button>
     <div
-      class="w-7 h-7 hover:bg-red-200 cursor-pointer rounded-md grid place-items-center"
+      class="size-7 hover:bg-red-200 cursor-pointer rounded-md grid place-items-center"
       @click="close"
     >
-      <Close class="w-5 h-5" />
+      <Close class="size-5" />
     </div>
   </div>
 </template>

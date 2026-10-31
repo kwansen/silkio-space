@@ -108,7 +108,7 @@ onKeyStroke("Enter", () => {
     <div
       v-if="previewUrl"
       @click="previewUrl = ''"
-      class="absolute w-5 h-5 text-white grid place-items-center bg-gray-300 hover:bg-red-300 rounded-full top-0 right-0 translate-x-1/2 -translate-y-1/2"
+      class="absolute size-5 text-white grid place-items-center bg-gray-300 hover:bg-red-300 rounded-full top-0 right-0 translate-x-1/2 -translate-y-1/2"
     >
       <Close />
     </div>
