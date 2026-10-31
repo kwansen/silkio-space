@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useDocAction } from "@/actions/docAction";
 import Search from "@/components/icons/Search.vue";
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { storeToRefs } from "pinia";
@@ -9,7 +8,6 @@ import { onMounted, useTemplateRef, watch } from "vue";
 const inputRef = useTemplateRef("inputRef");
 const store = useDocSearchStore();
 const { query } = storeToRefs(store);
-const action = useDocAction();
 
 onMounted(() => {
   inputRef.value?.focus();
@@ -20,7 +18,7 @@ watch(
   () => query.value,
   (v) => {
     if (v) {
-      action.searchDocs(v);
+      store.searchDocs(v);
     } else {
       store.setDocs([]);
     }

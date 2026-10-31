@@ -50,19 +50,19 @@ const handleKeyDown = (event: KeyboardEvent) => {
   switch (key) {
     case "ArrowDown":
       event.preventDefault();
-      action.activateSortedNext();
+      docSortStore.activateSortedNext();
       break;
     case "ArrowUp":
       event.preventDefault();
-      action.activateSortedPrev();
+      docSortStore.activateSortedPrev();
       break;
     case "PageUp":
       event.preventDefault();
-      action.goSortedPrev();
+      docSortStore.goSortedPrev();
       break;
     case "PageDown":
       event.preventDefault();
-      action.goSortedNext();
+      docSortStore.goSortedNext();
       break;
     case "Enter":
       openResult(activeId.value);

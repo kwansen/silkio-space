@@ -7,18 +7,6 @@ import {
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { useUiStore } from "@/stores/uiStore";
 import { useDocSortStore } from "@/stores/docSortStore";
-import { SortField } from "@/types/doc";
-
-const SORT_MAP: Record<DocSortOption, SortField> = {
-  viewedAt: "viewed_at",
-  updatedAt: "updated_at",
-  createdAt: "created_at",
-  wordCount: "word_count",
-};
-
-function toBackendSort(sort: DocSortOption): SortField {
-  return SORT_MAP[sort];
-}
 
 export const useDocAction = () => {
   const svc = useDocSvc();
@@ -49,65 +37,20 @@ export const useDocAction = () => {
     await refreshAll();
   };
 
-  // 元函数：按关键词搜索文档
-
   // 元函数：按最后一次关键词重新搜索（供增删改后刷新），光标尽量停在原位，结果变少时收敛到末项
   const refreshSearched = async () => {
     if (!searchStore.query) return;
     const index = searchStore.activeIndex;
-    await searchDocs(searchStore.query);
+    await searchStore.searchDocs(searchStore.query);
     searchStore.setActiveIndex(
       Math.max(0, Math.min(index, searchStore.searchedDocs.length - 1)),
     );
   };
 
-  const getSortedDocs = async (option: DocSortOption, page: number) => {
-    const sortField = toBackendSort(option);
-    const result = await svc.getSortedInPage(sortField, page);
-    sortStore.setDocs(result.list);
-    sortStore.setTotal(result.total);
-  };
-
-  // 元函数：按当前排序重新拉取列表，默认当前页（供增删改后刷新）
+  // 元函数：按当前排序重新拉取列表，默认当前页（供增删改后刷新），只同步数据与光标、不挪页码
   const refreshSorted = async (page: number = sortStore.currentPage) => {
-    await getSortedDocs(uiStore.docSort, page);
+    await sortStore.getSortedDocs(uiStore.docSort, page);
     sortStore.activateFirst();
-  };
-
-  const goToSortedPage = (page: number) => getSortedDocs(uiStore.docSort, page);
-
-  const goSortedPrev = async () => {
-    if (sortStore.currentPage > 1) {
-      await getSortedDocs(uiStore.docSort, sortStore.currentPage - 1);
-      sortStore.prevPage();
-    }
-  };
-
-  const goSortedNext = async () => {
-    if (sortStore.currentPage < sortStore.totalPages) {
-      await getSortedDocs(uiStore.docSort, sortStore.currentPage + 1);
-      sortStore.nextPage();
-    }
-  };
-
-  // 移动 activeIndex；跨页时派生页码变化，需重新拉取对应页数据（保留光标）
-  const activateSortedPrev = async () => {
-    const page = sortStore.currentPage;
-    // 已在页首且非第一页：先拉上一页数据，prevDoc 内部会回退页码并激活末条
-    if (sortStore.activeIndex <= 0 && page > 1) {
-      await getSortedDocs(uiStore.docSort, page - 1);
-    }
-    sortStore.prevDoc();
-  };
-
-  const activateSortedNext = async () => {
-    const page = sortStore.currentPage;
-    sortStore.nextDoc();
-    // nextDoc 跨页时已前进页码：重拉新页数据并激活首条
-    if (sortStore.currentPage !== page) {
-      await getSortedDocs(uiStore.docSort, sortStore.currentPage);
-      sortStore.activateFirst();
-    }
   };
 
   const refreshAll = async () => {
@@ -119,13 +62,7 @@ export const useDocAction = () => {
     createRichtext,
     remove,
     refreshSearched,
-    getSortedDocs,
     refreshSorted,
-    goToSortedPage,
-    goSortedPrev,
-    goSortedNext,
-    activateSortedPrev,
-    activateSortedNext,
     refreshAll,
   };
 };

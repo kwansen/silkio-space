@@ -34,19 +34,19 @@ const handleKeyDown = (event: KeyboardEvent) => {
       break;
     case "ArrowDown":
       event.preventDefault();
-      action.activateSearchedNext();
+      store.activateNext();
       break;
     case "ArrowUp":
       event.preventDefault();
-      action.activateSearchedPrev();
+      store.activatePrev();
       break;
     case "PageUp":
       event.preventDefault();
-      action.goSearchedPrev();
+      store.prevPage();
       break;
     case "PageDown":
       event.preventDefault();
-      action.goSearchedNext();
+      store.nextPage();
       break;
     case "Enter":
       openResult(activeId.value);

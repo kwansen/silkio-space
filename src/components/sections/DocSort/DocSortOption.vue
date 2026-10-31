@@ -4,6 +4,7 @@ import Add from "@/components/icons/Add.vue";
 import DocMian from "@/components/icons/DocMian.vue";
 import FlowchartMian from "@/components/icons/FlowchartMian.vue";
 import MindmapMian from "@/components/icons/MindmapMian.vue";
+import { useDocSortStore } from "@/stores/docSortStore";
 import { useUiStore } from "@/stores/uiStore";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
@@ -13,6 +14,7 @@ import { type Component, computed, ref, useTemplateRef } from "vue";
 const store = useUiStore();
 const { docSort: sort } = storeToRefs(store);
 const { setDocSort } = store;
+const sortStore = useDocSortStore();
 const action = useDocAction();
 const list: { key: DocSortOption; show: string }[] = [
   { key: "viewedAt", show: "最近浏览" },
@@ -23,7 +25,7 @@ const list: { key: DocSortOption; show: string }[] = [
 
 const handleClick = (option: DocSortOption) => {
   setDocSort(option);
-  action.getSortedDocs(option, 1);
+  sortStore.goToSortedPage(1);
 };
 
 const show = ref<boolean>(false);

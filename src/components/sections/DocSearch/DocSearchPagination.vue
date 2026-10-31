@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useDocAction } from "@/actions/docAction";
 import ArrowLeft from "@/components/icons/ArrowLeft.vue";
 import ArrowRight from "@/components/icons/ArrowRight.vue";
 import { useDocSearchStore } from "@/stores/docSearchStore";
@@ -9,7 +8,7 @@ import { computed } from "vue";
 
 const store = useDocSearchStore();
 const { currentPage, totalPages } = storeToRefs(store);
-const { goSearchedPrev, goSearchedNext, goToSearchedPage } = useDocAction();
+const { prevPage, nextPage, goToPage } = store;
 const pages = computed(() =>
   generatePages(currentPage.value, totalPages.value),
 );
@@ -21,7 +20,7 @@ const pages = computed(() =>
   >
     <!-- 上一页 -->
     <div
-      @click="goSearchedPrev"
+      @click="prevPage"
       class="w-9 h-9 rounded-md cursor-default grid place-items-center"
       :class="[store.currentPage <= 1 ? 'opacity-40' : 'hover:bg-gray-100']"
     >
@@ -30,7 +29,7 @@ const pages = computed(() =>
 
     <div
       v-for="page in pages"
-      @click="goToSearchedPage(page)"
+      @click="goToPage(page)"
       class="w-9 h-9 rounded-md cursor-default grid place-items-center"
       :class="[
         page === store.currentPage ? 'bg-purple-200' : 'hover:bg-gray-100',
@@ -41,7 +40,7 @@ const pages = computed(() =>
 
     <!-- 下一页 -->
     <div
-      @click="goSearchedNext"
+      @click="nextPage"
       class="w-9 h-9 rounded-md cursor-default grid place-items-center"
       :class="[
         store.currentPage >= store.totalPages
