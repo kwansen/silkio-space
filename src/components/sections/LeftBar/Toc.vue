@@ -19,9 +19,9 @@ const indentOf = (level: number) =>
 </script>
 
 <template>
-  <div class="h-11 pl-4 flex items-center gap-1 border-b border-purple-300">
+  <div class="h-11 pl-2 flex items-center gap-1 border-b border-purple-300">
     <Doc class="size-4" />
-    <span>{{ editorStore.title || "未命名标题" }}</span>
+    <span class="truncate">{{ editorStore.title || "未命名标题" }}</span>
   </div>
   <div class="h-2"></div>
   <div

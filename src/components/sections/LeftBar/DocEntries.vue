@@ -156,7 +156,7 @@ const handleClickBtn = () => {
 </script>
 
 <template>
-  <div class="h-11 flex items-center pl-4 gap-1 border-b border-gray-100">
+  <div class="h-11 flex items-center pl-2 gap-1 border-b border-gray-100">
     <Archive class="size-4" />{{ name }}
     <div class="flex-1"></div>
     <div
