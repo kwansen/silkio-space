@@ -21,6 +21,8 @@ interface Props {
   name: string;
   meta?: string;
   editing?: boolean;
+  // 悬浮高亮由父列表统一管理；弹层开关状态仍由 item 内部维护
+  hovered?: boolean;
 }
 
 const props = defineProps<Props>();
@@ -29,19 +31,10 @@ const emit = defineEmits<{
   "update:editing": [v: boolean];
 }>();
 
-const hoverKey = ref<string>("");
 const openedKey = ref<string>("");
 const target = useTemplateRef("target");
 const floating = useTemplateRef("floating");
 const { openArchive } = useArchiveAction();
-
-const hover = (v: string) => {
-  hoverKey.value = v;
-};
-
-const unHover = () => {
-  hoverKey.value = "";
-};
 
 const handleClickBtn = () => {
   openedKey.value = openedKey.value ? "" : props.itemKey;
@@ -106,11 +99,7 @@ const action = useArchiveAction();
     <div
       v-else
       class="h-10 px-4 grid grid-cols-[1fr_auto] select-none relative group cursor-pointer"
-      :class="
-        hoverKey === itemKey || openedKey === itemKey ? 'bg-gray-100' : ''
-      "
-      @mouseenter="hover(itemKey)"
-      @mouseleave="unHover"
+      :class="hovered || openedKey === itemKey ? 'bg-gray-100' : ''"
       @click="openArchive(itemKey)"
     >
       <!-- 图标 -->
@@ -134,7 +123,7 @@ const action = useArchiveAction();
       </div>
       <!-- 悬浮按钮 -->
       <div
-        v-if="hoverKey === itemKey || openedKey === itemKey"
+        v-if="hovered || openedKey === itemKey"
         class="h-full aspect-square bg-gray-100 absolute top-0 right-0 grid place-items-center"
       >
         <div
