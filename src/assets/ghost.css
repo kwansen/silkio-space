@@ -2,3 +2,7 @@
 .ghost {
   box-shadow: 0 0 0 1px var(--color-blue-300);
 }
+
+.ghost1 {
+  border: 1px solid var(--color-blue-300);
+}

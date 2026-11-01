@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import Doc from "@/components/icons/Doc.vue";
-import Flowchart from "@/components/icons/Flowchart.vue";
-import Mindmap from "@/components/icons/Mindmap.vue";
+import DocEntryItem from "@/components/sections/LeftBar/DocEntryItem.vue";
 import { useEditorStore } from "@/stores/editorStore";
 import { useDocSvc } from "@/services/document";
 import { useFdSvc } from "@/services/folder";
@@ -20,7 +18,6 @@ import {
   notifyArchiveChanged,
   notifyDocChanged,
 } from "@/infrastructure/api/windowEvent";
-import Close from "@/components/icons/Close.vue";
 
 const store = useEditorStore();
 const { docEntries, name, id, archiveId } = storeToRefs(store);
@@ -34,15 +31,30 @@ const openEntry = async (entry: DocEntry) => {
 
 const { setDoc, setDocEntries } = store;
 
+// 悬浮高亮与拖拽锁提升到列表级，item 保持纯展示。
+// 拖拽锁：vuedraggable 拖拽结束会重排 DOM，鼠标未动却会对换位后的元素触发虚假
+// mouseenter，误激活相邻项的悬浮高亮。dragend 时加锁，锁住期间的第一次
+// mouseenter 仅解锁不激活，吞掉这次虚假事件
+const locked = ref(false);
+const hoverId = ref<string>("");
+
+const handleEnter = (id: string) => {
+  if (locked.value) {
+    locked.value = false;
+    return;
+  }
+  hoverId.value = id;
+};
+
 // 拖拽结束持久化新顺序：vuedraggable 已通过 :list 原地更新 docEntries，此处写库后
 // 广播 archive:changed（归档内文档排序属归档成员关系域），其他窗口按需刷新
 const dragEnd = async () => {
+  locked.value = true;
   if (!archiveId.value) return;
   await fdSvc.reorderDocs({
     folderId: archiveId.value,
     documentIds: docEntries.value.map((e) => e.id),
   });
-  notifyArchiveChanged();
 };
 
 // 在当前归档下创建文档：加入归档 → 刷新左侧目录 → 在已打开的编辑区展示新文档
@@ -174,31 +186,22 @@ const handleClickBtn = () => {
   <div class="h-2"></div>
   <Drag
     :list="docEntries"
+    ghost-class="ghost1"
     :animation="200"
-    ghost-class="ghost"
+    class="pl-2"
     item-key="id"
     @end="dragEnd"
   >
     <template #item="{ element }: { element: DocEntry }">
-      <div
-        class="flex items-center gap-1 py-0.5 px-4 relative group"
-        :class="id === element.id ? 'bg-purple-200' : 'hover:bg-gray-50'"
-        @click="openEntry(element)"
-      >
-        <Mindmap v-if="element.doc_type === 'mindMap'" class="size-4" />
-        <Flowchart
-          v-else-if="element.doc_type === 'flowChart'"
-          class="size-4"
-        />
-        <Doc v-if="element.doc_type === 'richText'" class="size-4" />
-        <span>{{ element.title || "未命名标题" }}</span>
-        <div
-          class="absolute cursor-pointer aspect-square hover:text-red-700 right-0.5 place-items-center h-full hidden group-hover:grid"
-          @click.stop="removeEntry(element)"
-        >
-          <Close class="size-4" />
-        </div>
-      </div>
+      <DocEntryItem
+        :entry="element"
+        :active="id === element.id"
+        :hovered="hoverId === element.id"
+        @mouseenter="handleEnter(element.id)"
+        @mouseleave="hoverId = ''"
+        @open="openEntry(element)"
+        @remove="removeEntry(element)"
+      />
     </template>
   </Drag>
 </template>
