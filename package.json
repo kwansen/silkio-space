@@ -77,6 +77,7 @@
     "simple-mind-map": "0.14.0-fix.3",
     "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3",
+    "vitest": "^5.1.0",
     "vue": "^3.5.13",
     "vue-draggable-plus": "^0.6.1",
     "vue-i18n": "^11.4.8",

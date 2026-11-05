@@ -28,9 +28,9 @@ const emit = defineEmits<{
     <Mindmap v-if="entry.doc_type === 'mindMap'" class="size-4" />
     <Flowchart v-else-if="entry.doc_type === 'flowChart'" class="size-4" />
     <Doc v-if="entry.doc_type === 'richText'" class="size-4" />
-    <span class="flex-1 min-w-0 truncate">{{
-      entry.title || "未命名标题"
-    }}</span>
+    <span class="flex-1 min-w-0 truncate">
+      {{ entry.title || "未命名标题" }}
+    </span>
     <div
       :class="hovered ? 'grid' : 'hidden'"
       class="absolute cursor-pointer aspect-square hover:text-red-700 right-0.5 place-items-center h-full bg-inherit"
