@@ -167,16 +167,12 @@ export const useFolderDb = () => {
     ]);
   };
 
-  // 元函数：级联删除单个归档（连同其全部后代 folders 行与对应 folder_document 关联，
-  // documents 表文档本体保留；tauri-plugin-sql 单次仅执行一条语句，需先删关联再删归档）
+  // 元函数：级联删除单个归档（连同其全部后代 folders 行，documents 表文档本体保留；
+  // folder_document 关联由 v2 trigger 随 folders 行删除级联清理，单条语句原子生效）
   const remove = async (db: Database, id: string): Promise<void> => {
     const ids = await getSubtreeIds(db, id);
     if (ids.length === 0) return;
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
-    await db.execute(
-      `DELETE FROM folder_document WHERE folder_id IN (${placeholders})`,
-      ids,
-    );
     await db.execute(`DELETE FROM folders WHERE id IN (${placeholders})`, ids);
   };
 

@@ -12,8 +12,15 @@ import {
 } from "@/infrastructure/api/search.ts";
 import { Doc, ScoredDoc } from "@/types/doc";
 
-// 每页文档数量
-const PAGE_SIZE = 10;
+// 每页文档数量（列表分页与页码计算共用，唯一定义处）
+export const PAGE_SIZE = 10;
+
+// 元函数：将文档组装为索引输入项（使用纯文本作为搜索内容）
+const toIndexInput = (doc: Doc): DocIndexInput => ({
+  id: doc.id,
+  title: doc.title ?? "",
+  content: doc.plain_text ?? "",
+});
 
 // 文档服务层：组装文档数据库元函数提供业务能力，并同步维护搜索索引
 export const useDocSvc = () => {
@@ -23,13 +30,6 @@ export const useDocSvc = () => {
   const docDb = useDocDb();
   // 元函数：组装搜索索引元函数集合
   const searchApi = useSearchApi();
-
-  // 元函数：将文档组装为索引输入项（使用纯文本作为搜索内容）
-  const toIndexInput = (doc: Doc): DocIndexInput => ({
-    id: doc.id,
-    title: doc.title ?? "",
-    content: doc.plain_text ?? "",
-  });
 
   // 元函数：创建文档并同步创建索引
   const create = async (params: CreateDocParams = {}): Promise<string> => {
@@ -63,9 +63,7 @@ export const useDocSvc = () => {
     await searchApi.deleteIndexBatch(ids);
   };
 
-  // 元函数：更新文档并同步重建索引（先删后建）
-  // [日志]
-  // 元函数：更新文档，仅当 title/content 变化时同步重建索引
+  // 元函数：更新文档，仅当 title/content 变化时同步重建索引（单次提交内先删后加，原子生效）
   const update = async (id: string, params: UpdateDocParams): Promise<void> => {
     await docDb.update(db, id, params);
     // 元函数：判断更新是否涉及索引字段（title/content/plain_text）
@@ -73,13 +71,10 @@ export const useDocSvc = () => {
       "title" in params || "content" in params || "plain_text" in params;
     if (!needIndex) return;
     const doc = await docDb.getById(db, id);
-    if (doc) {
-      await searchApi.deleteIndex(id);
-      await searchApi.createDocIndex(toIndexInput(doc));
-    }
+    if (doc) await searchApi.updateDocIndex(toIndexInput(doc));
   };
 
-  // 元函数：批量更新文档并同步重建索引
+  // 元函数：批量更新文档并同步重建索引（同一提交内先删后加，一次 commit 原子生效）
   const updateMany = async (
     list: { id: string; params: UpdateDocParams }[] = [],
   ): Promise<void> => {
@@ -87,8 +82,7 @@ export const useDocSvc = () => {
     const docs = (
       await Promise.all(list.map(({ id }) => docDb.getById(db, id)))
     ).filter((d): d is Doc => d !== null);
-    await searchApi.deleteIndexBatch(docs.map((d) => d.id));
-    await searchApi.createIndexBatch(docs.map(toIndexInput));
+    await searchApi.updateIndexBatch(docs.map(toIndexInput));
   };
 
   // 元函数：根据 id 查询文档
@@ -124,4 +118,20 @@ export const useDocSvc = () => {
     getSortedInPage,
     search,
   };
+};
+
+// 元函数：启动时校验搜索索引与 SQLite 的一致性（数量不等则全量重建），
+// 兜底崩溃/强杀导致的 SQLite 与 tantivy 索引不同步（双存储无事务保障，只能事后修复）
+export const ensureIndexConsistency = async (): Promise<void> => {
+  const db = getDb();
+  const docDb = useDocDb();
+  const searchApi = useSearchApi();
+  const dbCount = await docDb.getCount(db);
+  const indexCount = await searchApi.indexDocCount();
+  if (dbCount === indexCount) return;
+  console.warn(
+    `搜索索引与数据库不一致（db=${dbCount}, index=${indexCount}），执行全量重建`,
+  );
+  const docs = await docDb.getAllForIndex(db);
+  await searchApi.reindexAll(docs.map(toIndexInput));
 };

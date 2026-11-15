@@ -1,9 +1,7 @@
-import { useDocSvc } from "@/services/document";
+import { useDocSvc, PAGE_SIZE } from "@/services/document";
 import { Doc, SortField } from "@/types/doc";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-
-const PAGE_SIZE = 10;
 
 const SORT_MAP: Record<DocSortOption, SortField> = {
   viewedAt: "viewed_at",

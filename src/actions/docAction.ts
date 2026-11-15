@@ -7,6 +7,7 @@ import {
 
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { useDocSortStore } from "@/stores/docSortStore";
+import type { DocType } from "@/types/doc";
 
 export const useDocAction = () => {
   const svc = useDocSvc();
@@ -30,6 +31,33 @@ export const useDocAction = () => {
       console.error(e);
     }
   };
+
+  // 各类型新建时的默认内容（JSON 字符串），数据模型参照 .examples demo：
+  // mindMap：{ text, children } 节点树，新建仅含根节点
+  // flowChart：{ nodes, edges }，新建仅含一个"开始"端点节点
+  const MINDMAP_DEFAULT_CONTENT = JSON.stringify({
+    text: "中心主题",
+    children: [],
+  });
+  const FLOWCHART_DEFAULT_CONTENT = JSON.stringify({
+    nodes: [{ id: "start", shape: "ellipse", x: 80, y: 200, text: "开始" }],
+    edges: [],
+  });
+
+  // 新建指定类型文档的通用流程：落库（含默认内容）→ 广播 doc:changed → 打开 editor 窗口
+  const createTyped = async (doc_type: DocType, content: string) => {
+    try {
+      const id = await svc.create({ doc_type, content });
+      notifyDocChanged();
+      await notifyEditorOpen("doc", id);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const createMindmap = () => createTyped("mindMap", MINDMAP_DEFAULT_CONTENT);
+  const createFlowchart = () =>
+    createTyped("flowChart", FLOWCHART_DEFAULT_CONTENT);
 
   // 删除文档动了两个域：本体删除广播 doc:changed，级联清理归档关联广播 archive:changed
   const remove = async (id: string) => {
@@ -62,6 +90,8 @@ export const useDocAction = () => {
   return {
     openDoc,
     createRichtext,
+    createMindmap,
+    createFlowchart,
     remove,
     refreshSearched,
     refreshSorted,

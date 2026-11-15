@@ -152,6 +152,78 @@ pub fn delete_index_batch(
     Ok(())
 }
 
+// 更新单个文档索引：单次提交内先删后加，避免分次提交间隙查询到中间态（索引短暂缺失该文档）
+#[tauri::command]
+pub fn update_doc_index(
+    state: tauri::State<SearchState>,
+    id: String,
+    title: String,
+    content: String,
+) -> Result<(), String> {
+    update_index_batch(state, vec![(id, title, content)])
+}
+
+// 批量更新文档索引：同一提交内先按 id 删除旧文档再添加新文档，一次 commit 原子生效
+#[tauri::command]
+pub fn update_index_batch(
+    state: tauri::State<SearchState>,
+    docs: Vec<(String, String, String)>,
+) -> Result<(), String> {
+    // 获取索引字段并复用全局写入器
+    let index = &state.index;
+    let (id_field, title_field, content_field) = get_fields(index)?;
+    let mut writer = state.writer.lock().map_err(|e| e.to_string())?;
+    // 先删除所有旧文档
+    for (id, _, _) in &docs {
+        writer.delete_term(Term::from_field_text(id_field, id));
+    }
+    // 再添加所有新文档并一次性提交
+    for (id, title, content) in docs {
+        writer
+            .add_document(doc!(
+                id_field => id,
+                title_field => title,
+                content_field => content))
+            .map_err(|e| e.to_string())?;
+    }
+    writer.commit().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+// 查询索引中的文档总数（供启动时与 SQLite 文档数比对，检测崩溃导致的脏索引）
+#[tauri::command]
+pub fn index_doc_count(state: tauri::State<SearchState>) -> Result<u64, String> {
+    let index = &state.index;
+    let reader = index.reader().map_err(|e| e.to_string())?;
+    let searcher = reader.searcher();
+    Ok(searcher.num_docs())
+}
+
+// 全量重建索引：清空后按传入文档批量重建并一次性提交（SQLite 为唯一事实源，由前端传入全量文档）
+#[tauri::command]
+pub fn reindex_all(
+    state: tauri::State<SearchState>,
+    docs: Vec<(String, String, String)>,
+) -> Result<(), String> {
+    // 获取索引字段并复用全局写入器
+    let index = &state.index;
+    let (id_field, title_field, content_field) = get_fields(index)?;
+    let mut writer = state.writer.lock().map_err(|e| e.to_string())?;
+    // 清空全部索引
+    writer.delete_all_documents().map_err(|e| e.to_string())?;
+    // 重建所有文档并一次性提交
+    for (id, title, content) in docs {
+        writer
+            .add_document(doc!(
+                id_field => id,
+                title_field => title,
+                content_field => content))
+            .map_err(|e| e.to_string())?;
+    }
+    writer.commit().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 // 搜索结果项
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct SearchResult {

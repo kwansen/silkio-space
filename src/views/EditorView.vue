@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import EditorEmpty from "@/components/sections/EditorEmpty.vue";
+import FlowChart from "@/components/sections/FlowChart/FlowChart.vue";
 import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
+import MindMap from "@/components/sections/MindMap/MindMap.vue";
 import RichText from "@/components/sections/RichText/RichText.vue";
 import { useEditorAction } from "@/actions/editorAction";
 import { useFdSvc } from "@/services/folder";
@@ -151,8 +153,20 @@ const { saveContent } = useEditorAction();
           @on-content-save="saveContent"
         />
         <EditorEmpty v-if="!docType" />
-        <!-- <MindMap />
-        <FlowChart /> -->
+        <MindMap
+          v-if="docType === 'mindMap'"
+          :content="content"
+          :key="key"
+          @on-ready="showWindow"
+          @on-content-save="saveContent"
+        />
+        <FlowChart
+          v-if="docType === 'flowChart'"
+          :content="content"
+          :key="key"
+          @on-ready="showWindow"
+          @on-content-save="saveContent"
+        />
       </div>
     </div>
     <div class="w-65 h-full"></div>

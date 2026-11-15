@@ -49,7 +49,7 @@ interface PopoverListItem {
   action: () => void;
 }
 
-const { createRichtext } = useDocAction();
+const { createRichtext, createMindmap, createFlowchart } = useDocAction();
 
 const popoverList: PopoverListItem[] = [
   {
@@ -63,12 +63,18 @@ const popoverList: PopoverListItem[] = [
   {
     icon: MindmapMian,
     text: "思维导图",
-    action: () => console.log(""),
+    action: () => {
+      createMindmap();
+      show.value = false;
+    },
   },
   {
     icon: FlowchartMian,
     text: "流程图",
-    action: () => console.log(""),
+    action: () => {
+      createFlowchart();
+      show.value = false;
+    },
   },
 ];
 

@@ -79,26 +79,18 @@ export const useDocDb = () => {
     return ids;
   };
 
-  // 元函数：删除单个文档（先清理 folder_document 多对多关联再删本体，
-  // tauri-plugin-sql 单次仅执行一条语句）
+  // 元函数：删除单个文档（folder_document 关联由 v2 trigger 随本删除级联清理，单条语句原子生效）
   const remove = async (db: Database, id: string): Promise<void> => {
-    await db.execute("DELETE FROM folder_document WHERE document_id = $1", [
-      id,
-    ]);
     await db.execute("DELETE FROM documents WHERE id = $1", [id]);
   };
 
-  // 元函数：批量删除文档（同上，先清理关联再删本体）
+  // 元函数：批量删除文档（同上，关联由 trigger 级联清理）
   const removeMany = async (
     db: Database,
     ids: string[] = [],
   ): Promise<void> => {
     if (ids.length === 0) return;
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
-    await db.execute(
-      `DELETE FROM folder_document WHERE document_id IN (${placeholders})`,
-      ids,
-    );
     await db.execute(
       `DELETE FROM documents WHERE id IN (${placeholders})`,
       ids,
@@ -174,6 +166,26 @@ export const useDocDb = () => {
     return rows.length > 0 ? rows[0] : null;
   };
 
+  // 元函数：查询文档总数（供启动时与搜索索引数量比对）
+  const getCount = async (db: Database): Promise<number> => {
+    const rows = await db.select<{ count: number }[]>(
+      "SELECT COUNT(*) AS count FROM documents",
+    );
+    return rows[0]?.count ?? 0;
+  };
+
+  // 元函数：查询全部文档的索引字段（id/title/plain_text），供全量重建索引
+  const getAllForIndex = (db: Database): Promise<Doc[]> =>
+    db.select<Doc[]>("SELECT id, title, plain_text FROM documents");
+
+  // 排序字段 → SQL 列名白名单（db 层不信任上层传参，仅允许已知列参与 ORDER BY 拼接）
+  const orderByExpr: Record<SortField, string> = {
+    word_count: "word_count",
+    viewed_at: "viewed_at",
+    updated_at: "updated_at",
+    created_at: "created_at",
+  };
+
   // 元函数：按指定字段与方向查询排序后的文档分页，并返回总数用于计算页码
   const getSorted = async (
     db: Database,
@@ -182,14 +194,14 @@ export const useDocDb = () => {
     limit: number,
     offset: number,
   ): Promise<SortedPage> => {
-    const [rows, countRows] = await Promise.all([
+    const [rows, count] = await Promise.all([
       db.select<Doc[]>(
-        `SELECT * FROM documents ORDER BY ${orderBy} ${direction} LIMIT $1 OFFSET $2`,
+        `SELECT * FROM documents ORDER BY ${orderByExpr[orderBy]} ${direction} LIMIT $1 OFFSET $2`,
         [limit, offset],
       ),
-      db.select<{ count: number }[]>("SELECT COUNT(*) AS count FROM documents"),
+      getCount(db),
     ]);
-    return { list: rows, total: countRows[0]?.count ?? 0 };
+    return { list: rows, total: count };
   };
 
   return {
@@ -200,6 +212,8 @@ export const useDocDb = () => {
     update,
     updateMany,
     getById,
+    getCount,
+    getAllForIndex,
     getSorted,
   };
 };

@@ -20,8 +20,12 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             search::create_doc_index,
             search::create_index_batch,
+            search::update_doc_index,
+            search::update_index_batch,
             search::delete_index,
             search::delete_index_batch,
+            search::index_doc_count,
+            search::reindex_all,
             search::search,
         ])
         .setup(|app| {

@@ -35,6 +35,12 @@ importers:
       '@leafer-in/viewport':
         specifier: ^2.2.9
         version: 2.2.9(@leafer-in/interface@2.2.9(@leafer-ui/interface@2.2.9)(@leafer/interface@2.2.9))(@leafer-ui/core@2.2.9)(@leafer-ui/interface@2.2.9)
+      '@silkor/core':
+        specifier: ^0.1.0
+        version: 0.1.0
+      '@silkor/preset':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@splicetree/adapter-vue':
         specifier: ^3.1.1
         version: 3.1.1(vue@3.5.41(typescript@5.6.3))
@@ -197,6 +203,12 @@ importers:
       pinia:
         specifier: ^4.0.2
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@5.6.3)(vue@3.5.41(typescript@5.6.3))
+      silkio-flowchart:
+        specifier: ^0.1.0
+        version: 0.1.0
+      silkio-mindmap:
+        specifier: ^0.1.0
+        version: 0.1.0
       simple-mind-map:
         specifier: 0.14.0-fix.3
         version: 0.14.0-fix.3
@@ -823,6 +835,46 @@ packages:
     resolution: {integrity: sha512-zD6NdeWEByGE9QF9vCrlJ5YQB4oq9q91kPZS37Jwj5hOkvR1lTBSpsKhKDw4IJtbQ35LsTS1HD9DZYGKIshU1Q==}
     cpu: [x64]
     os: [win32]
+
+  '@silkor/core@0.1.0':
+    resolution: {integrity: sha512-1u3hkV5ItM7SoxHgv7ZlvoMS11poDiuAg3IvYm47ew9sbw2bMBqmRDauqJKl2W+0k1Js+yU651w4zt9ZANlQDQ==}
+    engines: {node: '>=18'}
+
+  '@silkor/plugin-clipboard@0.1.0':
+    resolution: {integrity: sha512-LuiApsw9sm8iSd5dzN8tkTSFubvxQOJZRUv5cPY+dikZXOrlGIzR80+kM59mA4xOb3QH7m3e0Eje5tLtomJLlw==}
+    engines: {node: '>=18'}
+
+  '@silkor/plugin-command@0.1.0':
+    resolution: {integrity: sha512-hl1/xFSdcxdDmoLfCzhCQcPKrIMfjH4f7CAJxrkuuid6ZpQihhXqfrH5nNZQCz1kzN18y+swpJkzKxCEcwGVHg==}
+    engines: {node: '>=18'}
+
+  '@silkor/plugin-exporter@0.1.0':
+    resolution: {integrity: sha512-ydifQiuGJkVEGBEHzit1K+JF2iHL0gktZPuXetth6RRv/qaeiDKm4F4IWgx7TQTdRibkuB8FjQCVX3GMlA4pLw==}
+    engines: {node: '>=18'}
+
+  '@silkor/plugin-history@0.1.0':
+    resolution: {integrity: sha512-7lKpzCYSw2B5gcpICTq2SmQ+DSBXScmiyKCopYADlKevNisuQaRKmfQLu/TMkw/8GJDiJEmyZiYUUi1P56NFaA==}
+    engines: {node: '>=18'}
+
+  '@silkor/plugin-interaction@0.1.0':
+    resolution: {integrity: sha512-uL+0Q6UOQiEctUHnWC6FWCMKjynRkbeXTTeerwpbrGcrR7XWm9RuyovYOdQgodGZW/t3B/TK1h7dozSUTn1nQQ==}
+    engines: {node: '>=18'}
+
+  '@silkor/plugin-selection@0.1.0':
+    resolution: {integrity: sha512-Dx+v1IBRG7x1rXpLeBxto53RL6eGh+OgQsZHUOimG1+CFBrRxWL0nZ4HLVVxB4hsE3MjkLMdZl299bRSmJ1StQ==}
+    engines: {node: '>=18'}
+
+  '@silkor/plugin-text-editor@0.1.0':
+    resolution: {integrity: sha512-DQT84BnQfOEAxj2nltTN1S6l2jeY5+q7q2PNkGeTogpzvZBO5o5HwpO7b9CtHZ1bEWkFRiNPAQhW0rdQsWk4MQ==}
+    engines: {node: '>=18'}
+
+  '@silkor/plugin-viewport@0.1.0':
+    resolution: {integrity: sha512-x/dqoGFNaZjpoKTayFh3T5Z1DpL6FqWi287xqoG2IMedcXYJBFZlO+pC+k3DD1cguO8n3j/FPg0Z+vB8KzL8AA==}
+    engines: {node: '>=18'}
+
+  '@silkor/preset@0.1.0':
+    resolution: {integrity: sha512-+M6SJflxuIHNc9rndjPFcOrFFGd0G0Guv+Z105E9BNKKCkcJ0Ql652CgHxz9YRf78/Q6wPH1ZPYfHt1vzIUS9A==}
+    engines: {node: '>=18'}
 
   '@splicetree/adapter-vue@3.1.1':
     resolution: {integrity: sha512-BIEmUdGUryP6eNkGnpzgDEKxaMAuDmqzdCiet5XHQ5fWk1ssX4dNxwZ2mljsa/JtQSBNHytJTm2k0tU4vwce2g==}
@@ -2010,6 +2062,12 @@ packages:
   setimmediate@1.0.5:
     resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
 
+  silkio-flowchart@0.1.0:
+    resolution: {integrity: sha512-gEQ6Z2wXZCxtR1Efhf45aXhmQWMI7a1YpFphMHtjuzFwTxkmY8UpFZHYMIX9T3G3ruq9z/dda+LLaoe48v61Lg==}
+
+  silkio-mindmap@0.1.0:
+    resolution: {integrity: sha512-lHt+RWh2AceHYlVgmkPtOYDoypKftFEt7EHat/YijpK8Ok5aQI19srN8vhreuZpO7B10MOxj+4tCoNFH8F4NUA==}
+
   simple-mind-map@0.14.0-fix.3:
     resolution: {integrity: sha512-S8kotb0kcxpty5DKHZPFktZWoa0c+hfPn3Ry7CQBxjH/bOD8ePrc9xW99vi8gLBZJe69OyEZ/W1EODSuCnULyw==}
 
@@ -2841,6 +2899,52 @@ snapshots:
 
   '@rollup/rollup-win32-x64-msvc@4.62.4':
     optional: true
+
+  '@silkor/core@0.1.0': {}
+
+  '@silkor/plugin-clipboard@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+
+  '@silkor/plugin-command@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+
+  '@silkor/plugin-exporter@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+
+  '@silkor/plugin-history@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+
+  '@silkor/plugin-interaction@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+
+  '@silkor/plugin-selection@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+
+  '@silkor/plugin-text-editor@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+
+  '@silkor/plugin-viewport@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+
+  '@silkor/preset@0.1.0':
+    dependencies:
+      '@silkor/core': 0.1.0
+      '@silkor/plugin-clipboard': 0.1.0
+      '@silkor/plugin-command': 0.1.0
+      '@silkor/plugin-exporter': 0.1.0
+      '@silkor/plugin-history': 0.1.0
+      '@silkor/plugin-interaction': 0.1.0
+      '@silkor/plugin-selection': 0.1.0
+      '@silkor/plugin-text-editor': 0.1.0
+      '@silkor/plugin-viewport': 0.1.0
 
   '@splicetree/adapter-vue@3.1.1(vue@3.5.41(typescript@5.6.3))':
     dependencies:
@@ -4072,6 +4176,15 @@ snapshots:
   sax@1.6.1: {}
 
   setimmediate@1.0.5: {}
+
+  silkio-flowchart@0.1.0:
+    dependencies:
+      '@silkor/core': 0.1.0
+      '@silkor/preset': 0.1.0
+
+  silkio-mindmap@0.1.0:
+    dependencies:
+      '@silkor/core': 0.1.0
 
   simple-mind-map@0.14.0-fix.3:
     dependencies:
