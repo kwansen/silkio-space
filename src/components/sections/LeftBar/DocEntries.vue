@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DocEntryItem from "@/components/sections/LeftBar/DocEntryItem.vue";
+import { useEditorAction } from "@/actions/editorAction";
 import { useEditorStore } from "@/stores/editorStore";
 import { useDocSvc } from "@/services/document";
 import { useFdSvc } from "@/services/folder";
@@ -24,12 +25,13 @@ const { docEntries, name, id, archiveId } = storeToRefs(store);
 const docSvc = useDocSvc();
 const fdSvc = useFdSvc();
 
-const openEntry = async (entry: DocEntry) => {
-  const doc = await docSvc.getById(entry.id);
-  store.setDoc(doc);
-};
+const { openDocById } = useEditorAction();
 
-const { setDoc, setDocEntries } = store;
+// 统一走 openDocById：序号守卫保证快速连续点击时只有最后一次切换生效，
+// 且切换前会先落库旧文档的挂起编辑
+const openEntry = (entry: DocEntry) => openDocById(entry.id);
+
+const { setDocEntries } = store;
 
 // 悬浮高亮与拖拽锁提升到列表级，item 保持纯展示。
 // 拖拽锁：vuedraggable 拖拽结束会重排 DOM，鼠标未动却会对换位后的元素触发虚假
@@ -64,8 +66,7 @@ const createDoc = async (newType: DocType) => {
     const docId = await docSvc.create({ doc_type: newType });
     await fdSvc.addDocToFolder({ folderId: archiveId.value, docId });
     setDocEntries(await fdSvc.getArchiveDocEntries({ id: archiveId.value }));
-    const doc = await docSvc.getById(docId);
-    if (doc) setDoc(doc);
+    await openDocById(docId);
     // 动了两个域：新建文档本体广播 doc:changed，归入归档广播 archive:changed
     notifyDocChanged();
     notifyArchiveChanged();
@@ -87,12 +88,7 @@ const removeEntry = async (entry: DocEntry) => {
     // 若移出的正是当前打开的文档，则切换到列表中的第一个文档并加载（无则清空编辑区）
     if (id.value === entry.id) {
       const next = docEntries.value[0];
-      if (next) {
-        const doc = await docSvc.getById(next.id);
-        if (doc) setDoc(doc);
-      } else {
-        setDoc(null);
-      }
+      await openDocById(next ? next.id : null);
     }
   } catch (e) {
     console.error(e);

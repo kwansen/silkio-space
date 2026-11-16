@@ -46,6 +46,11 @@ export const useEditorStore = defineStore("editor", () => {
   const oldContent = ref("");
   // 上次落库的标题快照，用于跳过无变化的保存
   const oldTitle = ref("");
+  // 文档切换中：为 true 时用遮罩盖住编辑区，避免切换间隙残留上一个文档造成闪烁
+  const switching = ref(false);
+  const setSwitching = (v: boolean) => {
+    switching.value = v;
+  };
   const toc = ref<TableOfContentData>([]);
   const setToc = (v: TableOfContentData) => {
     toc.value = v;
@@ -92,6 +97,8 @@ export const useEditorStore = defineStore("editor", () => {
     setKey,
     oldContent,
     oldTitle,
+    switching,
+    setSwitching,
     setDoc,
     name,
     setName,

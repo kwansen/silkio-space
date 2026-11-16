@@ -19,7 +19,8 @@ const editorStore = useEditorStore();
 const uiStore = useUiStore();
 const { id, docEntries, content, docType, key, name, archiveId } =
   storeToRefs(editorStore);
-const { setDoc, setDocEntries, setArchiveId } = editorStore;
+const { setDocEntries, setArchiveId } = editorStore;
+const { saveContent, openDocById } = useEditorAction();
 
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
@@ -39,7 +40,7 @@ const reconcileStale = async () => {
     : false;
   if (stale) {
     const next = docEntries.value[0];
-    setDoc(next ? await docSvc.getById(next.id) : null);
+    await openDocById(next ? next.id : null);
   }
 };
 
@@ -50,7 +51,6 @@ onMounted(async () => {
       const data = event.payload;
       const t = data.type;
       if (t === "doc") {
-        const doc = await docSvc.getById(data.id);
         editorStore.setEditorMode("doc");
         uiStore.setLeftbarOption("toc");
         // 切到独立文档视图必须清掉归档态，否则对账逻辑仍挂在旧归档上，
@@ -58,7 +58,7 @@ onMounted(async () => {
         setArchiveId(undefined);
         setDocEntries([]);
         name.value = "";
-        setDoc(doc);
+        await openDocById(data.id);
         // viewed_at 变化由本窗口显示后补发广播（见 showWindow）
         pendingDocChanged = true;
       } else if (t === "archive") {
@@ -73,12 +73,9 @@ onMounted(async () => {
         }
 
         setDocEntries(docEntries);
-        const doc = docEntries[0]
-          ? await docSvc.getById(docEntries[0].id)
-          : null;
-        setDoc(doc);
+        await openDocById(docEntries[0]?.id ?? null);
         // 空归档没有富文本视图挂载、不会有就绪信号，渲染完成后直接显示窗口
-        if (!doc) {
+        if (!editorStore.id) {
           await nextTick();
           showWindow();
         }
@@ -113,9 +110,11 @@ onMounted(async () => {
   });
 });
 
-// 显示窗口：由 RichText 的就绪信号或空态渲染完成后调用；
+// 显示窗口：由编辑器的就绪信号或空态渲染完成后调用；
+// 就绪信号意味着新文档已完成绘制，此时才解除切换遮罩
 // viewed_at 等待同步广播在此补发，保证 main 刷新发生在 editor 已显示之后
 const showWindow = () => {
+  editorStore.setSwitching(false);
   getCurrentWindow().unminimize();
   getCurrentWindow().show();
   getCurrentWindow().setFocus();
@@ -130,8 +129,6 @@ onUnmounted(() => {
   stopOnDocChanged?.();
   stopOnArchiveChanged?.();
 });
-
-const { saveContent } = useEditorAction();
 </script>
 
 <template>
@@ -141,10 +138,16 @@ const { saveContent } = useEditorAction();
   >
     空空如也
   </div>
-  <div class="w-full h-full flex" v-else>
+  <div class="relative w-full h-full flex" v-else>
+    <!-- 切换遮罩：盖住整个视图（含 LeftBar 的旧目录/旧 Toc 残留），
+         就绪后由 showWindow 解除 -->
+    <div
+      v-if="editorStore.switching"
+      class="absolute inset-0 z-20 bg-white"
+    ></div>
     <LeftBar v-if="uiStore.showLeftbar" v-model="docEntries" />
     <div class="flex-1 min-w-0 px-2 pb-2">
-      <div class="w-full h-full bg-white rounded-lg overflow-hidden">
+      <div class="relative w-full h-full bg-white rounded-lg overflow-hidden">
         <RichText
           v-if="docType === 'richText'"
           :content="content"
