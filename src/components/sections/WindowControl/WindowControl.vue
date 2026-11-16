@@ -51,8 +51,10 @@ defineProps<Props>();
       </div>
     </div>
     <div class="flex-1 h-full flex items-center desktop-draggable"></div>
+    <!-- 左侧栏切换：仅在左侧栏有内容可显示时出现（与 EditorView 同源判定），
+         flowChart/mindMap 的 doc 模式下无目录也无大纲，隐藏避免无效交互 -->
     <div
-      v-if="label === 'editor'"
+      v-if="label === 'editor' && editorStore.leftbarApplicable"
       class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
       @click="uiStore.toggleLeftbar"
     >

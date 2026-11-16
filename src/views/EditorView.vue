@@ -9,7 +9,7 @@ import { useFdSvc } from "@/services/folder";
 import { notifyDocChanged } from "@/infrastructure/api/windowEvent";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { nextTick, onMounted, onUnmounted } from "vue";
+import { computed, nextTick, onMounted, onUnmounted } from "vue";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
@@ -21,6 +21,12 @@ const { id, docEntries, content, docType, key, name, archiveId } =
   storeToRefs(editorStore);
 const { setDocEntries, setArchiveId } = editorStore;
 const { saveContent, openDocById } = useEditorAction();
+
+// 左侧栏可见性：store 的 leftbarApplicable 是唯一判定源（WindowControl 同源），
+// 这里仅叠加用户手动收起/展开的偏好
+const leftbarVisible = computed(
+  () => uiStore.showLeftbar && editorStore.leftbarApplicable,
+);
 
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
@@ -145,7 +151,7 @@ onUnmounted(() => {
       v-if="editorStore.switching"
       class="absolute inset-0 z-20 bg-white"
     ></div>
-    <LeftBar v-if="uiStore.showLeftbar" v-model="docEntries" />
+    <LeftBar v-if="leftbarVisible" v-model="docEntries" />
     <div class="flex-1 min-w-0 px-2 pb-2">
       <div class="relative w-full h-full bg-white rounded-lg overflow-hidden">
         <RichText

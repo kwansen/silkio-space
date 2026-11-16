@@ -1,7 +1,7 @@
 import { Doc, DocEntry, DocType } from "@/types/doc";
 import { TableOfContentData } from "@tiptap/extension-table-of-contents";
 import { acceptHMRUpdate, defineStore } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 
 export const useEditorStore = defineStore("editor", () => {
   const id = ref<string>();
@@ -77,7 +77,15 @@ export const useEditorStore = defineStore("editor", () => {
   const setArchiveId = (v: string | undefined) => {
     archiveId.value = v;
   };
+  // 左侧栏是否有内容可显示（唯一判定源，EditorView 与 WindowControl 共用）：
+  // 归档模式总有文档目录；doc 模式仅富文本有大纲，flowChart/mindMap 两者皆无
+  const leftbarApplicable = computed(
+    () =>
+      editorMode.value === "archive" ||
+      (editorMode.value === "doc" && docType.value === "richText"),
+  );
   return {
+    leftbarApplicable,
     id,
     setId,
     editorMode,
