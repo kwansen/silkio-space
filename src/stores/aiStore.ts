@@ -28,7 +28,6 @@ export const useAiStore = defineStore("ai", () => {
   // 进行中的回复：流式增量实时更新，完成后并入 messages
   const pending = ref<AIPendingReply | null>(null);
   const busy = ref(false);
-  const settingsOpen = ref(false);
   const prompt = ref("");
   const config = ref<AIConfig>(loadAIConfig());
   const ready = computed(
@@ -47,9 +46,6 @@ export const useAiStore = defineStore("ai", () => {
   const setPending = (v: AIPendingReply | null) => {
     pending.value = v;
   };
-  const setSettingsOpen = (v: boolean) => {
-    settingsOpen.value = v;
-  };
   const appendMessage = (message: Omit<AIChatMessage, "id">) => {
     messages.value.push({ ...message, id: ++seq });
   };
@@ -59,8 +55,6 @@ export const useAiStore = defineStore("ai", () => {
     pending,
     busy,
     setBusy,
-    settingsOpen,
-    setSettingsOpen,
     prompt,
     config,
     ready,

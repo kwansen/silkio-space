@@ -6,7 +6,6 @@ import ArchiveSort from "@/components/sections/ArchiveSort/ArchiveSort.vue";
 import DocSearch from "@/components/sections/DocSearch/DocSearch.vue";
 import DocSort from "@/components/sections/DocSort/DocSort.vue";
 import DocTabs from "@/components/sections/DocTabs/DocTabs.vue";
-import SettingDialog from "@/components/sections/SettingDialog/SettingDialog.vue";
 import ArchivePickerDialog from "@/components/shared/ArchivePickerDialog.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
 import { useUiStore } from "@/stores/uiStore";
@@ -82,5 +81,4 @@ onUnmounted(() => {
     </div>
   </div>
   <ArchivePickerDialog v-if="store.openId" :id="store.openId" />
-  <SettingDialog v-if="store.showSettingDialog" />
 </template>

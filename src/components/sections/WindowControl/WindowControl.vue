@@ -70,7 +70,7 @@ defineProps<Props>();
       <Side v-else class="size-5" />
     </div>
     <div
-      v-if="label === 'main'"
+      v-if="label === 'main' || label === 'editor'"
       class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
       @click="uiStore.setSettingDialogShow(true)"
     >

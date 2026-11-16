@@ -4,6 +4,7 @@ import {
 } from "@/infrastructure/api/ai";
 import { useAiStore } from "@/stores/aiStore";
 import { useEditorStore } from "@/stores/editorStore";
+import { useUiStore } from "@/stores/uiStore";
 
 // 单次请求上下文长度上限：避免超长文档打爆 token 预算
 const CONTEXT_LIMIT = 12000;
@@ -51,9 +52,11 @@ export const useAiAction = () => {
     if (aiStore.busy) return;
     const text = aiStore.prompt.trim();
     if (!text) return;
-    // 未配置 AI 服务：直接打开设置面板引导配置
+    // 未配置 AI 服务：打开设置对话框并直达 AI 服务页签
     if (!aiStore.ready) {
-      aiStore.setSettingsOpen(true);
+      const uiStore = useUiStore();
+      uiStore.setSettingNav("ai");
+      uiStore.setSettingDialogShow(true);
       return;
     }
     // 标记本次生成：切换文档会递增 generation，迟到的结果被丢弃

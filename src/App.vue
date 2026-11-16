@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import WindowControl from "./components/sections/WindowControl/WindowControl.vue";
+import SettingDialog from "./components/sections/SettingDialog/SettingDialog.vue";
 import { onMounted, onUnmounted } from "vue";
+import { useUiStore } from "@/stores/uiStore";
 import MainView from "./views/MainView.vue";
 import EditorView from "./views/EditorView.vue";
 import SearchView from "./views/SearchView.vue";
 import ToolView from "./views/ToolView.vue";
 
 const label = getCurrentWindow().label;
+const uiStore = useUiStore();
 
 let stopOnClose: (() => void) | null = null;
 
@@ -42,5 +45,9 @@ onUnmounted(() => {
       <ToolView v-else-if="label === 'tool'" />
       <!-- <InsertView v-else-if="label === 'insert'" /> -->
     </div>
+    <!-- 设置对话框：main/editor 两窗口共用（AI 配置在 editor 窗口的 AI 面板中触达） -->
+    <SettingDialog
+      v-if="uiStore.showSettingDialog && (label === 'main' || label === 'editor')"
+    />
   </div>
 </template>

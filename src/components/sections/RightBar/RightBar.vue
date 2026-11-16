@@ -1,47 +1,27 @@
 <script setup lang="ts">
 // AI 助手右侧栏（移植自 .examples demo 的 AISidebar，适配本应用栅格与
-// 图标体系）：对话历史 / 流式思考 / Markdown 回答 / 服务配置。
-// 状态与网络逻辑在 aiStore + aiAction，此处只负责展示与交互。
+// 图标体系）：对话历史 / 流式思考 / Markdown 回答。
+// 状态与网络逻辑在 aiStore + aiAction；服务配置在设置对话框的「AI 服务」页签。
 import AIMarkdown from "./AIMarkdown.vue";
 import { useAiAction } from "@/actions/aiAction";
 import { useAiStore } from "@/stores/aiStore";
-import type { AIConfig } from "@/infrastructure/api/ai";
+import { useUiStore } from "@/stores/uiStore";
 import { storeToRefs } from "pinia";
-import { computed, nextTick, reactive, ref, useTemplateRef, watch } from "vue";
+import { computed, nextTick, useTemplateRef, watch } from "vue";
 import Setting from "@/components/icons/Setting.vue";
 import Sparkles from "@/components/icons/Sparkles.vue";
 import Stop from "@/components/icons/Stop.vue";
 import ArrowUp from "@/components/icons/ArrowUp.vue";
 
 const aiStore = useAiStore();
-const { messages, pending, busy, settingsOpen, prompt, config, ready } =
-  storeToRefs(aiStore);
+const uiStore = useUiStore();
+const { messages, pending, busy, prompt, ready } = storeToRefs(aiStore);
 const { send, stop, clear } = useAiAction();
 
-// 配置草稿：输入不直接落盘，点「保存」写回 config（store 的 watch 统一持久化）。
-// 打开面板时从已保存配置同步，关闭面板丢弃未保存草稿
-const draft = reactive({
-  baseURL: "",
-  apiKey: "",
-  model: "",
-  format: "openai" as AIConfig["format"],
-});
-watch(
-  settingsOpen,
-  (open) => {
-    if (open) Object.assign(draft, config.value);
-  },
-  { immediate: true },
-);
-
-// 保存后按钮短暂显示「已保存」作为落盘反馈
-const saved = ref(false);
-let savedTimer: ReturnType<typeof setTimeout> | undefined;
-const saveConfig = () => {
-  config.value = { ...draft };
-  saved.value = true;
-  clearTimeout(savedTimer);
-  savedTimer = setTimeout(() => (saved.value = false), 1500);
+// 齿轮直达设置对话框的 AI 服务页签
+const openSettings = () => {
+  uiStore.setSettingNav("ai");
+  uiStore.setSettingDialogShow(true);
 };
 
 const pendingStatus = computed(() => {
@@ -84,70 +64,13 @@ const onKeydown = (event: KeyboardEvent) => {
         清空
       </button>
       <button
-        class="size-7 grid place-items-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-200"
-        :class="settingsOpen || ready ? 'text-violet-500' : ''"
+        class="size-7 grid place-items-center rounded-md hover:bg-gray-200"
+        :class="ready ? 'text-violet-500' : 'text-gray-400 hover:text-gray-600'"
         title="AI 服务配置"
-        @click="aiStore.setSettingsOpen(!settingsOpen)"
+        @click="openSettings"
       >
         <Setting class="size-5" />
       </button>
-    </div>
-
-    <!-- 服务配置（草稿输入，点「保存」落盘 localStorage） -->
-    <div
-      v-if="settingsOpen"
-      class="flex flex-col gap-1.5 rounded-lg bg-gray-50 p-2"
-    >
-      <select
-        v-model="draft.format"
-        class="h-7 w-full rounded-md border border-gray-200 bg-white px-1.5 text-xs text-gray-800 outline-none focus:border-violet-400"
-      >
-        <option value="openai">OpenAI 兼容格式（chat/completions）</option>
-        <option value="anthropic">Anthropic 格式（messages）</option>
-      </select>
-      <input
-        v-model="draft.baseURL"
-        :placeholder="
-          draft.format === 'anthropic'
-            ? '接口地址（含 /v1），如 https://api.anthropic.com/v1'
-            : '接口地址（含 /v1），如 https://api.deepseek.com/v1'
-        "
-        class="h-7 w-full rounded-md border border-gray-200 bg-white px-2 text-xs text-gray-800 outline-none focus:border-violet-400"
-        @keydown.enter="saveConfig"
-      />
-      <input
-        v-model="draft.apiKey"
-        type="password"
-        placeholder="API Key"
-        class="h-7 w-full rounded-md border border-gray-200 bg-white px-2 text-xs text-gray-800 outline-none focus:border-violet-400"
-        @keydown.enter="saveConfig"
-      />
-      <input
-        v-model="draft.model"
-        :placeholder="
-          draft.format === 'anthropic'
-            ? '模型名，如 claude-sonnet-4-5'
-            : '模型名，如 deepseek-chat'
-        "
-        class="h-7 w-full rounded-md border border-gray-200 bg-white px-2 text-xs text-gray-800 outline-none focus:border-violet-400"
-        @keydown.enter="saveConfig"
-      />
-      <div class="flex items-center justify-between gap-2">
-        <p class="min-w-0 text-[10px] text-gray-400">
-          配置保存在本地；经 Tauri 网络层请求，无跨域限制
-        </p>
-        <button
-          class="h-6 shrink-0 cursor-pointer rounded-md px-2.5 text-xs text-white transition-colors"
-          :class="
-            saved
-              ? 'bg-emerald-500 hover:bg-emerald-500'
-              : 'bg-violet-500 hover:bg-violet-600'
-          "
-          @click="saveConfig"
-        >
-          {{ saved ? "已保存" : "保存" }}
-        </button>
-      </div>
     </div>
 
     <!-- 消息流 -->
@@ -158,6 +81,9 @@ const onKeydown = (event: KeyboardEvent) => {
           class="mt-8 text-center text-xs leading-[1.9] text-gray-400"
         >
           询问当前文档内容，或输入任意问题
+          <template v-if="!ready">
+            <br />尚未配置 AI 服务，点击右上角齿轮进行配置
+          </template>
         </div>
 
         <div v-for="m in messages" :key="m.id">

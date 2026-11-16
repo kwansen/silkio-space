@@ -45,6 +45,11 @@ export const useUiStore = defineStore("ui", () => {
   const setSettingDialogShow = (v: boolean) => {
     showSettingDialog.value = v;
   };
+  // 设置对话框页签：允许其他组件打开设置时直达指定页（如 AI 面板齿轮 → AI 服务）
+  const settingNav = ref<string>("common");
+  const setSettingNav = (v: string) => {
+    settingNav.value = v;
+  };
 
   return {
     docTab,
@@ -61,5 +66,7 @@ export const useUiStore = defineStore("ui", () => {
     toggleRightbar,
     showSettingDialog,
     setSettingDialogShow,
+    settingNav,
+    setSettingNav,
   };
 });

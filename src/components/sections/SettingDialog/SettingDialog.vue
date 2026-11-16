@@ -3,24 +3,33 @@ import Close from "@/components/icons/Close.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
 import { FocusScope } from "@zhencai/vue-focus-scope";
 import About from "./About.vue";
+import AI from "./AI.vue";
 import Common from "./Common.vue";
 import Shortcut from "./Shortcut.vue";
 import Sync from "./Sync.vue";
-import { ref } from "vue";
+import { computed } from "vue";
 import { useUiStore } from "@/stores/uiStore.ts";
 
-type NavKey = "common" | "shortcut" | "sync" | "about";
+type NavKey = "common" | "ai" | "shortcut" | "sync" | "about";
 
 const navList: { key: NavKey; show: string }[] = [
   { key: "common", show: "通用" },
+  { key: "ai", show: "AI 服务" },
   { key: "shortcut", show: "快捷键" },
   { key: "sync", show: "同步" },
   { key: "about", show: "关于" },
 ];
 
-const nav = ref<NavKey>("common");
+const navKeys: string[] = navList.map((n) => n.key);
 
+// 页签状态放 uiStore：其他组件（如 AI 面板齿轮）可直达指定页签
 const uiStore = useUiStore();
+const nav = computed<NavKey>({
+  get: () =>
+    (navKeys.includes(uiStore.settingNav) ? uiStore.settingNav : "common") as NavKey,
+  set: (v) => uiStore.setSettingNav(v),
+});
+
 const close = () => {
   uiStore.setSettingDialogShow(false);
 };
@@ -58,6 +67,7 @@ const close = () => {
             <Sync v-if="nav === 'sync'" />
             <Shortcut v-if="nav === 'shortcut'" />
             <Common v-if="nav === 'common'" />
+            <AI v-if="nav === 'ai'" />
             <About v-if="nav === 'about'" />
           </ScrollArea>
         </div>

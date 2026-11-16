@@ -179,8 +179,7 @@ onUnmounted(() => {
         />
       </div>
     </div>
-    <!-- 右侧 AI 面板：用户可通过窗口控制开关；关闭时保留占位保持布局对称 -->
+    <!-- 右侧 AI 面板：用户可通过窗口控制开关；关闭时整个右侧栏隐藏 -->
     <RightBar v-if="uiStore.showRightbar" />
-    <div v-else class="w-65 h-full"></div>
   </div>
 </template>
