@@ -21,11 +21,11 @@ export const useDocAction = () => {
     await svc.update(id, { viewed_at: Date.now() });
   };
 
-  // 创建富文本后刷新列表（排序保持当前页，搜索按最后关键词重查）
+  // 创建富文本：只落库并通知 editor 打开，不在此广播 doc:changed——
+  // 与 openDoc 同一策略，main 的刷新由 editor 就绪显示后补发，避免先刷新闪烁
   const createRichtext = async () => {
     try {
       const id = await svc.create({ doc_type: "richText" });
-      notifyDocChanged();
       await notifyEditorOpen("doc", id);
     } catch (e) {
       console.error(e);
@@ -44,11 +44,11 @@ export const useDocAction = () => {
     edges: [],
   });
 
-  // 新建指定类型文档的通用流程：落库（含默认内容）→ 广播 doc:changed → 打开 editor 窗口
+  // 新建指定类型文档的通用流程：落库（含默认内容）→ 打开 editor 窗口；
+  // 不广播 doc:changed（同 openDoc），main 的刷新由 editor 就绪显示后补发
   const createTyped = async (doc_type: DocType, content: string) => {
     try {
       const id = await svc.create({ doc_type, content });
-      notifyDocChanged();
       await notifyEditorOpen("doc", id);
     } catch (e) {
       console.error(e);

@@ -10,12 +10,15 @@ import { App } from "@silkor/core";
 import { officialPlugins } from "@silkor/preset";
 import { MindMap, type MindMapNode, type MindMapOptions } from "silkio-mindmap";
 import type { EdgeShape } from "@silkor/core";
+import type { Style } from "silkio-mindmap";
 import { onClickOutside } from "@vueuse/core";
 import { onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef } from "vue";
 import ArrowDown from "@/components/icons/ArrowDown.vue";
 import Maximize from "@/components/icons/Maximize.vue";
 import Redo from "@/components/icons/Redo.vue";
 import Undo from "@/components/icons/Undo.vue";
+import { useEditorAction } from "@/actions/editorAction";
+import { useEditorStore } from "@/stores/editorStore";
 
 const props = defineProps<{ content: string }>();
 
@@ -47,16 +50,117 @@ const EDGE_OPTIONS: { value: EdgeShape; label: string }[] = [
   { value: "rPath", label: "直角折线" },
 ];
 
-// 解析文档内容，空/损坏数据时回退为仅含根节点的默认树
-const parseDoc = (raw: string): MindMapNode => {
+// 级数样式配置（参照 .examples/mindmap 的 levelStyles）：index 0 为根节点（一级），
+// 依次向深层级递增，超出配置长度套用最后一项。节点一律无边框（borderWidth: 0），
+// 层级靠背景色深浅区分
+const LEVEL_STYLES: Style[] = [
+  // 一级样式：根节点
+  {
+    color: "#ffffffff",
+    backgroundColor: "#A4B3C2",
+    fontSize: 24,
+    fontWeight: 500,
+    fontFamily: "sans-serif",
+    radius: 6,
+    borderColor: "",
+    borderWidth: 0,
+    lineHeight: 1.4,
+    padding: [8, 24],
+  },
+  // 二级样式：分支节点
+  {
+    color: "#1f2937",
+    backgroundColor: "#DCE2E8",
+    fontSize: 16,
+    fontWeight: 500,
+    fontFamily: "sans-serif",
+    radius: 6,
+    borderColor: "",
+    borderWidth: 0,
+    lineHeight: 1.4,
+    padding: [6, 16],
+  },
+  // 三级样式
+  {
+    color: "#1f2937",
+    backgroundColor: "#F9FAFB",
+    fontSize: 14,
+    fontWeight: 400,
+    fontFamily: "sans-serif",
+    radius: 6,
+    borderColor: "",
+    borderWidth: 0,
+    lineHeight: 1.4,
+    padding: [6, 12],
+  },
+  // 四级及以后样式（叶子节点）
+  {
+    color: "#1f2937",
+    backgroundColor: "",
+    fontSize: 14,
+    fontWeight: 400,
+    fontFamily: "sans-serif",
+    radius: 6,
+    borderColor: "",
+    borderWidth: 0,
+    lineHeight: 1.4,
+    padding: [6, 12],
+  },
+];
+
+// 场景偏好（direction/edgeStyle）不随 MindMap.toJSON 导出（仅节点树），参照
+// .examples/mindmap 的 MindMapDoc：与数据树并列作为顶层字段持久化，打开时整场景还原
+type Prefs = {
+  direction?: LayoutDirection;
+  edgeStyle?: EdgeShape;
+};
+type SavedDoc = { data: MindMapNode } & Prefs;
+
+// 解析文档内容：新格式为 { data, direction, edgeStyle } 包装；兼容旧格式
+// （裸节点树，或偏好并入根节点字段的过渡格式），空/损坏数据回退默认树
+const parseContent = (raw: string): { data: MindMapNode } & Required<Prefs> => {
+  const fallback = {
+    data: { text: "中心主题", children: [] } as MindMapNode,
+    direction: "right" as LayoutDirection,
+    edgeStyle: "bezier" as EdgeShape,
+  };
   try {
-    const parsed = JSON.parse(raw) as MindMapNode;
-    if (parsed && typeof parsed.text === "string") return parsed;
+    const parsed = JSON.parse(raw) as (SavedDoc & Prefs) | null;
+    if (!parsed) return fallback;
+    // 新格式：包装对象
+    if (parsed.data && typeof parsed.data.text === "string") {
+      return {
+        data: parsed.data,
+        direction: DIRECTION_OPTIONS.some((d) => d.value === parsed.direction)
+          ? (parsed.direction as LayoutDirection)
+          : fallback.direction,
+        edgeStyle: EDGE_OPTIONS.some((e) => e.value === parsed.edgeStyle)
+          ? (parsed.edgeStyle as EdgeShape)
+          : fallback.edgeStyle,
+      };
+    }
+    // 旧格式：裸节点树（可能带过渡期并入根节点的偏好字段）
+    const legacy = parsed as unknown as MindMapNode & Prefs;
+    if (typeof legacy.text === "string") {
+      return {
+        data: legacy,
+        direction: DIRECTION_OPTIONS.some((d) => d.value === legacy.direction)
+          ? (legacy.direction as LayoutDirection)
+          : fallback.direction,
+        edgeStyle: EDGE_OPTIONS.some((e) => e.value === legacy.edgeStyle)
+          ? (legacy.edgeStyle as EdgeShape)
+          : fallback.edgeStyle,
+      };
+    }
   } catch {
     // 回退默认树
   }
-  return { text: "中心主题", children: [] };
+  return fallback;
 };
+
+// 当前布局方向与连线样式（保存/恢复用）
+const direction = ref<LayoutDirection>("right");
+const edgeShape = ref<EdgeShape>("bezier");
 
 // 汇总整棵树的纯文本与字数
 const collectText = (node: MindMapNode, out: string[] = []): string[] => {
@@ -65,14 +169,34 @@ const collectText = (node: MindMapNode, out: string[] = []): string[] => {
   return out;
 };
 
+// 根节点文本即文档标题（参照 .examples/mindmap 的 docName = toJSON().text）：
+// 走 RichTextTitle 相同的落库路径（saveTitle 防抖 + 快照去重），并实时同步左侧目录
+const editorStore = useEditorStore();
+const { saveTitle } = useEditorAction();
+const syncTitle = (rootText: string) => {
+  const docId = editorStore.id;
+  if (!docId || !rootText.trim()) return;
+  editorStore.setTitle(rootText);
+  editorStore.updateDocEntryTitle(docId, rootText);
+  saveTitle(rootText);
+};
+
 const save = () => {
   const mm = mindmap.value;
   if (!mm) return;
   const doc = mm.toJSON();
   const plainText = collectText(doc).join("\n");
+  // 根节点文本同步为文档标题
+  syncTitle(doc.text);
+  // 偏好（方向/连线样式）与数据树并列持久化（toJSON 不含样式信息）
+  const saved: SavedDoc = {
+    data: doc,
+    direction: direction.value,
+    edgeStyle: edgeShape.value,
+  };
   emit(
     "onContentSave",
-    JSON.stringify(doc),
+    JSON.stringify(saved),
     plainText,
     plainText.replace(/\s/g, "").length,
   );
@@ -95,11 +219,13 @@ const redo = async () => {
   syncState();
 };
 
-const setLayout = async (direction: LayoutDirection) => {
-  await mindmap.value?.setLayout(direction);
+const setLayout = async (value: LayoutDirection) => {
+  direction.value = value;
+  await mindmap.value?.setLayout(value);
   syncState();
 };
 const setEdgeStyle = (shape: EdgeShape) => {
+  edgeShape.value = shape;
   mindmap.value?.setEdgeStyle(shape);
 };
 const collapseOthers = async () => {
@@ -169,10 +295,15 @@ onMounted(async () => {
   if (!canvas) return;
   app.value = new App(canvas);
   for (const plugin of officialPlugins()) app.value.use(plugin);
+  const parsed = parseContent(props.content);
+  direction.value = parsed.direction;
+  edgeShape.value = parsed.edgeStyle;
   mindmap.value = new MindMap({
     app: app.value,
-    data: parseDoc(props.content),
-    direction: "right",
+    data: parsed.data,
+    direction: parsed.direction,
+    edgeStyle: parsed.edgeStyle,
+    levelStyles: LEVEL_STYLES,
     onChange: () => {
       save();
       syncState();
@@ -185,6 +316,8 @@ onMounted(async () => {
   await mindmap.value.selectRoot();
   fitView();
   syncState();
+  // 挂载即同步根节点文本为标题（无编辑动作时 title 也跟随根节点）
+  syncTitle(mindmap.value.toJSON().text);
   emit("onReady");
 });
 
