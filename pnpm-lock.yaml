@@ -204,11 +204,11 @@ importers:
         specifier: ^4.0.2
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@5.6.3)(vue@3.5.41(typescript@5.6.3))
       silkio-flowchart:
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.1.1
+        version: 0.1.1
       silkio-mindmap:
-        specifier: ^0.1.0
-        version: 0.1.0
+        specifier: ^0.1.1
+        version: 0.1.1
       simple-mind-map:
         specifier: 0.14.0-fix.3
         version: 0.14.0-fix.3
@@ -2062,11 +2062,11 @@ packages:
   setimmediate@1.0.5:
     resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
 
-  silkio-flowchart@0.1.0:
-    resolution: {integrity: sha512-gEQ6Z2wXZCxtR1Efhf45aXhmQWMI7a1YpFphMHtjuzFwTxkmY8UpFZHYMIX9T3G3ruq9z/dda+LLaoe48v61Lg==}
+  silkio-flowchart@0.1.1:
+    resolution: {integrity: sha512-U9dGU1c2LNSqGwci6qw0hqDatQuU2TYb1VDmglhUjpFKxfeOqwq1CDPERqh4I5bIgKoXAa14iV59FLdmssTNFw==}
 
-  silkio-mindmap@0.1.0:
-    resolution: {integrity: sha512-lHt+RWh2AceHYlVgmkPtOYDoypKftFEt7EHat/YijpK8Ok5aQI19srN8vhreuZpO7B10MOxj+4tCoNFH8F4NUA==}
+  silkio-mindmap@0.1.1:
+    resolution: {integrity: sha512-bFrIdMv80bgTvcRDSd8MMFbNzB/Zi+iVV4XDBA4nFj+9BjK5tGK43SAufJdWSKSDCEtODHRmN3GPvDCf+tSqaA==}
 
   simple-mind-map@0.14.0-fix.3:
     resolution: {integrity: sha512-S8kotb0kcxpty5DKHZPFktZWoa0c+hfPn3Ry7CQBxjH/bOD8ePrc9xW99vi8gLBZJe69OyEZ/W1EODSuCnULyw==}
@@ -4177,14 +4177,15 @@ snapshots:
 
   setimmediate@1.0.5: {}
 
-  silkio-flowchart@0.1.0:
+  silkio-flowchart@0.1.1:
     dependencies:
       '@silkor/core': 0.1.0
       '@silkor/preset': 0.1.0
 
-  silkio-mindmap@0.1.0:
+  silkio-mindmap@0.1.1:
     dependencies:
       '@silkor/core': 0.1.0
+      '@silkor/preset': 0.1.0
 
   simple-mind-map@0.14.0-fix.3:
     dependencies:

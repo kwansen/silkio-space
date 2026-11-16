@@ -1,2 +1,5 @@
 allowBuilds:
   esbuild: true
+minimumReleaseAgeExclude:
+  - silkio-mindmap@0.1.1
+  - silkio-flowchart@0.1.1
