@@ -122,7 +122,7 @@ const parseContent = (raw: string): { data: MindMapNode } & Required<Prefs> => {
   const fallback = {
     data: { text: "中心主题", children: [] } as MindMapNode,
     direction: "right" as LayoutDirection,
-    edgeStyle: "bezier" as EdgeShape,
+    edgeStyle: "rPath" as EdgeShape,
   };
   try {
     const parsed = JSON.parse(raw) as (SavedDoc & Prefs) | null;
@@ -158,9 +158,9 @@ const parseContent = (raw: string): { data: MindMapNode } & Required<Prefs> => {
   return fallback;
 };
 
-// 当前布局方向与连线样式（保存/恢复用）
+// 当前布局方向与连线样式（保存/恢复用），缺省连线样式为圆角折线
 const direction = ref<LayoutDirection>("right");
-const edgeShape = ref<EdgeShape>("bezier");
+const edgeShape = ref<EdgeShape>("rPath");
 
 // 汇总整棵树的纯文本与字数
 const collectText = (node: MindMapNode, out: string[] = []): string[] => {
