@@ -7,7 +7,7 @@ import RichText from "@/components/sections/RichText/RichText.vue";
 import RightBar from "@/components/sections/RightBar/RightBar.vue";
 import { useEditorAction } from "@/actions/editorAction";
 import { useFdSvc } from "@/services/folder";
-import { notifyDocChanged } from "@/infrastructure/api/windowEvent";
+import { notifyDocChanged, onEditorOpen } from "@/infrastructure/api/windowEvent";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { computed, nextTick, onMounted, onUnmounted } from "vue";
@@ -53,11 +53,8 @@ const reconcileStale = async () => {
 };
 
 onMounted(async () => {
-  stopOnOpen = await listen<{ type: "doc" | "archive"; id: string }>(
-    "open",
-    async (event) => {
-      const data = event.payload;
-      const t = data.type;
+  stopOnOpen = await onEditorOpen(async (data) => {
+    const t = data.type;
       if (t === "doc") {
         editorStore.setEditorMode("doc");
         uiStore.setLeftbarOption("toc");
@@ -88,8 +85,7 @@ onMounted(async () => {
           showWindow();
         }
       }
-    },
-  );
+  });
 
   // 数据事实按域订阅，收到后与 DB 对账（不盲改当前文档，避免打断编辑）
   // doc:changed：文档本体变化。归档模式下目录里的文档可能被删/改名，重拉目录

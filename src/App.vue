@@ -49,7 +49,6 @@ onUnmounted(() => {
       <EditorView v-else-if="label === 'editor'" />
       <SearchView v-else-if="label === 'search'" />
       <ToolView v-else-if="label === 'tool'" />
-      <!-- <InsertView v-else-if="label === 'insert'" /> -->
     </div>
     <!-- 设置对话框：仅 main 窗口提供（editor 的 AI 面板不再有设置入口） -->
     <SettingDialog

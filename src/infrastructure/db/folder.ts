@@ -2,8 +2,9 @@ import Database from "@tauri-apps/plugin-sql";
 import type { Doc } from "@/infrastructure/db/document.ts";
 import { Folder } from "@/types/archive";
 
-// 归档（文件夹）创建参数（id 与时间字段仅在同步服务端数据时传入，本地创建自动生成/取当前时间）
-export interface CreateFolderParams {
+// 归档（文件夹）插入行参数（snake_case，对应 folders 表列；供 useFolderDb.create 使用。
+// 注意：业务层创建参数请用 services/folder.ts 的 CreateFolderParams）
+export interface CreateFolderRow {
   id?: string;
   name?: string;
   parent_id?: string | null;
@@ -76,7 +77,7 @@ export const useFolderDb = () => {
   // 时间字段未传时取当前时间（viewed_at 默认当前时间，表示创建即视为最近打开）
   const create = async (
     db: Database,
-    params: CreateFolderParams = {},
+    params: CreateFolderRow = {},
   ): Promise<string> => {
     const id = params.id ?? genId();
     const now = Date.now();
