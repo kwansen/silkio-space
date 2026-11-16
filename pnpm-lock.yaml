@@ -65,6 +65,9 @@ importers:
       '@tauri-apps/plugin-global-shortcut':
         specifier: ~2.4.1
         version: 2.4.1
+      '@tauri-apps/plugin-http':
+        specifier: ^2.9.0
+        version: 2.9.0
       '@tauri-apps/plugin-opener':
         specifier: ^2.7.2
         version: 2.7.2
@@ -1072,6 +1075,9 @@ packages:
   '@tauri-apps/plugin-global-shortcut@2.4.1':
     resolution: {integrity: sha512-NVCoQ0ShDFncsj9f8iAzhRBTnsJj5sf60vOjcV6emeQHzmEFd6+RXH+fUHHuJAbEYP4mdT2vGlvVOG7tMr/e8g==}
 
+  '@tauri-apps/plugin-http@2.9.0':
+    resolution: {integrity: sha512-q3HTsbyFk3E9H4slJr+egd6KdRF2Fn4BoZFGI3ZHb7PBT9snlsOOlZC5L4Q1+AlDDd6OHdf/KTM6DNUJ0RNMEQ==}
+
   '@tauri-apps/plugin-opener@2.7.2':
     resolution: {integrity: sha512-LyybP1VSzTMQiaFYcsbAse47KpivlyXdLZMQzGLEnkgQacGESnpjAfFoQ6h5sqWgAdZDH9szYjPzHMpv0Sz+TQ==}
 
@@ -1308,6 +1314,7 @@ packages:
 
   '@tiptap/y-tiptap@3.0.10':
     resolution: {integrity: sha512-vJtwYVoBBk+e8KyUVoH9WSsfUfKTXf1Uh+tk2UNTlD8wim9j7XVTuc7sakWUYuznB7DkXThT9w5uQTGH2SN0Kg==}
+    deprecated: Persistent position migrations can cause excessive collaborative document growth. Upgrade all collaborating clients to 3.1.0 or later.
     peerDependencies:
       prosemirror-model: ^1.7.1
       prosemirror-state: ^1.2.3
@@ -3082,6 +3089,10 @@ snapshots:
       '@tauri-apps/api': 2.12.4
 
   '@tauri-apps/plugin-global-shortcut@2.4.1':
+    dependencies:
+      '@tauri-apps/api': 2.12.4
+
+  '@tauri-apps/plugin-http@2.9.0':
     dependencies:
       '@tauri-apps/api': 2.12.4
 

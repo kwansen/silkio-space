@@ -51,6 +51,12 @@ export const useEditorStore = defineStore("editor", () => {
   const setSwitching = (v: boolean) => {
     switching.value = v;
   };
+  // 最近一次落库的富文本纯文本快照（saveContent 时顺手记录），
+  // 供 AI 面板取当前文档正文作上下文，避免解析 content JSON
+  const plainText = ref("");
+  const setPlainText = (v: string) => {
+    plainText.value = v;
+  };
   const toc = ref<TableOfContentData>([]);
   const setToc = (v: TableOfContentData) => {
     toc.value = v;
@@ -64,6 +70,7 @@ export const useEditorStore = defineStore("editor", () => {
     setTitle(doc?.title || "");
     setContent(c);
     setDocType(doc?.doc_type);
+    setPlainText("");
     setKey(Date.now().toString());
     // 目录随文档清空：空态下 RichText 已卸载、不会回填新 toc，不清会残留上一文档的旧标题
     setToc([]);
@@ -103,6 +110,8 @@ export const useEditorStore = defineStore("editor", () => {
     setDocType,
     key,
     setKey,
+    plainText,
+    setPlainText,
     oldContent,
     oldTitle,
     switching,

@@ -1,0 +1,104 @@
+@import "tailwindcss";
+@import "overlayscrollbars/overlayscrollbars.css";
+
+/* OverlayScrollbars 细滚动条：贴合 demo 的浅灰视觉（与主题类同优先级才能覆盖变量） */
+.os-theme-dark.os-scrollbar {
+  --os-size: 8px;
+  --os-handle-bg: #d1d5db;
+  --os-handle-bg-hover: #9ca3af;
+  --os-handle-bg-active: #6b7280;
+}
+
+/* AI 消息流的 comark 渲染排版：Tailwind preflight 重置了元素默认样式，
+   此处按聊天气泡的字号尺度补回最简的 markdown 排版 */
+.ai-md :is(h1, h2, h3, h4, h5, h6) {
+  font-weight: 600;
+  margin: 0.6em 0 0.2em;
+}
+.ai-md h1 {
+  font-size: 1.25em;
+}
+.ai-md h2 {
+  font-size: 1.15em;
+}
+.ai-md h3 {
+  font-size: 1.05em;
+}
+.ai-md p {
+  margin: 0.25em 0;
+}
+.ai-md > :first-child {
+  margin-top: 0;
+}
+.ai-md > :last-child {
+  margin-bottom: 0;
+}
+.ai-md ul,
+.ai-md ol {
+  margin: 0.25em 0;
+  padding-left: 1.3em;
+}
+.ai-md ul {
+  list-style: disc;
+}
+.ai-md ol {
+  list-style: decimal;
+}
+.ai-md li {
+  margin: 0.1em 0;
+}
+.ai-md code {
+  background: #f3f4f6;
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.95em;
+}
+.ai-md pre {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 0.6em 0.8em;
+  margin: 0.3em 0;
+  overflow-x: auto;
+}
+.ai-md pre code {
+  background: none;
+  padding: 0;
+}
+.ai-md blockquote {
+  border-left: 3px solid #d1d5db;
+  padding-left: 0.6em;
+  margin: 0.3em 0;
+  color: #6b7280;
+}
+.ai-md a {
+  color: #7c3aed;
+  text-decoration: underline;
+}
+.ai-md table {
+  border-collapse: collapse;
+  margin: 0.3em 0;
+}
+.ai-md :is(th, td) {
+  border: 1px solid #e5e7eb;
+  padding: 0.2em 0.5em;
+}
+.ai-md hr {
+  border-color: #e5e7eb;
+  margin: 0.5em 0;
+}
+
+/* comark 流式渲染的打字光标 */
+.comark-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: currentColor;
+  animation: comark-caret-blink 1s steps(2) infinite;
+}
+@keyframes comark-caret-blink {
+  50% {
+    opacity: 0;
+  }
+}

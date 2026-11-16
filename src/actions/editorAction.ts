@@ -1,4 +1,5 @@
 import { notifyDocChanged } from "@/infrastructure/api/windowEvent";
+import { useAiAction } from "@/actions/aiAction";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 
@@ -109,6 +110,8 @@ const openDocById = async (docId: string | null): Promise<void> => {
     await flushPendingSaves();
     const doc = docId ? await useDocSvc().getById(docId) : null;
     if (seq !== switchSeq) return;
+    // 换了文档才重置 AI 会话（对话跟随文档）；重复打开同一文档不清空
+    if (docId !== store.id) useAiAction().resetConversation();
     store.setDoc(doc);
     // 空文档 / 无 docType 没有编辑器挂载、不会有就绪信号，直接解除遮罩
     if (!doc || !doc.doc_type) store.setSwitching(false);
@@ -135,6 +138,8 @@ export const useEditorAction = () => {
       word_count,
       snapshot: store.oldContent,
     };
+    // 顺手暂存纯文本快照（不等落库，始终最新），供 AI 面板取文档上下文
+    store.setPlainText(plain_text);
     if (contentTimer) clearTimeout(contentTimer);
     contentTimer = setTimeout(flushContent, SAVE_DELAY);
   };

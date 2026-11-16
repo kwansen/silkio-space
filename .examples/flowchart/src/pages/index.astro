@@ -1,0 +1,17 @@
+---
+import "../styles/global.css";
+import FlowChartDemo from "../components/FlowChartDemo.vue";
+---
+
+<!doctype html>
+<html lang="zh-CN" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flowchart Demo</title>
+  </head>
+  <body class="h-full overflow-hidden bg-white text-[13px] leading-normal text-gray-800">
+    <!-- 画布 API 依赖真实 DOM，整页作为 Vue 客户端岛屿渲染（无 SSR 输出） -->
+    <FlowChartDemo client:only="vue" />
+  </body>
+</html>

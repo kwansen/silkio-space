@@ -4,6 +4,7 @@ import FlowChart from "@/components/sections/FlowChart/FlowChart.vue";
 import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
 import MindMap from "@/components/sections/MindMap/MindMap.vue";
 import RichText from "@/components/sections/RichText/RichText.vue";
+import RightBar from "@/components/sections/RightBar/RightBar.vue";
 import { useEditorAction } from "@/actions/editorAction";
 import { useFdSvc } from "@/services/folder";
 import { notifyDocChanged } from "@/infrastructure/api/windowEvent";
@@ -178,6 +179,8 @@ onUnmounted(() => {
         />
       </div>
     </div>
-    <div class="w-65 h-full"></div>
+    <!-- 右侧 AI 面板：用户可通过窗口控制开关；关闭时保留占位保持布局对称 -->
+    <RightBar v-if="uiStore.showRightbar" />
+    <div v-else class="w-65 h-full"></div>
   </div>
 </template>
