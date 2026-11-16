@@ -14,7 +14,12 @@ const uiStore = useUiStore();
 
 let stopOnClose: (() => void) | null = null;
 
+// 窗口尺寸变化同步进 uiStore，驱动侧栏自适应隐藏（leftbarFits/rightbarFits）
+const onWindowResize = () => uiStore.setWindowWidth(window.innerWidth);
+
 onMounted(async () => {
+  onWindowResize();
+  window.addEventListener("resize", onWindowResize);
   try {
     // 挂载时阻止窗口关闭，改为隐藏
     stopOnClose = await getCurrentWindow().onCloseRequested(async (event) => {
@@ -26,8 +31,9 @@ onMounted(async () => {
   }
 });
 
-// 元函数：卸载时取消关闭拦截
+// 元函数：卸载时取消关闭拦截与尺寸监听
 onUnmounted(() => {
+  window.removeEventListener("resize", onWindowResize);
   stopOnClose?.();
 });
 </script>

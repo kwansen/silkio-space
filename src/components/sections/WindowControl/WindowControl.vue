@@ -56,17 +56,26 @@ defineProps<Props>();
     <div
       v-if="label === 'editor' && editorStore.leftbarApplicable"
       class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
+      title="目录 / 大纲"
       @click="uiStore.toggleLeftbar"
     >
-      <SideMian v-if="uiStore.showLeftbar" class="size-5" />
+      <!-- 图标反映实际可见状态（含窄窗口自动隐藏） -->
+      <SideMian
+        v-if="uiStore.showLeftbar && uiStore.leftbarFits"
+        class="size-5"
+      />
       <Side v-else class="size-5 rotate-180" />
     </div>
     <div
       v-if="label === 'editor'"
       class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
+      title="AI 助手"
       @click="uiStore.toggleRightbar"
     >
-      <SideMian v-if="uiStore.showRightbar" class="size-5 rotate-180" />
+      <SideMian
+        v-if="uiStore.showRightbar && uiStore.rightbarFits"
+        class="size-5 rotate-180"
+      />
       <Side v-else class="size-5" />
     </div>
     <!-- 设置入口仅保留在 main 窗口；editor 窗口经 AI 面板齿轮触达 AI 配置 -->

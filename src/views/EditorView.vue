@@ -24,9 +24,10 @@ const { setDocEntries, setArchiveId } = editorStore;
 const { saveContent, openDocById } = useEditorAction();
 
 // 左侧栏可见性：store 的 leftbarApplicable 是唯一判定源（WindowControl 同源），
-// 这里仅叠加用户手动收起/展开的偏好
+// 叠加用户手动偏好与窄窗口自适应（宽度不足时自动隐藏，不写偏好）
 const leftbarVisible = computed(
-  () => uiStore.showLeftbar && editorStore.leftbarApplicable,
+  () =>
+    uiStore.showLeftbar && editorStore.leftbarApplicable && uiStore.leftbarFits,
 );
 
 const fdSvc = useFdSvc();
@@ -153,7 +154,7 @@ onUnmounted(() => {
       class="absolute inset-0 z-20 bg-white"
     ></div>
     <LeftBar v-if="leftbarVisible" v-model="docEntries" />
-    <div class="flex-1 min-w-0 px-2 pb-2">
+    <div class="flex-1 min-w-[480px] px-2 pb-2">
       <div class="relative w-full h-full bg-white rounded-lg overflow-hidden">
         <RichText
           v-if="docType === 'richText'"
@@ -179,7 +180,7 @@ onUnmounted(() => {
         />
       </div>
     </div>
-    <!-- 右侧 AI 面板：用户可通过窗口控制开关；关闭时整个右侧栏隐藏 -->
-    <RightBar v-if="uiStore.showRightbar" />
+    <!-- 右侧 AI 面板：用户偏好 && 宽度足够；关闭时整个右侧栏隐藏 -->
+    <RightBar v-if="uiStore.showRightbar && uiStore.rightbarFits" />
   </div>
 </template>
