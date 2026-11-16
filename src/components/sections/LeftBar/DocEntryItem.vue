@@ -21,22 +21,28 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="flex items-center cursor-pointer gap-1 h-7 px-4 relative border border-transparent group"
-    :class="active ? 'bg-purple-200' : hovered ? 'bg-gray-100' : ''"
+    class="flex items-center cursor-pointer gap-1.5 h-8 px-2.5 relative rounded-md group"
+    :class="active ? 'bg-purple-100' : hovered ? 'bg-gray-100' : ''"
     @click="emit('open')"
   >
-    <Mindmap v-if="entry.doc_type === 'mindMap'" class="size-4" />
-    <Flowchart v-else-if="entry.doc_type === 'flowChart'" class="size-4" />
-    <Doc v-if="entry.doc_type === 'richText'" class="size-4" />
-    <span class="flex-1 min-w-0 truncate">
+    <Mindmap
+      v-if="entry.doc_type === 'mindMap'"
+      class="size-4 shrink-0 text-neutral-400"
+    />
+    <Flowchart
+      v-else-if="entry.doc_type === 'flowChart'"
+      class="size-4 shrink-0 text-neutral-400"
+    />
+    <Doc v-if="entry.doc_type === 'richText'" class="size-4 shrink-0 text-neutral-400" />
+    <span class="flex-1 min-w-0 truncate pr-5">
       {{ entry.title || "未命名标题" }}
     </span>
     <div
-      :class="hovered ? 'grid' : 'hidden'"
-      class="absolute cursor-pointer aspect-square hover:text-red-700 right-0.5 place-items-center h-full bg-inherit"
+      v-show="hovered"
+      class="absolute cursor-pointer size-5 grid place-items-center rounded right-0 top-1/2 -translate-y-1/2 bg-inherit hover:bg-red-100 hover:text-red-700"
       @click.stop="emit('remove')"
     >
-      <Close class="size-4" />
+      <Close class="size-3.5" />
     </div>
   </div>
 </template>

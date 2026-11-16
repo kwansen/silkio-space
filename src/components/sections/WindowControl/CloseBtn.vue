@@ -7,7 +7,9 @@ const isHover = ref<boolean>(false);
 
 const handleClick = async () => {
   try {
-    await getCurrentWindow().hide();
+    // 走 close 请求而非直接 hide：由 App.vue 统一处理（editor 需先合成
+    // 中性帧再隐藏，避免下次打开闪现旧内容）
+    await getCurrentWindow().close();
     unhover();
   } catch {
     console.error;

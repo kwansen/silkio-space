@@ -15,28 +15,33 @@ const levelRank = computed(() => {
 });
 
 const indentOf = (level: number) =>
-  `${((levelRank.value.get(level) ?? 1) - 1) * 20 + 16}px`;
+  `${((levelRank.value.get(level) ?? 1) - 1) * 20 + 12}px`;
 </script>
 
 <template>
-  <div class="h-11 pl-2 flex items-center gap-1 border-b border-purple-300">
-    <Doc class="size-4" />
-    <span class="truncate">{{ editorStore.title || "未命名标题" }}</span>
-  </div>
-  <div class="h-2"></div>
   <div
-    v-if="editorStore.toc.length === 0"
-    class="h-11 flex items-center justify-center text-xs text-neutral-400"
+    class="h-11 shrink-0 flex items-center pl-3 pr-2 gap-1.5 border-b border-gray-100"
   >
-    空空如也
+    <Doc class="size-4 shrink-0 text-neutral-400" />
+    <span class="flex-1 min-w-0 truncate">
+      {{ editorStore.title || "未命名标题" }}
+    </span>
   </div>
-  <a
-    :href="`#${item.id}`"
-    v-for="item in editorStore.toc"
-    class="block cursor-pointer py-0.5"
-    :style="{ paddingLeft: indentOf(item.originalLevel) }"
-    :class="item.isActive ? 'text-purple-700' : ''"
-  >
-    {{ item.textContent }}
-  </a>
+  <div class="flex-1 min-h-0 overflow-y-auto px-2 py-2">
+    <div
+      v-if="editorStore.toc.length === 0"
+      class="h-11 flex items-center justify-center text-xs text-neutral-400"
+    >
+      空空如也
+    </div>
+    <a
+      :href="`#${item.id}`"
+      v-for="item in editorStore.toc"
+      class="block cursor-pointer rounded-md py-1 pr-2 truncate text-sm hover:bg-gray-100"
+      :style="{ paddingLeft: indentOf(item.originalLevel) }"
+      :class="item.isActive ? 'bg-purple-100 text-purple-700' : ''"
+    >
+      {{ item.textContent }}
+    </a>
+  </div>
 </template>

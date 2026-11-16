@@ -152,16 +152,18 @@ const handleClickBtn = () => {
 </script>
 
 <template>
-  <div class="h-11 flex items-center pl-2 gap-1 border-b border-gray-100">
-    <Archive class="size-4" />{{ name }}
-    <div class="flex-1"></div>
+  <div
+    class="h-11 shrink-0 flex items-center pl-3 pr-2 gap-1.5 border-b border-gray-100"
+  >
+    <Archive class="size-4 shrink-0 text-neutral-400" />
+    <span class="flex-1 min-w-0 truncate">{{ name }}</span>
     <div
       ref="target"
-      class="size-7 grid place-items-center rounded-md cursor-pointer"
-      :class="show ? 'bg-gray-100' : 'bg-gray-50 hover:bg-gray-100'"
+      class="size-7 shrink-0 grid place-items-center rounded-md cursor-pointer text-neutral-500 hover:text-neutral-700"
+      :class="show ? 'bg-gray-100' : 'hover:bg-gray-100'"
       @click="handleClickBtn"
     >
-      <Add class="size-5" />
+      <Add class="size-4" />
     </div>
   </div>
   <div
@@ -175,19 +177,18 @@ const handleClickBtn = () => {
       class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md hover:bg-gray-100"
       @click="i.action()"
     >
-      <component :is="i.icon" class="size-5" />
+      <component :is="i.icon" class="size-4" />
       <span>{{ i.text }}</span>
     </div>
   </div>
-  <div class="h-2"></div>
-  <Drag
-    :list="docEntries"
-    ghost-class="ghost1"
-    :animation="200"
-    class="pl-2"
-    item-key="id"
-    @end="dragEnd"
-  >
+  <div class="flex-1 min-h-0 overflow-y-auto px-2 py-2">
+    <Drag
+      :list="docEntries"
+      ghost-class="ghost1"
+      :animation="200"
+      item-key="id"
+      @end="dragEnd"
+    >
     <template #item="{ element }: { element: DocEntry }">
       <DocEntryItem
         :entry="element"
@@ -199,5 +200,6 @@ const handleClickBtn = () => {
         @remove="removeEntry(element)"
       />
     </template>
-  </Drag>
+    </Drag>
+  </div>
 </template>

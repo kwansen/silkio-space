@@ -46,11 +46,7 @@ export const useEditorStore = defineStore("editor", () => {
   const oldContent = ref("");
   // 上次落库的标题快照，用于跳过无变化的保存
   const oldTitle = ref("");
-  // 文档切换中：为 true 时用遮罩盖住编辑区，避免切换间隙残留上一个文档造成闪烁
-  const switching = ref(false);
-  const setSwitching = (v: boolean) => {
-    switching.value = v;
-  };
+  // 文档切换中标记已废弃：富文本切换走原地 setContent，无需遮罩
   // 最近一次落库的富文本纯文本快照（saveContent 时顺手记录），
   // 供 AI 面板取当前文档正文作上下文，避免解析 content JSON
   const plainText = ref("");
@@ -114,8 +110,6 @@ export const useEditorStore = defineStore("editor", () => {
     setPlainText,
     oldContent,
     oldTitle,
-    switching,
-    setSwitching,
     setDoc,
     name,
     setName,

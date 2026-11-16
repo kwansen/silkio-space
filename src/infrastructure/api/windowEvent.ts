@@ -8,7 +8,8 @@ import { emit, emitTo, listen } from "@tauri-apps/api/event";
 // UI 指令：editor 窗口 "open" 事件载荷（发送与监听共用同一类型，避免两端各自声明漂移）
 export type EditorOpenPayload = { type: "doc" | "archive"; id: string };
 
-// UI 指令：通知 editor 窗口打开指定类型与 id 的文档
+// UI 指令：通知 editor 窗口打开指定类型与 id 的文档。
+// editor 侧的"销毁渲染再重建"见 EditorView 的打开事件处理
 export const notifyEditorOpen = (type: EditorOpenPayload["type"], id: string) => {
   return emitTo("editor", "open", { type, id } satisfies EditorOpenPayload);
 };

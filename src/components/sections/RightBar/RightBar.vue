@@ -41,24 +41,25 @@ const onKeydown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="w-65 h-full px-2 pb-2 flex flex-col gap-1">
-    <!-- 头部 -->
-    <div class="h-9 flex items-center px-2 rounded-md hover:bg-gray-100">
-      <Sparkles class="size-4 text-violet-500" />
-      <div class="ml-1.5">AI 助手</div>
-      <div class="flex-1"></div>
-      <button
-        class="text-xs text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
-        :disabled="busy || !messages.length"
-        @click="clear"
-      >
-        清空
-      </button>
-    </div>
+  <div class="w-65 h-full flex">
+    <div class="flex-1 min-h-0 bg-white rounded-lg overflow-hidden flex flex-col">
+      <!-- 头部 -->
+      <div class="h-10 shrink-0 flex items-center px-3 gap-1.5">
+        <Sparkles class="size-4 text-violet-500" />
+        <div class="font-medium">AI 助手</div>
+        <div class="flex-1"></div>
+        <button
+          class="text-xs text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="busy || !messages.length"
+          @click="clear"
+        >
+          清空
+        </button>
+      </div>
 
-    <!-- 消息流 -->
-    <div ref="chatBox" class="flex-1 min-h-0 overflow-y-auto pr-0.5">
-      <div class="flex flex-col gap-3 p-1">
+      <!-- 消息流 -->
+      <div ref="chatBox" class="flex-1 min-h-0 overflow-y-auto px-2.5">
+        <div class="flex flex-col gap-3 py-2">
         <div
           v-if="!messages.length && !pending"
           class="mt-8 text-center text-xs leading-[1.9] text-gray-400"
@@ -133,30 +134,56 @@ const onKeydown = (event: KeyboardEvent) => {
     </div>
 
     <!-- 输入区 -->
-    <div class="flex items-center gap-1.5">
-      <input
-        v-model="prompt"
-        placeholder="输入问题…"
-        autocomplete="off"
-        class="h-9 min-w-0 flex-1 rounded-lg bg-gray-50 px-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:shadow-[inset_0_0_0_1px_#ddd6fe]"
-        @keydown="onKeydown"
-      />
-      <button
-        class="size-9 shrink-0 grid place-items-center rounded-lg text-white hover:bg-violet-600 disabled:cursor-not-allowed disabled:opacity-50"
-        :class="busy ? 'bg-gray-900 hover:bg-gray-700' : 'bg-violet-500'"
-        :disabled="!busy && !prompt.trim()"
-        :title="busy ? '停止生成' : '发送'"
-        @click="busy ? stop() : send()"
-      >
-        <Stop v-if="busy" class="size-5" />
-        <ArrowUp v-else class="size-5" />
-      </button>
+      <div class="shrink-0 p-2 pt-1 flex items-center gap-1.5">
+        <input
+          v-model="prompt"
+          placeholder="输入问题…"
+          autocomplete="off"
+          class="h-9 min-w-0 flex-1 rounded-lg bg-gray-50 px-3 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:shadow-[inset_0_0_0_1px_#ddd6fe]"
+          @keydown="onKeydown"
+        />
+        <button
+          class="size-9 shrink-0 grid place-items-center rounded-lg text-white hover:bg-violet-600 disabled:cursor-not-allowed disabled:opacity-50"
+          :class="busy ? 'bg-gray-900 hover:bg-gray-700' : 'bg-violet-500'"
+          :disabled="!busy && !prompt.trim()"
+          :title="busy ? '停止生成' : '发送'"
+          @click="busy ? stop() : send()"
+        >
+          <Stop v-if="busy" class="size-4" />
+          <ArrowUp v-else class="size-4" />
+        </button>
+      </div>
     </div>
   </div>
 </template>
 
 <!-- v-html 内容不能用 scoped 选择器命中，此处用 :deep 穿透 -->
 <style scoped>
+/* 折叠块去掉浏览器默认的黑色三角标记，换成细线条小箭头 */
+:deep(summary) {
+  list-style: none;
+}
+:deep(summary::-webkit-details-marker) {
+  display: none;
+}
+:deep(summary)::after {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin-left: auto;
+  border-right: 1.2px solid currentColor;
+  border-bottom: 1.2px solid currentColor;
+  transform: rotate(-45deg) translateY(-1px);
+  transition: transform 0.15s;
+}
+:deep(details[open] summary)::after {
+  transform: rotate(45deg) translateY(-1px);
+}
+:deep(summary) {
+  display: flex;
+  align-items: center;
+}
+
 :deep(.ai-p) {
   margin: 0.25rem 0;
   white-space: pre-wrap;

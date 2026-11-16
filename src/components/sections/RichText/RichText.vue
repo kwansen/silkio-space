@@ -142,6 +142,28 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   editor.value?.destroy();
 });
+
+// 富文本→富文本的文档切换不重挂载组件：原地 setContent 换内容，
+// 旧内容保持显示直到新内容替换完成，避免销毁重建带来的白屏闪烁
+watch(
+  () => props.content,
+  async (c) => {
+    const ed = editor.value;
+    if (!ed || c === content.value) return;
+    content.value = c;
+    let v;
+    try {
+      v = JSON.parse(c);
+    } catch {
+      v = c;
+    }
+    // emitUpdate: false 换内容不触发保存，避免把新文档内容当成编辑写回
+    ed.commands.setContent(v, { emitUpdate: false });
+    await nextTick();
+    await new Promise((r) => requestAnimationFrame(r));
+    emit("onReady");
+  },
+);
 </script>
 
 <template>

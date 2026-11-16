@@ -100,23 +100,22 @@ const flushPendingSaves = async (): Promise<void> => {
 
 // 统一打开/切换入口：先落库旧文档挂起编辑 → 取数 → 序号校验 → setDoc。
 // 快速连续打开时，旧的异步取数结果会被序号守卫丢弃，只有最后一次生效。
-// 进入即同步置位 switching 遮住编辑区（先于任何 await），避免切换间隙
-// 残留上一个文档造成闪烁；遮罩由编辑器就绪信号（showWindow）或空态兜底解除
+// 富文本→富文本的切换走 RichText 原地 setContent（编辑器保持挂载），
+// 旧内容保持到新内容替换完成，无闪烁；类型变化时组件随 v-if 切换重挂载
 const openDocById = async (docId: string | null): Promise<void> => {
   const seq = ++switchSeq;
   const store = useEditorStore();
-  store.setSwitching(true);
   try {
-    await flushPendingSaves();
-    const doc = docId ? await useDocSvc().getById(docId) : null;
+    // 落库（旧文档挂起编辑）与取数（新文档）互不依赖，并行执行缩短切换耗时
+    const [doc] = await Promise.all([
+      docId ? useDocSvc().getById(docId) : Promise.resolve(null),
+      flushPendingSaves(),
+    ]);
     if (seq !== switchSeq) return;
     // 换了文档才重置 AI 会话（对话跟随文档）；重复打开同一文档不清空
     if (docId !== store.id) useAiAction().resetConversation();
     store.setDoc(doc);
-    // 空文档 / 无 docType 没有编辑器挂载、不会有就绪信号，直接解除遮罩
-    if (!doc || !doc.doc_type) store.setSwitching(false);
   } catch (e) {
-    if (seq === switchSeq) store.setSwitching(false);
     console.error(e);
   }
 };

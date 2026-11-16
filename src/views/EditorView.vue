@@ -7,7 +7,11 @@ import RichText from "@/components/sections/RichText/RichText.vue";
 import RightBar from "@/components/sections/RightBar/RightBar.vue";
 import { useEditorAction } from "@/actions/editorAction";
 import { useFdSvc } from "@/services/folder";
-import { notifyDocChanged, onEditorOpen } from "@/infrastructure/api/windowEvent";
+import {
+  notifyDocChanged,
+  onEditorOpen,
+  type EditorOpenPayload,
+} from "@/infrastructure/api/windowEvent";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { computed, nextTick, onMounted, onUnmounted } from "vue";
@@ -52,39 +56,52 @@ const reconcileStale = async () => {
   }
 };
 
-onMounted(async () => {
-  stopOnOpen = await onEditorOpen(async (data) => {
-    const t = data.type;
-      if (t === "doc") {
-        editorStore.setEditorMode("doc");
-        uiStore.setLeftbarOption("toc");
-        // 切到独立文档视图必须清掉归档态，否则对账逻辑仍挂在旧归档上，
-        // 会把不在该归档目录中的当前文档误判为失效并回切到目录首项
-        setArchiveId(undefined);
-        setDocEntries([]);
-        name.value = "";
-        await openDocById(data.id);
-        // viewed_at 变化由本窗口显示后补发广播（见 showWindow）
-        pendingDocChanged = true;
-      } else if (t === "archive") {
-        editorStore.setEditorMode("archive");
-        uiStore.setLeftbarOption("docEntries");
-        setArchiveId(data.id);
-        const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
-        try {
-          name.value = await fdSvc.getArchiveName({ id: data.id });
-        } catch (e) {
-          console.error(e);
-        }
+// 执行一次打开（doc / archive）：事件触发与启动兜底共用
+const runOpen = async (data: EditorOpenPayload) => {
+  const t = data.type;
+  if (t === "doc") {
+    editorStore.setEditorMode("doc");
+    uiStore.setLeftbarOption("toc");
+    // 切到独立文档视图必须清掉归档态，否则对账逻辑仍挂在旧归档上，
+    // 会把不在该归档目录中的当前文档误判为失效并回切到目录首项
+    setArchiveId(undefined);
+    setDocEntries([]);
+    name.value = "";
+    await openDocById(data.id);
+    // viewed_at 变化由本窗口显示后补发广播（见 showWindow）
+    pendingDocChanged = true;
+  } else if (t === "archive") {
+    editorStore.setEditorMode("archive");
+    uiStore.setLeftbarOption("docEntries");
+    setArchiveId(data.id);
+    const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });
+    try {
+      name.value = await fdSvc.getArchiveName({ id: data.id });
+    } catch (e) {
+      console.error(e);
+    }
 
-        setDocEntries(docEntries);
-        await openDocById(docEntries[0]?.id ?? null);
-        // 空归档没有富文本视图挂载、不会有就绪信号，渲染完成后直接显示窗口
-        if (!editorStore.id) {
-          await nextTick();
-          showWindow();
-        }
-      }
+    setDocEntries(docEntries);
+    await openDocById(docEntries[0]?.id ?? null);
+    // 空归档没有富文本视图挂载、不会有就绪信号，渲染完成后直接显示窗口
+    if (!editorStore.id) {
+      await nextTick();
+      showWindow();
+    }
+  }
+};
+
+onMounted(async () => {
+  // 跨窗口打开事件 = 销毁渲染再重建：
+  // 1) setDoc(null) 清空文档态，编辑区所有渲染器（tiptap/画布）随 v-if
+  //    立即卸载，回到中性空态——配合屏幕外驻留（合成持续进行），空态帧
+  //    会真实提交进交换链，旧文档画面被彻底替换，不残留旧数据；
+  // 2) runOpen 用新文档重建渲染，就绪后才显示窗口。
+  // JS 运行时、store、事件监听全部保留；挂起的旧编辑由 openDocById
+  // 内部的 flushPendingSaves 落库，不受清空影响（pending 快照自带 docId）
+  stopOnOpen = await onEditorOpen(async (data) => {
+    editorStore.setDoc(null);
+    await runOpen(data);
   });
 
   // 数据事实按域订阅，收到后与 DB 对账（不盲改当前文档，避免打断编辑）
@@ -114,11 +131,9 @@ onMounted(async () => {
   });
 });
 
-// 显示窗口：由编辑器的就绪信号或空态渲染完成后调用；
-// 就绪信号意味着新文档已完成绘制，此时才解除切换遮罩
+// 显示窗口：由编辑器的就绪信号或空态渲染完成后调用
 // viewed_at 等待同步广播在此补发，保证 main 刷新发生在 editor 已显示之后
 const showWindow = () => {
-  editorStore.setSwitching(false);
   getCurrentWindow().unminimize();
   getCurrentWindow().show();
   getCurrentWindow().setFocus();
@@ -142,20 +157,18 @@ onUnmounted(() => {
   >
     空空如也
   </div>
-  <div class="relative w-full h-full flex" v-else>
-    <!-- 切换遮罩：盖住整个视图（含 LeftBar 的旧目录/旧 Toc 残留），
-         就绪后由 showWindow 解除 -->
-    <div
-      v-if="editorStore.switching"
-      class="absolute inset-0 z-20 bg-white"
-    ></div>
-    <LeftBar v-if="leftbarVisible" v-model="docEntries" />
-    <div class="flex-1 min-w-[480px] px-2 pb-2">
+  <!-- 行容器统一控制四周与列间留白（8px），各卡片不再自带边距，避免叠加 -->
+  <div class="relative w-full h-full flex gap-2 px-2 pb-2" v-else>
+    <!-- 左侧栏：与编辑区一致的白色圆角卡片 -->
+    <div v-if="leftbarVisible" class="h-full">
+      <LeftBar v-model="docEntries" />
+    </div>
+    <div class="flex-1 min-w-[480px]">
       <div class="relative w-full h-full bg-white rounded-lg overflow-hidden">
+        <!-- 富文本不按 key 重挂载：同类型切换由组件内原地 setContent 完成 -->
         <RichText
           v-if="docType === 'richText'"
           :content="content"
-          :key="key"
           @on-ready="showWindow"
           @on-content-save="saveContent"
         />
