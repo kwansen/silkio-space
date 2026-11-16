@@ -5,24 +5,15 @@
 import AIMarkdown from "./AIMarkdown.vue";
 import { useAiAction } from "@/actions/aiAction";
 import { useAiStore } from "@/stores/aiStore";
-import { useUiStore } from "@/stores/uiStore";
 import { storeToRefs } from "pinia";
 import { computed, nextTick, useTemplateRef, watch } from "vue";
-import Setting from "@/components/icons/Setting.vue";
 import Sparkles from "@/components/icons/Sparkles.vue";
 import Stop from "@/components/icons/Stop.vue";
 import ArrowUp from "@/components/icons/ArrowUp.vue";
 
 const aiStore = useAiStore();
-const uiStore = useUiStore();
 const { messages, pending, busy, prompt, ready } = storeToRefs(aiStore);
 const { send, stop, clear } = useAiAction();
-
-// 齿轮直达设置对话框的 AI 服务页签
-const openSettings = () => {
-  uiStore.setSettingNav("ai");
-  uiStore.setSettingDialogShow(true);
-};
 
 const pendingStatus = computed(() => {
   const p = pending.value;
@@ -63,14 +54,6 @@ const onKeydown = (event: KeyboardEvent) => {
       >
         清空
       </button>
-      <button
-        class="size-7 grid place-items-center rounded-md hover:bg-gray-200"
-        :class="ready ? 'text-violet-500' : 'text-gray-400 hover:text-gray-600'"
-        title="AI 服务配置"
-        @click="openSettings"
-      >
-        <Setting class="size-5" />
-      </button>
     </div>
 
     <!-- 消息流 -->
@@ -81,9 +64,7 @@ const onKeydown = (event: KeyboardEvent) => {
           class="mt-8 text-center text-xs leading-[1.9] text-gray-400"
         >
           询问当前文档内容，或输入任意问题
-          <template v-if="!ready">
-            <br />尚未配置 AI 服务，点击右上角齿轮进行配置
-          </template>
+          <br />尚未配置 AI 服务，请在主页窗口的设置中配置
         </div>
 
         <div v-for="m in messages" :key="m.id">

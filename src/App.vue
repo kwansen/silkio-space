@@ -45,9 +45,9 @@ onUnmounted(() => {
       <ToolView v-else-if="label === 'tool'" />
       <!-- <InsertView v-else-if="label === 'insert'" /> -->
     </div>
-    <!-- 设置对话框：main/editor 两窗口共用（AI 配置在 editor 窗口的 AI 面板中触达） -->
+    <!-- 设置对话框：仅 main 窗口提供（editor 的 AI 面板不再有设置入口） -->
     <SettingDialog
-      v-if="uiStore.showSettingDialog && (label === 'main' || label === 'editor')"
+      v-if="uiStore.showSettingDialog && label === 'main'"
     />
   </div>
 </template>

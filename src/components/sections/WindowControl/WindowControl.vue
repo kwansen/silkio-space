@@ -69,8 +69,9 @@ defineProps<Props>();
       <SideMian v-if="uiStore.showRightbar" class="size-5 rotate-180" />
       <Side v-else class="size-5" />
     </div>
+    <!-- 设置入口仅保留在 main 窗口；editor 窗口经 AI 面板齿轮触达 AI 配置 -->
     <div
-      v-if="label === 'main' || label === 'editor'"
+      v-if="label === 'main'"
       class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
       @click="uiStore.setSettingDialogShow(true)"
     >
