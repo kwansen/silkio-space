@@ -84,7 +84,7 @@ const handleClickBtn = () => {
 </script>
 
 <template>
-  <div class="flex items-center h-16 px-4.5 gap-4 border-b border-purple-300">
+  <div class="flex items-center h-16 px-5 gap-4 border-b border-purple-300">
     <div
       v-for="i in list"
       class="select-none relative cursor-pointer"
@@ -106,7 +106,7 @@ const handleClickBtn = () => {
       :class="show ? 'bg-gray-200' : 'bg-gray-100 hover:bg-gray-200'"
       @click="handleClickBtn"
     >
-      <Add />
+      <Add class="size-4" />
     </div>
   </div>
   <div

@@ -136,7 +136,7 @@ const btnList: SelfBtn[] = [
 
 <template>
   <div
-    class="z-9 absolute left-1/2 -translate-x-1/2 w-fit flex items-center gap-2 p-2 bg-white rounded-lg shadow-lg"
+    class="z-9 absolute left-1/2 -translate-x-1/2 w-fit flex items-center gap-2 p-2 bg-white rounded-lg shadow-lg text-neutral-500"
     :style="{ top: `${y}px` }"
   >
     <div
@@ -147,7 +147,7 @@ const btnList: SelfBtn[] = [
       :title="btn.name"
       @click="btn.action()"
     >
-      <component :is="btn.icon" class="size-5" />
+      <component :is="btn.icon" class="size-4" />
     </div>
   </div>
 </template>

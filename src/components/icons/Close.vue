@@ -4,11 +4,14 @@
     width="1em"
     height="1em"
     viewBox="0 0 24 24"
+    fill="none"
   >
     <path d="M0 0h24v24H0z" fill="none" />
     <path
-      fill="currentColor"
-      d="m12 13.4l-4.9 4.9q-.275.275-.7.275t-.7-.275t-.275-.7t.275-.7l4.9-4.9l-4.9-4.9q-.275-.275-.275-.7t.275-.7t.7-.275t.7.275l4.9 4.9l4.9-4.9q.275-.275.7-.275t.7.275t.275.7t-.275.7L13.4 12l4.9 4.9q.275.275.275.7t-.275.7t-.7.275t-.7-.275z"
+      d="M6 6l12 12M18 6 6 18"
+      stroke="currentColor"
+      stroke-width="1.5"
+      stroke-linecap="round"
     />
   </svg>
 </template>

@@ -114,10 +114,11 @@ const action = useArchiveAction();
         <div class="truncate">{{ name }}</div>
       </div>
 
-      <!-- 数据 -->
+      <!-- 数据：悬浮出现"更多"按钮时隐藏，避免文字被按钮底色遮挡 -->
       <div
         v-if="meta"
-        class="whitespace-nowrap pl-4 text-right text-xs text-neutral-400 flex items-center"
+        class="whitespace-nowrap pl-4 text-right text-xs text-neutral-400 flex items-center transition-opacity"
+        :class="hovered || openedKey === itemKey ? 'opacity-0' : ''"
       >
         {{ meta }}
       </div>
@@ -132,7 +133,7 @@ const action = useArchiveAction();
           :class="openedKey === itemKey ? 'bg-gray-200' : 'hover:bg-gray-200'"
           @click.stop="handleClickBtn"
         >
-          <More />
+          <More class="size-4" />
         </div>
       </div>
       <!-- popover -->

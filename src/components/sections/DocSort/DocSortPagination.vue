@@ -14,34 +14,34 @@ const { currentPage, totalPages } = storeToRefs(store);
     <!-- 上一页 -->
     <div
       @click="store.goSortedPrev"
-      class="w-9 h-9 rounded-md cursor-default grid place-items-center"
+      class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[currentPage <= 1 ? 'opacity-40' : 'hover:bg-gray-100']"
     >
-      <ArrowLeft />
+      <ArrowLeft class="size-4" />
     </div>
 
     <div
       v-for="page in totalPages"
       @click="store.goToSortedPage(page)"
-      class="w-9 h-9 rounded-md cursor-default grid place-items-center"
+      class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[
         page === store.currentPage ? 'bg-purple-200' : 'hover:bg-gray-100',
       ]"
     >
-      {{ page === -1 ? "..." : page }}
+      {{ page }}
     </div>
 
     <!-- 下一页 -->
     <div
       @click="store.goSortedNext"
-      class="w-9 h-9 rounded-md cursor-default grid place-items-center"
+      class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[
         store.currentPage >= store.totalPages
           ? 'opacity-40'
           : 'hover:bg-gray-100',
       ]"
     >
-      <ArrowRight />
+      <ArrowRight class="size-4" />
     </div>
   </div>
 </template>

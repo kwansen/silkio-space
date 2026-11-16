@@ -21,16 +21,16 @@ const pages = computed(() =>
     <!-- 上一页 -->
     <div
       @click="prevPage"
-      class="w-9 h-9 rounded-md cursor-default grid place-items-center"
+      class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[store.currentPage <= 1 ? 'opacity-40' : 'hover:bg-gray-100']"
     >
-      <ArrowLeft />
+      <ArrowLeft class="size-4" />
     </div>
 
     <div
       v-for="page in pages"
       @click="goToPage(page)"
-      class="w-9 h-9 rounded-md cursor-default grid place-items-center"
+      class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[
         page === store.currentPage ? 'bg-purple-200' : 'hover:bg-gray-100',
       ]"
@@ -41,14 +41,14 @@ const pages = computed(() =>
     <!-- 下一页 -->
     <div
       @click="nextPage"
-      class="w-9 h-9 rounded-md cursor-default grid place-items-center"
+      class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[
         store.currentPage >= store.totalPages
           ? 'opacity-40'
           : 'hover:bg-gray-100',
       ]"
     >
-      <ArrowRight />
+      <ArrowRight class="size-4" />
     </div>
   </div>
 </template>

@@ -67,7 +67,7 @@ onUnmounted(() => {
     <div class="w-10 h-full">
       <DocTabs />
     </div>
-    <div class="flex-1 pr-2 pb-2">
+    <div class="flex-1 p-2">
       <ScrollArea class="bg-gray-50 rounded-lg">
         <div class="py-14 w-full max-w-176 mx-auto">
           <div class="bg-white rounded-2xl overflow-hidden">

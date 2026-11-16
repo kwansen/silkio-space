@@ -62,9 +62,9 @@ defineProps<Props>();
       <!-- 图标反映实际可见状态（含窄窗口自动隐藏） -->
       <SideMian
         v-if="uiStore.showLeftbar && uiStore.leftbarFits"
-        class="size-5"
+        class="size-4"
       />
-      <Side v-else class="size-5 rotate-180" />
+      <Side v-else class="size-4 rotate-180" />
     </div>
     <div
       v-if="label === 'editor'"
@@ -74,9 +74,9 @@ defineProps<Props>();
     >
       <SideMian
         v-if="uiStore.showRightbar && uiStore.rightbarFits"
-        class="size-5 rotate-180"
+        class="size-4 rotate-180"
       />
-      <Side v-else class="size-5" />
+      <Side v-else class="size-4" />
     </div>
     <!-- 设置入口仅保留在 main 窗口；editor 窗口经 AI 面板齿轮触达 AI 配置 -->
     <div
@@ -84,7 +84,7 @@ defineProps<Props>();
       class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
       @click="uiStore.setSettingDialogShow(true)"
     >
-      <Setting class="size-5" />
+      <Setting class="size-4" />
     </div>
     <MinimizeBtn />
     <MaximizeBtn />

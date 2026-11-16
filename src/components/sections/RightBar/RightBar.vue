@@ -12,7 +12,7 @@ import Stop from "@/components/icons/Stop.vue";
 import ArrowUp from "@/components/icons/ArrowUp.vue";
 
 const aiStore = useAiStore();
-const { messages, pending, busy, prompt, ready } = storeToRefs(aiStore);
+const { messages, pending, busy, prompt } = storeToRefs(aiStore);
 const { send, stop, clear } = useAiAction();
 
 const pendingStatus = computed(() => {

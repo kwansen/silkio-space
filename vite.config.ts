@@ -5,10 +5,14 @@ import tailwindcss from '@tailwindcss/vite';
 
 const host = process.env.TAURI_DEV_HOST;
 
-// https://vite.dev/config/
+// main.ts 使用顶层 await（initDb 后再挂载），默认 target（chrome87 等）不支持，
+// Tauri 运行于系统 WebView（WebView2/WKWebView），提升到 es2022 即可
 export default defineConfig(async () => ({
 
   plugins: [vue(), tailwindcss()],
+  build: {
+    target: "es2022",
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

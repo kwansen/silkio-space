@@ -28,7 +28,7 @@ onMounted(async () => {
     class="h-full aspect-square grid place-items-center hover:bg-gray-100"
     @click="handleClick"
   >
-    <Maximize v-if="isMax" class="size-5" />
-    <UnMaximize v-else class="size-5" />
+    <Maximize v-if="isMax" class="size-4" />
+    <UnMaximize v-else class="size-4" />
   </div>
 </template>

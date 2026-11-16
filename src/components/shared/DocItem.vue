@@ -114,7 +114,7 @@ const getClass = () => {
     <!-- 图标 -->
     <div class="w-full h-full grid place-items-center">
       <div class="h-7 w-7 bg-gray-50 rounded-md grid place-items-center">
-        <component :is="icon" class="size-5 text-neutral-400" />
+        <component :is="icon" class="size-4 text-neutral-400" />
       </div>
     </div>
 
@@ -126,10 +126,13 @@ const getClass = () => {
       </div>
     </div>
 
-    <!-- 数据 -->
+    <!-- 数据：悬浮出现"更多"按钮时隐藏，避免文字被按钮底色遮挡 -->
     <div
       v-if="meta"
-      class="whitespace-nowrap px-4 text-right text-xs text-neutral-400 flex items-center"
+      class="whitespace-nowrap px-4 text-right text-xs text-neutral-400 flex items-center transition-opacity"
+      :class="
+        hoverKey === itemKey || openedKey === itemKey ? 'opacity-0' : ''
+      "
     >
       {{ meta }}
     </div>
@@ -145,7 +148,7 @@ const getClass = () => {
         :class="openedKey === itemKey ? 'bg-gray-200' : 'hover:bg-gray-200'"
         @click.stop="handleClickBtn"
       >
-        <More />
+        <More class="size-4" />
       </div>
     </div>
   </div>

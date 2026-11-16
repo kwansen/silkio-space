@@ -44,7 +44,7 @@ const handleClick = (option: ArchiveSortOption) => {
       @click="setShow(true)"
       class="size-7 bg-gray-100 cursor-pointer grid place-items-center rounded-md hover:bg-gray-200"
     >
-      <Add />
+      <Add class="size-4" />
     </div>
   </div>
 </template>
