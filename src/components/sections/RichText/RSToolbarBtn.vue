@@ -34,7 +34,7 @@ defineProps<Prop>();
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
   >
-    <component :is="b.icon" class="size-4" />
+    <component :is="b.icon" class="size-6" />
     <!-- <Teleport to="body"> -->
     <div
       :style="floatingStyles"

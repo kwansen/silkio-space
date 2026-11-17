@@ -7,8 +7,12 @@
   >
     <path d="M0 0h24v24H0z" fill="none" />
     <path
-      fill="currentColor"
-      d="M13.04 10q-.6.375-1.14.9c-.33.34-.63.71-.87 1.1H8v-1.5c0-.28.22-.5.5-.5zM20 8H2V2h18zm-2-4H4v2h14zM5 18V9H3v11h8.82a6.4 6.4 0 0 1-1.32-2zm18.39 3L22 22.39l-3.12-3.07c-.69.43-1.51.68-2.38.68c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5s4.5 2 4.5 4.5c0 .88-.25 1.71-.69 2.4zM19 15.5a2.5 2.5 0 0 0-5 0a2.5 2.5 0 0 0 5 0"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M3 3h18v5H3zM5 8v10a1 1 0 0 0 1 1h5.5M9 12.5h4M20.5 15.5a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0M19.4 18.9l2.5 2.5"
     />
   </svg>
 </template>

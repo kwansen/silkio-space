@@ -4,11 +4,16 @@
     width="1em"
     height="1em"
     viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1"
+    stroke-linecap="round"
+    stroke-linejoin="round"
   >
-    <path d="M0 0h24v24H0z" fill="none" />
-    <path
-      fill="currentColor"
-      d="M16 20q-.425 0-.712-.288T15 19v-1h-3q-.425 0-.712-.288T11 17v-4H9v1q0 .425-.288.713T8 15H3q-.425 0-.712-.288T2 14v-4q0-.425.288-.712T3 9h5q.425 0 .713.288T9 10v1h2V7q0-.425.288-.712T12 6h3V5q0-.425.288-.712T16 4h5q.425 0 .713.288T22 5v4q0 .425-.288.713T21 10h-5q-.425 0-.712-.288T15 9V8h-2v8h2v-1q0-.425.288-.712T16 14h5q.425 0 .713.288T22 15v4q0 .425-.288.713T21 20zm1-2h3v-2h-3zM4 13h3v-2H4zm13-5h3V6h-3zm0 10v-2zM7 13v-2zm10-5V6z"
-    />
+    <rect x="2.5" y="9.5" width="6" height="5" rx="1" />
+    <rect x="15.5" y="4.5" width="6" height="5" rx="1" />
+    <rect x="15.5" y="14.5" width="6" height="5" rx="1" />
+    <path d="M8.5 12H12V7h3.5" />
+    <path d="M12 12v5h3.5" />
   </svg>
 </template>

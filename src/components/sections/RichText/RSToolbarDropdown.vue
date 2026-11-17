@@ -37,18 +37,18 @@ onClickOutside(
     :class="show ? 'bg-gray-200' : 'hover:bg-gray-200'"
     @click="show = !show"
   >
-    <component :is="icon" class="size-4" />
-    <ArrowDown class="size-3.5 ml-0.5" />
+    <component :is="icon" class="size-6" />
+    <ArrowDown class="size-3.5" />
   </div>
   <div
     v-if="show"
     ref="floating"
-    class="rounded-lg shadow-2xl bg-white px-1 py-2 select-none"
+    class="rounded-lg shadow-md bg-white px-1 py-1 select-none"
     :style="floatingStyles"
   >
     <div
       v-for="b in buttons"
-      class="px-4 py-2 flex items-center"
+      class="px-4 py-1 flex items-center rounded-md"
       :class="[
         b.active()
           ? 'bg-purple-200 text-purple-700'
@@ -58,7 +58,7 @@ onClickOutside(
       ]"
       @click="!b.disabled() && (b.action(), (show = false))"
     >
-      <component :is="b.icon" class="size-4 mr-2" />
+      <component :is="b.icon" class="size-6 mr-2" />
       <span class="text-xs">{{ b.name }}</span>
       <span class="text-[10px] ml-auto pl-6">{{ b.shortcut }}</span>
     </div>

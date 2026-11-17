@@ -14,12 +14,12 @@
       height="11.5"
       rx="1.5"
       stroke="currentColor"
-      stroke-width="1.5"
+      stroke-width="0.6"
     />
     <path
       d="M8.5 4.75H17a2.25 2.25 0 0 1 2.25 2.25v8.5"
       stroke="currentColor"
-      stroke-width="1.5"
+      stroke-width="0.6"
       stroke-linecap="round"
     />
   </svg>

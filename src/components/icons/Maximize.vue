@@ -14,7 +14,7 @@
       height="14.5"
       rx="1.5"
       stroke="currentColor"
-      stroke-width="1.5"
+      stroke-width="0.6"
     />
   </svg>
 </template>

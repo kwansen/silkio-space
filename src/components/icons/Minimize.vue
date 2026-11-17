@@ -10,7 +10,7 @@
       fill="none"
       stroke="currentColor"
       stroke-linecap="round"
-      stroke-width="1.5"
+      stroke-width="0.6"
       d="M5 12h14"
     />
   </svg>

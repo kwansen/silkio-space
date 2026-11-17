@@ -295,7 +295,7 @@ onBeforeUnmount(() => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="1.5"
+          stroke-width="0.6"
           stroke-linecap="round"
           class="size-4"
         >
@@ -333,7 +333,7 @@ onBeforeUnmount(() => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="1.5"
+          stroke-width="0.6"
           stroke-linecap="round"
           stroke-linejoin="round"
           class="size-4"

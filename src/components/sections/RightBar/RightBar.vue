@@ -41,7 +41,7 @@ const onKeydown = (event: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="w-65 h-full flex">
+  <div class="w-75 h-full flex">
     <div class="flex-1 min-h-0 bg-white rounded-lg overflow-hidden flex flex-col">
       <!-- 头部 -->
       <div class="h-10 shrink-0 flex items-center px-3 gap-1.5">

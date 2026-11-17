@@ -330,9 +330,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full w-full select-none">
+  <!-- 画布铺满整个区域，工具条悬浮其上（半透明毛玻璃圆角卡片），不再占独立一行 -->
+  <div class="relative h-full w-full select-none">
+    <div class="absolute inset-0">
+      <canvas ref="canvasRef" class="block h-full w-full bg-white"></canvas>
+    </div>
     <div
-      class="flex items-center gap-0.5 px-2 py-1 border-b border-gray-100 text-gray-700"
+      class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-0.5 px-2 py-1 bg-white/85 backdrop-blur-md rounded-lg shadow-lg text-gray-700"
     >
       <button
         class="size-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
@@ -442,7 +446,7 @@ onBeforeUnmount(() => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="1.5"
+          stroke-width="0.6"
           stroke-linecap="round"
           class="size-4"
         >
@@ -469,7 +473,7 @@ onBeforeUnmount(() => {
         <span class="text-sm leading-none">+</span>
       </button>
 
-      <div class="flex-1"></div>
+      <div class="w-px h-5 bg-gray-200 mx-1.5"></div>
 
       <button
         class="h-7 px-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-gray-200 text-xs"
@@ -480,7 +484,7 @@ onBeforeUnmount(() => {
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="1.5"
+          stroke-width="0.6"
           stroke-linecap="round"
           stroke-linejoin="round"
           class="size-4"
@@ -491,10 +495,6 @@ onBeforeUnmount(() => {
         </svg>
         导出
       </button>
-    </div>
-
-    <div class="flex-1 min-h-0">
-      <canvas ref="canvasRef" class="block h-full w-full bg-white"></canvas>
     </div>
   </div>
 </template>

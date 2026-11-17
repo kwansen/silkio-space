@@ -10,7 +10,7 @@
     <path
       d="m14.5 6-6 6 6 6"
       stroke="currentColor"
-      stroke-width="1.5"
+      stroke-width="0.6"
       stroke-linecap="round"
       stroke-linejoin="round"
     />
