@@ -55,98 +55,7 @@ defineProps<Props>();
         大纲
       </div>
     </div>
-    <div class="flex-1 h-full flex items-center desktop-draggable">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 100 100"
-        class="size-4 text-black"
-      >
-        <rect
-          x="5"
-          y="5"
-          width="90"
-          height="90"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="4"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        class="size-4 text-black"
-      >
-        <rect
-          x="2"
-          y="2"
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 16 16"
-        class="size-4 text-black"
-      >
-        <rect
-          x="1"
-          y="1"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 100 100"
-        class="size-6 text-black"
-      >
-        <rect
-          x="5"
-          y="5"
-          width="90"
-          height="90"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="4"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        class="size-6 text-black"
-      >
-        <rect
-          x="2"
-          y="2"
-          width="20"
-          height="20"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        />
-      </svg>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 16 16"
-        class="size-6 text-black"
-      >
-        <rect
-          x="1"
-          y="1"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.5"
-        />
-      </svg>
-    </div>
+    <div class="flex-1 h-full flex items-center desktop-draggable"></div>
     <!-- 左侧栏切换：仅在左侧栏有内容可显示时出现（与 EditorView 同源判定），
          flowChart/mindMap 的 doc 模式下无目录也无大纲，隐藏避免无效交互 -->
     <div
@@ -178,7 +87,7 @@ defineProps<Props>();
       class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
       @click="uiStore.setSettingDialogShow(true)"
     >
-      <PixelAlign><Setting /></PixelAlign>
+      <Setting class="size-5" />
     </div>
     <MinimizeBtn />
     <MaximizeBtn />

@@ -1,19 +1,14 @@
 <template>
-  <!-- 归档搜索：lucide archive 变体（右下角开放 + 放大镜），stroke 与 Archive 统一 -->
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"
     viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
   >
-    <rect width="20" height="5" x="2" y="3" rx="1" />
-    <path d="M4 8v11a2 2 0 0 0 2 2h4.5" />
-    <circle cx="15.5" cy="15.5" r="3.5" />
-    <path d="m18.2 18.2 3 3" />
+    <path d="M0 0h24v24H0z" fill="none" />
+    <path
+      fill="currentColor"
+      d="M13.04 10q-.6.375-1.14.9c-.33.34-.63.71-.87 1.1H8v-1.5c0-.28.22-.5.5-.5zM20 8H2V2h18zm-2-4H4v2h14zM5 18V9H3v11h8.82a6.4 6.4 0 0 1-1.32-2zm18.39 3L22 22.39l-3.12-3.07c-.69.43-1.51.68-2.38.68c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5s4.5 2 4.5 4.5c0 .88-.25 1.71-.69 2.4zM19 15.5a2.5 2.5 0 0 0-5 0a2.5 2.5 0 0 0 5 0"
+    />
   </svg>
 </template>

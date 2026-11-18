@@ -1,20 +1,14 @@
 <template>
-  <!-- 文档搜索：lucide file-text 变体（右下角开放 + 放大镜），stroke 与 Doc 统一 -->
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"
     viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="2"
-    stroke-linecap="round"
-    stroke-linejoin="round"
   >
-    <path d="M14 2v4a2 2 0 0 0 2 2h4" />
-    <path d="M20 8V7l-5-5H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h4.5" />
-    <path d="M8 11h4" />
-    <circle cx="15.5" cy="15.5" r="3.5" />
-    <path d="m18.2 18.2 3 3" />
+    <path d="M0 0h24v24H0z" fill="none" />
+    <path
+      fill="currentColor"
+      d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h7c-.41-.25-.8-.56-1.14-.9c-.33-.33-.61-.7-.86-1.1H6V4h7v5h5v1.18c.71.16 1.39.43 2 .82V8zm6.31 16.9c1.33-2.11.69-4.9-1.4-6.22c-2.11-1.33-4.91-.68-6.22 1.4c-1.34 2.11-.69 4.89 1.4 6.22c1.46.93 3.32.93 4.79.02L22 23.39L23.39 22zm-3.81.1a2.5 2.5 0 0 1-2.5-2.5a2.5 2.5 0 0 1 2.5-2.5a2.5 2.5 0 0 1 2.5 2.5a2.5 2.5 0 0 1-2.5 2.5"
+    />
   </svg>
 </template>
