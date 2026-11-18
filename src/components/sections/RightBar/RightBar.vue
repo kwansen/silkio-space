@@ -3,6 +3,7 @@
 // 图标体系）：对话历史 / 流式思考 / Markdown 回答。
 // 状态与网络逻辑在 aiStore + aiAction；服务配置在设置对话框的「AI 服务」页签。
 import AIMarkdown from "./AIMarkdown.vue";
+import ScrollArea from "@/components/shared/ScrollArea.vue";
 import { useAiAction } from "@/actions/aiAction";
 import { useAiStore } from "@/stores/aiStore";
 import { storeToRefs } from "pinia";
@@ -23,13 +24,13 @@ const pendingStatus = computed(() => {
 });
 
 // 新消息或流式增量后，消息流自动跟随到底部
-const chatBox = useTemplateRef<HTMLDivElement>("chatBox");
+const chatBox = useTemplateRef<InstanceType<typeof ScrollArea>>("chatBox");
 watch(
   () => [messages.value, pending.value] as const,
   async () => {
     await nextTick();
-    const el = chatBox.value;
-    if (el) el.scrollTop = el.scrollHeight;
+    const viewport = chatBox.value?.osInstance()?.elements().viewport;
+    if (viewport) viewport.scrollTop = viewport.scrollHeight;
   },
   { deep: true, flush: "post" },
 );
@@ -58,7 +59,7 @@ const onKeydown = (event: KeyboardEvent) => {
       </div>
 
       <!-- 消息流 -->
-      <div ref="chatBox" class="flex-1 min-h-0 overflow-y-auto px-2.5">
+      <ScrollArea ref="chatBox" class="flex-1 min-h-0 px-2.5">
         <div class="flex flex-col gap-3 py-2">
         <div
           v-if="!messages.length && !pending"
@@ -131,7 +132,7 @@ const onKeydown = (event: KeyboardEvent) => {
           </div>
         </div>
       </div>
-    </div>
+      </ScrollArea>
 
     <!-- 输入区 -->
       <div class="shrink-0 p-2 pt-1 flex items-center gap-1.5">

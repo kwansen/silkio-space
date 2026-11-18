@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Copy from "@/components/icons/Copy.vue";
+import ScrollArea from "@/components/shared/ScrollArea.vue";
 import Success from "@/components/icons/Success.vue";
 import { NodeViewContent, NodeViewWrapper, nodeViewProps } from "@tiptap/vue-3";
 import { ref } from "vue";
@@ -35,8 +36,8 @@ const copy = async () => {
         <Copy class="size-5" v-else />
       </button>
     </div>
-    <pre
-      class="text-sm p-4 bg-gray-50 overflow-x-auto [&::-webkit-scrollbar-thumb]:cursor-default"
-    ><code ><NodeViewContent class="whitespace-pre!" /></code></pre>
+    <ScrollArea class="text-sm bg-gray-50">
+      <pre class="p-4"><code><NodeViewContent class="whitespace-pre!" /></code></pre>
+    </ScrollArea>
   </NodeViewWrapper>
 </template>

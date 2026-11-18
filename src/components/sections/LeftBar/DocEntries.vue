@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import DocEntryItem from "@/components/sections/LeftBar/DocEntryItem.vue";
+import ScrollArea from "@/components/shared/ScrollArea.vue";
 import { useEditorAction } from "@/actions/editorAction";
 import { useEditorStore } from "@/stores/editorStore";
 import { useDocSvc } from "@/services/document";
@@ -189,7 +190,7 @@ const handleClickBtn = () => {
       <span>{{ i.text }}</span>
     </div>
   </div>
-  <div class="flex-1 min-h-0 overflow-y-auto px-2 py-2">
+  <ScrollArea class="flex-1 min-h-0 px-2 py-2">
     <Drag
       :list="docEntries"
       ghost-class="ghost1"
@@ -209,5 +210,5 @@ const handleClickBtn = () => {
       />
     </template>
     </Drag>
-  </div>
+  </ScrollArea>
 </template>
