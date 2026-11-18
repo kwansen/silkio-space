@@ -29,7 +29,7 @@ watch(
 <template>
   <div class="flex h-16">
     <div class="size-16 grid place-items-center">
-      <Search class="size-5" />
+      <Search class="size-5 text-gray-500" />
     </div>
     <input
       ref="inputRef"

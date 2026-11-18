@@ -10,8 +10,7 @@
     <path
       d="M12 19V5M5 12l7-7 7 7"
       stroke="currentColor"
-      stroke-width="0.6"
-      vector-effect="non-scaling-stroke"
+      stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
     />

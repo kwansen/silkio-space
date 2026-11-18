@@ -106,7 +106,7 @@ const handleClickBtn = () => {
       :class="show ? 'bg-gray-200' : 'bg-gray-100 hover:bg-gray-200'"
       @click="handleClickBtn"
     >
-      <Add class="size-4" />
+      <Add class="size-4 text-gray-500 hover:text-gray-700" />
     </div>
   </div>
   <div

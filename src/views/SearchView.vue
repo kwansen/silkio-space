@@ -144,7 +144,7 @@ onUnmounted(() => {
         "
         @click="openResult(d)"
       >
-        <div class="size-8 bg-gray-50 grid place-items-center rounded-md">
+        <div class="size-8 bg-gray-50 grid place-items-center rounded-md text-gray-400">
           <doc class="size-5" v-if="d.doc_type === 'richText'" />
           <flowchart class="size-5" v-if="d.doc_type === 'flowChart'" />
           <mindmap class="size-5" v-if="d.doc_type === 'mindMap'" />

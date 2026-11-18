@@ -263,7 +263,7 @@ onBeforeUnmount(() => {
           {{ editorStore.title || "未命名标题" }}
         </span>
         <button
-          class="size-6 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200 text-gray-400 hover:text-gray-600"
+          class="size-6 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200 text-gray-400 hover:text-gray-700"
           title="编辑标题"
           @click="startTitleEdit"
         >

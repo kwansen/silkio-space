@@ -114,7 +114,7 @@ const getClass = () => {
     <!-- 图标 -->
     <div class="w-full h-full grid place-items-center">
       <div class="h-7 w-7 bg-gray-50 rounded-md grid place-items-center">
-        <component :is="icon" class="size-4 text-neutral-400" />
+        <component :is="icon" class="size-4 text-gray-400" />
       </div>
     </div>
 

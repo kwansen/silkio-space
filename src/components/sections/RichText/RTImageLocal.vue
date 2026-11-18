@@ -91,7 +91,7 @@ onKeyStroke("Enter", () => {
   <input type="file" @change="change" accept="image/*" ref="uploader" hidden />
   <div class="relative">
     <div
-      class="relative aspect-3/2 overflow-hidden bg-gray-100 text-neutral-400 hover:text-neutral-700 cursor-pointer mt-6 rounded-md flex flex-col justify-center items-center"
+      class="relative aspect-3/2 overflow-hidden bg-gray-100 text-gray-400 hover:text-gray-700 cursor-pointer mt-6 rounded-md flex flex-col justify-center items-center"
       @click="handleClick"
     >
       <img

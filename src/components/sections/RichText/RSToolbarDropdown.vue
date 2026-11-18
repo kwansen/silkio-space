@@ -33,7 +33,7 @@ onClickOutside(
 <template>
   <div
     ref="target"
-    class="px-1 h-7 mx-1 rounded-md flex justify-center items-center text-neutral-500 hover:text-neutral-700"
+    class="px-1 h-7 mx-1 rounded-md flex justify-center items-center text-gray-500 hover:text-gray-700"
     :class="show ? 'bg-gray-200' : 'hover:bg-gray-200'"
     @click="show = !show"
   >
@@ -52,7 +52,7 @@ onClickOutside(
       :class="[
         b.active()
           ? 'bg-purple-200 text-purple-700'
-          : 'text-neutral-500 hover:text-neutral-700',
+          : 'text-gray-500 hover:text-gray-700',
         !b.active() && !b.disabled() ? 'hover:bg-gray-100' : '',
         b.disabled() ? 'opacity-30' : '',
       ]"

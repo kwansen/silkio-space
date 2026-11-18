@@ -28,17 +28,17 @@ const emit = defineEmits<{
     <Mindmap
       v-if="entry.doc_type === 'mindMap'"
       class="size-4 shrink-0"
-      :class="active ? 'text-purple-500' : 'text-neutral-400'"
+      :class="active ? 'text-purple-500' : 'text-gray-400'"
     />
     <Flowchart
       v-else-if="entry.doc_type === 'flowChart'"
       class="size-4 shrink-0"
-      :class="active ? 'text-purple-500' : 'text-neutral-400'"
+      :class="active ? 'text-purple-500' : 'text-gray-400'"
     />
     <Doc
       v-else
       class="size-4 shrink-0"
-      :class="active ? 'text-purple-500' : 'text-neutral-400'"
+      :class="active ? 'text-purple-500' : 'text-gray-400'"
     />
     <span
       class="flex-1 min-w-0 truncate"

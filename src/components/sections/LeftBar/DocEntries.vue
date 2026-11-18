@@ -159,11 +159,11 @@ const handleClickBtn = () => {
   <div
     class="h-11 shrink-0 flex items-center pl-[18px] pr-2 gap-1.5 border-b border-gray-100"
   >
-    <Archive class="size-4 shrink-0 text-neutral-400" />
+    <Archive class="size-4 shrink-0 text-gray-400" />
     <span class="flex-1 min-w-0 truncate">{{ name }}</span>
     <div
       ref="target"
-      class="size-7 shrink-0 grid place-items-center rounded-md cursor-pointer text-neutral-500 hover:text-neutral-700"
+      class="size-7 shrink-0 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:text-gray-700"
       :class="show ? 'bg-gray-100' : 'hover:bg-gray-100'"
       @click="handleClickBtn"
     >

@@ -27,7 +27,11 @@ const options: { key: DocTabOption; icon: Component; pop: string }[] = [
       :class="tab === option.key ? 'bg-purple-200' : 'hover:bg-gray-100'"
       @click="setDocTab(option.key)"
     >
-      <component :is="option.icon" class="size-5" />
+      <component
+        :is="option.icon"
+        class="size-5"
+        :class="tab === option.key ? 'text-purple-700' : 'text-gray-500'"
+      />
       <div
         class="hidden bg-white text-xs shadow-xs px-4 py-1 rounded-md group-hover:block absolute left-12 top-1/2 -translate-y-1/2 z-100 whitespace-nowrap"
       >

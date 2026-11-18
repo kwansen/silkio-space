@@ -24,7 +24,7 @@ const indentOf = (level: number) =>
   <div
     class="h-11 shrink-0 flex items-center pl-3 pr-2 gap-1.5 border-b border-gray-100"
   >
-    <Doc class="size-4 shrink-0 text-neutral-400" />
+    <Doc class="size-4 shrink-0 text-gray-400" />
     <span class="flex-1 min-w-0 truncate">
       {{ editorStore.title || "未命名标题" }}
     </span>

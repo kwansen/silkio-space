@@ -27,7 +27,7 @@ defineProps<Prop>();
     :class="[
       b.active()
         ? 'bg-purple-200 text-purple-700'
-        : 'text-neutral-500 hover:text-neutral-700',
+        : 'text-gray-500 hover:text-gray-700',
       !b.active() && !b.disabled() ? 'hover:bg-gray-200' : '',
       b.disabled() ? 'opacity-30' : '',
     ]"

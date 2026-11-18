@@ -1,14 +1,17 @@
 <template>
+  <!-- lucide redo-2：重做 -->
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"
     viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
   >
-    <path d="M0 0h24v24H0z" fill="none" />
-    <path
-      fill="currentColor"
-      d="M17.085 9.673H9.342q-1.556 0-2.65 1.058q-1.096 1.058-1.096 2.596t1.095 2.606Q7.787 17 9.342 17h6.754q.214 0 .357.143t.143.357t-.143.357t-.357.143H9.342q-1.963 0-3.355-1.364t-1.39-3.309t1.39-3.3Q7.38 8.673 9.343 8.673h7.743l-2.612-2.611q-.14-.14-.15-.345q-.01-.203.15-.363t.354-.16t.354.16l3.253 3.254q.131.13.184.267t.053.298t-.053.298q-.052.137-.183.268l-3.254 3.253q-.14.14-.344.15t-.364-.15t-.16-.353t.16-.354z"
-    />
+    <path d="m15 14 5-5-5-5" />
+    <path d="M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13" />
   </svg>
 </template>
