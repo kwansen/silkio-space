@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEditorStore } from "@/stores/editorStore";
+import { useRichtextStore } from "@/stores/richtextStore";
 import { Editor } from "@tiptap/vue-3";
 import { ref } from "vue";
 
@@ -9,10 +9,10 @@ interface Props {
 const props = defineProps<Props>();
 const url = ref("");
 
-const { setRichtextDialog } = useEditorStore();
+const { setDialog } = useRichtextStore();
 
 const close = () => {
-  setRichtextDialog("");
+  setDialog("");
 };
 
 const handleConfirm = () => {

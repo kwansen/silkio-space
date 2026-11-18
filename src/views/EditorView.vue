@@ -14,7 +14,7 @@ import {
 } from "@/infrastructure/api/windowEvent";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { computed, nextTick, onMounted, onUnmounted } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, watch } from "vue";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
@@ -32,6 +32,17 @@ const { saveContent, openDocById } = useEditorAction();
 const leftbarVisible = computed(
   () =>
     uiStore.showLeftbar && editorStore.leftbarApplicable && uiStore.leftbarFits,
+);
+
+// 大纲（TOC）只对富文本有意义：归档模式下切到 mindMap/flowChart 时，
+// 若左栏停留在「大纲」tab 则回退到「目录」，避免出现永远为空的大纲面板
+watch(
+  () => [editorStore.docType, uiStore.leftbarOption] as const,
+  ([type, option]) => {
+    if (option === "toc" && type !== "richText") {
+      uiStore.setLeftbarOption("docEntries");
+    }
+  },
 );
 
 const fdSvc = useFdSvc();

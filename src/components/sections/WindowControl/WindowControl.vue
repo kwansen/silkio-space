@@ -21,7 +21,8 @@ defineProps<Props>();
 
 <template>
   <div class="h-10 flex items-center pl-1.5 select-none">
-    <!-- 必须是编辑器窗口的archive模式以及有激活的id -->
+    <!-- 必须是编辑器窗口的archive模式以及有激活的id；
+         「大纲」tab 仅富文本可显示（tocApplicable）：mindMap/flowChart 不产生大纲数据 -->
     <div
       v-if="
         label === 'editor' &&
@@ -42,6 +43,7 @@ defineProps<Props>();
         目录
       </div>
       <div
+        v-if="editorStore.tocApplicable"
         class="px-2 rounded-sm cursor-pointer"
         @click="uiStore.setLeftbarOption('toc')"
         :class="

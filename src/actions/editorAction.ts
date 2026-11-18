@@ -152,5 +152,17 @@ export const useEditorAction = () => {
     titleTimer = setTimeout(flushTitle, SAVE_DELAY);
   };
 
-  return { saveContent, saveTitle, flushPendingSaves, openDocById };
+  // 文档标题统一入口：store.title、左侧目录项、防抖落库三处同步收拢为一条链路。
+  // RichText（标题输入框）、MindMap（根节点文本）、FlowChart（标题输入框）共用，
+  // 各编辑器不再自行拼装这三步
+  const setDocTitle = (v: string) => {
+    const store = useEditorStore();
+    store.setTitle(v);
+    const docId = store.id;
+    if (!docId) return;
+    store.updateDocEntryTitle(docId, v);
+    saveTitle(v);
+  };
+
+  return { saveContent, saveTitle, setDocTitle, flushPendingSaves, openDocById };
 };

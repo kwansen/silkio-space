@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEditorStore } from "@/stores/editorStore";
+import { useRichtextStore } from "@/stores/richtextStore";
 import { Editor } from "@tiptap/vue-3";
 import { FocusScope } from "@zhencai/vue-focus-scope";
 import { ref } from "vue";
@@ -8,14 +8,14 @@ interface Props {
   editor: Editor | undefined;
 }
 
-const { setRichtextDialog } = useEditorStore();
+const { setDialog } = useRichtextStore();
 
 const latex = ref<string>("");
 
 const props = defineProps<Props>();
 
 const close = () => {
-  setRichtextDialog("");
+  setDialog("");
 };
 
 const handleClick = (block: boolean) => {

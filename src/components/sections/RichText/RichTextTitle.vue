@@ -6,7 +6,7 @@ import { Editor } from "@tiptap/vue-3";
 import { onMounted, useTemplateRef, watch } from "vue";
 
 const store = useEditorStore();
-const { saveTitle } = useEditorAction();
+const { setDocTitle } = useEditorAction();
 
 interface Props {
   editor: Editor | undefined;
@@ -24,11 +24,8 @@ onMounted(() => {
 watch(
   () => store.title,
   (v) => {
-    const id = store.id;
-    if (!id) return;
-    // 实时同步左侧目录列表中该文档的标题
-    store.updateDocEntryTitle(id, v);
-    saveTitle(v);
+    // 实时同步左侧目录列表中该文档的标题并防抖落库
+    setDocTitle(v);
   },
 );
 

@@ -7,10 +7,10 @@
 
 <script setup lang="ts">
 import { FocusScope } from "@zhencai/vue-focus-scope";
-import { useEditorStore } from "@/stores/editorStore";
+import { useRichtextStore } from "@/stores/richtextStore";
 import { Editor } from "@tiptap/vue-3";
 import { computed, onMounted, ref } from "vue";
-const { setRichtextDialog } = useEditorStore();
+const { setDialog } = useRichtextStore();
 interface Props {
   editor: Editor | undefined;
 }
@@ -24,7 +24,7 @@ const disabled = computed(() => {
 });
 
 const close = () => {
-  setRichtextDialog("");
+  setDialog("");
 };
 
 const handleClick = () => {

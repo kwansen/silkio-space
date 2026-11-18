@@ -1,4 +1,4 @@
-import { useEditorStore } from "@/stores/editorStore";
+import { useRichtextStore } from "@/stores/richtextStore";
 import { Extension } from "@tiptap/core";
 
 export const CustomShortcut = Extension.create({
@@ -13,17 +13,17 @@ export const CustomShortcut = Extension.create({
       },
       // 打开link对话框
       "Mod-k": () => {
-        useEditorStore().setRichtextDialog("link");
+        useRichtextStore().setDialog("link");
         return true;
       },
       // 打开math对话框
       "Mod-Shift-m": () => {
-        useEditorStore().setRichtextDialog("math");
+        useRichtextStore().setDialog("math");
         return true;
       },
       // 打开图片对话框
       "Mod-Alt-i": () => {
-        useEditorStore().setRichtextDialog("image");
+        useRichtextStore().setDialog("image");
         return true;
       },
       // 插入分割线

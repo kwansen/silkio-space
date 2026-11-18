@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import Unlink from "@/components/icons/Unlink.vue";
 import { MarkViewContent, markViewProps } from "@tiptap/vue-3";
-import { useEditorStore } from "@/stores/editorStore";
+import { useRichtextStore } from "@/stores/richtextStore";
 import { ref } from "vue";
 import Pencil from "@/components/icons/Pencil.vue";
 
 const props = defineProps(markViewProps);
 
-const { setRichtextDialog } = useEditorStore();
+const { setDialog } = useRichtextStore();
 
 const hover = ref(false);
 
@@ -47,7 +47,7 @@ const mouseleave = () => {
         class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
         @click.stop="
           props.editor.chain().focus().extendMarkRange('link').run();
-          setRichtextDialog('link');
+          setDialog('link');
         "
       >
         <Pencil class="size-5" />

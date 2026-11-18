@@ -1,7 +1,7 @@
 import { Doc, DocEntry, DocType } from "@/types/doc";
-import { TableOfContentData } from "@tiptap/extension-table-of-contents";
 import { acceptHMRUpdate, defineStore } from "pinia";
 import { computed, ref } from "vue";
+import { useRichtextStore } from "./richtextStore";
 
 export const useEditorStore = defineStore("editor", () => {
   const id = ref<string>();
@@ -11,11 +11,6 @@ export const useEditorStore = defineStore("editor", () => {
   const editorMode = ref<EditorMode>("doc");
   const setEditorMode = (v: EditorMode) => {
     editorMode.value = v;
-  };
-  // 当前打开的富文本弹窗类型（"" 为关闭）：link / math / image
-  const richtextDialog = ref<RichTextDialog>("");
-  const setRichtextDialog = (v: RichTextDialog) => {
-    richtextDialog.value = v;
   };
   const title = ref("");
   const setTitle = (v: string) => {
@@ -53,10 +48,6 @@ export const useEditorStore = defineStore("editor", () => {
   const setPlainText = (v: string) => {
     plainText.value = v;
   };
-  const toc = ref<TableOfContentData>([]);
-  const setToc = (v: TableOfContentData) => {
-    toc.value = v;
-  };
   // 元函数：整册替换当前文档（id/title/content/docType），并重置内容/标题快照、目录与重挂载 key
   const setDoc = (doc: Doc | null) => {
     setId(doc?.id);
@@ -68,8 +59,8 @@ export const useEditorStore = defineStore("editor", () => {
     setDocType(doc?.doc_type);
     setPlainText("");
     setKey(Date.now().toString());
-    // 目录随文档清空：空态下 RichText 已卸载、不会回填新 toc，不清会残留上一文档的旧标题
-    setToc([]);
+    // 大纲随文档清空：空态下 RichText 已卸载、不会回填新 toc，不清会残留上一文档的旧标题
+    useRichtextStore().setToc([]);
   };
   const name = ref("");
   const setName = (v: string) => {
@@ -80,21 +71,25 @@ export const useEditorStore = defineStore("editor", () => {
   const setArchiveId = (v: string | undefined) => {
     archiveId.value = v;
   };
-  // 左侧栏是否有内容可显示（唯一判定源，EditorView 与 WindowControl 共用）：
-  // 归档模式总有文档目录；doc 模式仅富文本有大纲，flowChart/mindMap 两者皆无
+  // 左侧栏能力判定（EditorView 与 WindowControl 共用），按维度拆分而非一个布尔耦合：
+  // - leftbarApplicable：左栏是否有内容可显示。归档模式总有文档目录；
+  //   doc 模式仅富文本有大纲，flowChart/mindMap 两者皆无
+  // - tocApplicable：大纲（TOC）是否适用于当前文档。大纲数据由 tiptap 扩展产生，
+  //   仅富文本具备；mindMap/flowChart 不产生大纲（导图树/流程结构是另一种形态，
+  //   不进 toc），对应面板必须隐藏或回退，否则永远"空空如也"
   const leftbarApplicable = computed(
     () =>
       editorMode.value === "archive" ||
       (editorMode.value === "doc" && docType.value === "richText"),
   );
+  const tocApplicable = computed(() => docType.value === "richText");
   return {
     leftbarApplicable,
+    tocApplicable,
     id,
     setId,
     editorMode,
     setEditorMode,
-    richtextDialog,
-    setRichtextDialog,
     title,
     setTitle,
     content,
@@ -115,8 +110,6 @@ export const useEditorStore = defineStore("editor", () => {
     setName,
     archiveId,
     setArchiveId,
-    toc,
-    setToc,
   };
 });
 

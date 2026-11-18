@@ -24,8 +24,8 @@ import Maximize from "@/components/icons/Maximize.vue";
 import Redo from "@/components/icons/Redo.vue";
 import Undo from "@/components/icons/Undo.vue";
 import { useEditorAction } from "@/actions/editorAction";
-import { useEditorStore } from "@/stores/editorStore";
 import { exportImage } from "@/utils/exportImage";
+import { countWords } from "@/utils/text";
 
 const props = defineProps<{ content: string }>();
 
@@ -177,15 +177,11 @@ const collectText = (node: MindMapNode, out: string[] = []): string[] => {
 };
 
 // 根节点文本即文档标题（参照 .examples/mindmap 的 docName = toJSON().text）：
-// 走 RichTextTitle 相同的落库路径（saveTitle 防抖 + 快照去重），并实时同步左侧目录
-const editorStore = useEditorStore();
-const { saveTitle } = useEditorAction();
-const syncTitle = (rootText: string) => {
-  const docId = editorStore.id;
-  if (!docId || !rootText.trim()) return;
-  editorStore.setTitle(rootText);
-  editorStore.updateDocEntryTitle(docId, rootText);
-  saveTitle(rootText);
+// 走统一的 setDocTitle 落库链路（防抖 + 快照去重），并实时同步左侧目录
+const { setDocTitle } = useEditorAction();const syncTitle = (rootText: string) => {
+  // 根节点文本清空的瞬间不回写，避免把文档标题清掉
+  if (!rootText.trim()) return;
+  setDocTitle(rootText);
 };
 
 const save = () => {
@@ -205,7 +201,7 @@ const save = () => {
     "onContentSave",
     JSON.stringify(saved),
     plainText,
-    plainText.replace(/\s/g, "").length,
+    countWords(plainText),
   );
 };
 

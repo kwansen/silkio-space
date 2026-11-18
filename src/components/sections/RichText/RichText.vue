@@ -21,16 +21,17 @@ import type { Node } from "@tiptap/pm/model";
 import RichtextImageDialog from "./RichtextImageDialog.vue";
 import RichTextTitle from "./RichTextTitle.vue";
 import { nextTick } from "vue";
-import { useEditorStore } from "@/stores/editorStore.ts";
+import { useRichtextStore } from "@/stores/richtextStore.ts";
+import { countWords } from "@/utils/text";
 import type { OverlayScrollbars } from "overlayscrollbars";
 import { createExtensions } from "./extensions";
 
 const node = ref<Node>();
 const pos = ref<number>(0);
 const block = ref<boolean>(false);
-const editorStore = useEditorStore();
+const richtextStore = useRichtextStore();
 
-const { richtextDialog: dialog } = storeToRefs(editorStore);
+const { dialog } = storeToRefs(richtextStore);
 
 const openMathDialog = (n: Node, p: number, b: boolean) => {
   node.value = n;
@@ -76,15 +77,14 @@ const createEditor = (v: any): Editor => {
     extensions: createExtensions({
       onMathClick: openMathDialog,
       onTocUpdate: (content) => {
-        editorStore.toc = content;
+        richtextStore.setToc(content);
         tocReady.value = true;
       },
     }),
     onUpdate: ({ editor }) => {
       content.value = JSON.stringify(editor.getJSON());
       const text = editor.getText();
-      const length = text.length;
-      emit("onContentSave", content.value, text, length);
+      emit("onContentSave", content.value, text, countWords(text));
     },
     onCreate: () => {
       editorReady.value = true;

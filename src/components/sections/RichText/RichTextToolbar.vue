@@ -32,12 +32,12 @@ import UnorderList from "@/components/icons/UnorderList.vue";
 import RSToolbarDropdown from "./RSToolbarDropdown.vue";
 import RTSearchPopover from "./RTSearchPopover.vue";
 import { Editor } from "@tiptap/vue-3";
-import { useEditorStore } from "@/stores/editorStore";
+import { useRichtextStore } from "@/stores/richtextStore";
 import Eraser from "@/components/icons/Eraser.vue";
 import Divider from "@/components/icons/Divider.vue";
 import { Btn, Group } from "./type.ts";
 import RSToolbarBtn from "./RSToolbarBtn.vue";
-const { setRichtextDialog } = useEditorStore();
+const { setDialog } = useRichtextStore();
 
 interface Props {
   editor: Editor | undefined;
@@ -257,7 +257,7 @@ const link: Btn = {
   name: "链接",
   icon: Link,
   shortcut: "Ctrl + K",
-  action: () => setRichtextDialog("link"),
+  action: () => setDialog("link"),
   disabled: () => !props.editor?.can().setLink({ href: "#" }),
   active: () => props.editor?.isActive("link") ?? false,
 };
@@ -265,7 +265,7 @@ const math: Btn = {
   name: "公式",
   icon: Math,
   shortcut: "Ctrl + Shift + M",
-  action: () => setRichtextDialog("math"),
+  action: () => setDialog("math"),
   disabled: () => !props.editor?.can().insertContent("$ E = mc^2 $"),
   active: () => false,
 };
@@ -303,7 +303,7 @@ const image: Btn = {
   name: "图片",
   icon: Image,
   shortcut: "Ctrl + Alt + I",
-  action: () => setRichtextDialog("image"),
+  action: () => setDialog("image"),
   disabled: () => !props.editor?.can().setImage({ src: "#" }),
   active: () => false,
 };

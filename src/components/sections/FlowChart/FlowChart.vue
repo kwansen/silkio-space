@@ -17,7 +17,10 @@ import Swap from "@/components/icons/Swap.vue";
 import Undo from "@/components/icons/Undo.vue";
 import ShapeIcon from "./ShapeIcon.vue";
 import { noteShapes } from "./noteShape";
+import { useEditorAction } from "@/actions/editorAction";
+import { useEditorStore } from "@/stores/editorStore";
 import { exportImage } from "@/utils/exportImage";
+import { countWords } from "@/utils/text";
 
 const props = defineProps<{ content: string }>();
 
@@ -28,6 +31,13 @@ const emit = defineEmits<{
 
 const canvasRef = ref<HTMLCanvasElement>();
 const flowchart = shallowRef<FlowChart>();
+
+// 文档标题：画布内容无天然标题节点（不像 MindMap 的根节点），由用户独立编辑
+const editorStore = useEditorStore();
+const { setDocTitle } = useEditorAction();
+const onTitleInput = (e: Event) => {
+  setDocTitle((e.target as HTMLInputElement).value);
+};
 
 // 工具栏状态：撤销重做可用性、选中态、缩放百分比
 const canUndo = ref(false);
@@ -72,7 +82,7 @@ const save = () => {
     "onContentSave",
     JSON.stringify(data),
     plainText,
-    plainText.replace(/\s/g, "").length,
+    countWords(plainText),
   );
 };
 
@@ -206,6 +216,18 @@ onBeforeUnmount(() => {
   <div class="relative h-full w-full select-none">
     <div class="absolute inset-0">
       <canvas ref="canvasRef" class="block h-full w-full bg-white"></canvas>
+    </div>
+    <!-- 文档标题：左上角浮动 chip，样式与工具条一致 -->
+    <div
+      class="absolute top-2 left-2 z-10 flex items-center h-8 px-2 bg-white/85 backdrop-blur-md rounded-lg shadow-lg"
+    >
+      <input
+        class="w-36 bg-transparent outline-none text-sm text-gray-700 placeholder:text-gray-300 cursor-text"
+        :value="editorStore.title"
+        placeholder="未命名标题"
+        title="文档标题"
+        @input="onTitleInput"
+      />
     </div>
     <div
       class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-0.5 px-2 py-1 bg-white/85 backdrop-blur-md rounded-lg shadow-lg text-gray-700"
