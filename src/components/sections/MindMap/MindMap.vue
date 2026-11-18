@@ -264,9 +264,12 @@ const setZoom = (scale: number) => {
 const zoomIn = () => setZoom((zoom.value + 10) / 100);
 const zoomOut = () => setZoom((zoom.value - 10) / 100);
 
-// 适应视图（只缩小不放大）：先 fit 拟合整棵可见子树，缩放被 fit 放大超过 1 时压回 1
-// （参照 .examples/demo-mindmap 的 fitView 实现）
-const fitView = () => {
+// 工具栏手动「适应视图」：真实拟合，允许放大（参照 .examples/mindmap 的 fit）
+const fitView = () => mindmap.value?.fit();
+
+// 渲染文档后自动适应视图（参照 .examples/mindmap 的 fitScene）：只缩小不放大，
+// 缩放被 fit 抬高超过 100% 时压回 1，节点少的小导图按原尺寸居中即可
+const fitScene = () => {
   const mm = mindmap.value;
   if (!mm) return;
   mm.fit();
@@ -322,7 +325,7 @@ onMounted(async () => {
   });
   // init 是异步的：selectRoot 落定即场景就绪，适应视图后再显示窗口避免白屏闪烁
   await mindmap.value.selectRoot();
-  fitView();
+  fitScene();
   syncState();
   // 挂载即同步根节点文本为标题（无编辑动作时 title 也跟随根节点）
   syncTitle(mindmap.value.toJSON().text);

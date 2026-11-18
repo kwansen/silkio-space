@@ -4,16 +4,19 @@
 // 文档 content 为 JSON 字符串，模型与 silkio-flowchart 的 FlowData 一致：
 //   { nodes: [{ id, shape, x, y, text }], edges: [{ from, to, text? }] }
 // 顶部工具栏参照 .examples/demo-flowchart：撤销重做/形状增删替换/删除/
-// 适应居中/缩放/导出图片。
+// 适应居中/缩放/导出图片。添加与替换走图标按钮 + 形状图标网格菜单（7 种形状，
+// 含经 noteShapes 插件注册的便签）。
 import { FlowChart, type FlowData, type ShapeKind } from "silkio-flowchart";
 import { onClickOutside } from "@vueuse/core";
 import { onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef } from "vue";
-import Add from "@/components/icons/Add.vue";
-import ArrowDown from "@/components/icons/ArrowDown.vue";
 import Delete from "@/components/icons/Delete.vue";
 import Maximize from "@/components/icons/Maximize.vue";
+import PlusBox from "@/components/icons/PlusBox.vue";
 import Redo from "@/components/icons/Redo.vue";
+import Swap from "@/components/icons/Swap.vue";
 import Undo from "@/components/icons/Undo.vue";
+import ShapeIcon from "./ShapeIcon.vue";
+import { noteShapes } from "./noteShape";
 import { exportImage } from "@/utils/exportImage";
 
 const props = defineProps<{ content: string }>();
@@ -32,7 +35,8 @@ const canRedo = ref(false);
 const hasSelection = ref(false);
 const zoom = ref(100);
 
-// 内置形状清单（label 用于菜单展示，text 为新节点默认文案）
+// 内置形状清单（label 用于 tooltip，text 为新节点默认文案），
+// note 由 noteShapes 插件注册，与 .examples/flowchart 的 shapeOptions 一致共 7 种
 const SHAPE_OPTIONS: { kind: ShapeKind; label: string; text: string }[] = [
   { kind: "rect", label: "矩形 · 步骤", text: "新步骤" },
   { kind: "diamond", label: "菱形 · 判断", text: "新判断" },
@@ -40,6 +44,7 @@ const SHAPE_OPTIONS: { kind: ShapeKind; label: string; text: string }[] = [
   { kind: "parallelogram", label: "平行四边形 · 输入输出", text: "输入数据" },
   { kind: "hexagon", label: "六边形 · 准备", text: "准备阶段" },
   { kind: "database", label: "数据库 · 存储", text: "存储数据" },
+  { kind: "note", label: "便签 · 自定义形状", text: "便签" },
 ];
 
 // 解析文档内容，空/损坏数据时回退为空画布
@@ -162,6 +167,7 @@ onMounted(async () => {
   flowchart.value = new FlowChart({
     canvas,
     data: parseDoc(props.content),
+    plugins: [noteShapes],
     onChange: () => {
       save();
       syncState();
@@ -171,7 +177,14 @@ onMounted(async () => {
   offViewport = flowchart.value.onViewportChange((scale) => {
     zoom.value = Math.round(scale * 100);
   });
-  flowchart.value.center();
+  // 渲染文档后自动适应视图（参照 .examples/flowchart 的 fitScene）：只缩小不放大
+  // （缩放超过 100% 压回 1），小文档按原尺寸居中；空文档回退居中
+  if (flowchart.value.toJSON().nodes.length) {
+    flowchart.value.fit();
+    if (flowchart.value.zoom > 1) flowchart.value.setZoom(1);
+  } else {
+    flowchart.value.center();
+  }
   zoom.value = Math.round(flowchart.value.zoom * 100);
   syncState();
   // 等首帧绘制提交后再显示窗口，避免白屏闪烁（与 RichText 的就绪信号对齐）
@@ -189,9 +202,13 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col h-full w-full select-none">
+  <!-- 画布铺满整个区域，工具条悬浮其上（半透明毛玻璃圆角卡片），不再占独立一行 -->
+  <div class="relative h-full w-full select-none">
+    <div class="absolute inset-0">
+      <canvas ref="canvasRef" class="block h-full w-full bg-white"></canvas>
+    </div>
     <div
-      class="flex items-center gap-0.5 px-2 py-1 border-b border-gray-100 text-gray-700"
+      class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-0.5 px-2 py-1 bg-white/85 backdrop-blur-md rounded-lg shadow-lg text-gray-700"
     >
       <button
         class="size-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
@@ -212,60 +229,62 @@ onBeforeUnmount(() => {
 
       <div class="w-px h-5 bg-gray-200 mx-1.5"></div>
 
-      <!-- 添加形状 -->
+      <!-- 添加形状：图标触发 + 形状图标网格（每行 4 个自动换行，悬停 tooltip 提示名称） -->
       <div ref="shapeMenuRef" class="relative">
         <button
-          class="h-7 px-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-gray-200"
+          class="size-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200"
           title="添加形状"
           @click="shapeMenuOpen = !shapeMenuOpen"
         >
-          <Add class="size-4" />
-          <ArrowDown class="size-3 text-gray-400" />
+          <PlusBox class="size-4" />
         </button>
         <div
           v-if="shapeMenuOpen"
-          class="absolute top-full left-0 mt-1 z-10 w-44 p-1 bg-white rounded-lg shadow-2xl text-xs"
+          class="absolute top-full left-0 mt-1.5 z-10 flex flex-row flex-wrap w-60 gap-0.5 p-1 bg-white rounded-[10px] shadow-2xl before:absolute before:-top-1.5 before:left-0 before:right-0 before:h-1.5 before:content-['']"
         >
-          <div
+          <button
             v-for="s in SHAPE_OPTIONS"
             :key="s.kind"
-            class="px-3 py-1.5 rounded-md cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+            type="button"
+            class="h-14 w-14 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-violet-500"
+            :title="s.label"
             @click="
               addShape(s.kind, s.text);
               shapeMenuOpen = false;
             "
           >
-            {{ s.label }}
-          </div>
+            <ShapeIcon :kind="s.kind" class="w-10 h-6" />
+          </button>
         </div>
       </div>
 
-      <!-- 替换选中形状 -->
+      <!-- 替换选中形状：无选中时禁用（与撤销/重做同一禁用样式） -->
       <div ref="replaceMenuRef" class="relative">
         <button
-          class="h-7 px-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed text-xs"
+          class="size-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
           :disabled="!hasSelection"
           title="替换选中形状"
           @click="replaceMenuOpen = !replaceMenuOpen"
         >
-          替换
-          <ArrowDown class="size-3 text-gray-400" />
+          <Swap class="size-4" />
         </button>
         <div
           v-if="replaceMenuOpen"
-          class="absolute top-full left-0 mt-1 z-10 w-44 p-1 bg-white rounded-lg shadow-2xl text-xs"
+          class="absolute top-full left-0 mt-1.5 z-10 flex flex-row flex-wrap w-60 gap-0.5 p-1 bg-white rounded-[10px] shadow-2xl before:absolute before:-top-1.5 before:left-0 before:right-0 before:h-1.5 before:content-['']"
         >
-          <div
+          <button
             v-for="s in SHAPE_OPTIONS"
             :key="s.kind"
-            class="px-3 py-1.5 rounded-md cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+            type="button"
+            class="h-14 w-14 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-violet-500"
+            :title="s.label"
             @click="
               replaceShape(s.kind);
               replaceMenuOpen = false;
             "
           >
-            {{ s.label }}
-          </div>
+            <ShapeIcon :kind="s.kind" class="w-10 h-6" />
+          </button>
         </div>
       </div>
 
@@ -345,10 +364,6 @@ onBeforeUnmount(() => {
         </svg>
         导出
       </button>
-    </div>
-
-    <div class="flex-1 min-h-0">
-      <canvas ref="canvasRef" class="block h-full w-full bg-white"></canvas>
     </div>
   </div>
 </template>

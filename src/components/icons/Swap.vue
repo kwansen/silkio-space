@@ -1,0 +1,16 @@
+<template>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="0.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <polyline points="16 3 20 7 16 11" />
+    <line x1="20" y1="7" x2="5" y2="7" />
+    <polyline points="8 13 4 17 8 21" />
+    <line x1="4" y1="17" x2="19" y2="17" />
+  </svg>
+</template>
