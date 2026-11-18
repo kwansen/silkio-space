@@ -122,10 +122,12 @@ const action = useArchiveAction();
       >
         {{ meta }}
       </div>
-      <!-- 悬浮按钮 -->
+      <!-- 悬浮按钮：mask 底色与行 hover 背景同色（视觉不可见），More 按钮通过
+           justify-end + pr-4 落在 item 内容轴上（px-4），与工具栏的添加按钮
+           右缘（px-5）同轴，避免悬浮按钮比头部按钮更贴近边缘 -->
       <div
         v-if="hovered || openedKey === itemKey"
-        class="h-full aspect-square bg-gray-100 absolute top-0 right-0 grid place-items-center"
+        class="h-full aspect-square bg-gray-100 absolute top-0 right-0 flex items-center justify-end pr-4"
       >
         <div
           ref="target"

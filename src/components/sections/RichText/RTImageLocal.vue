@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AddImage from "@/components/icons/AddImage.vue";
-import Close from "@/components/icons/Close.vue";
+import CloseSmall from "@/components/icons/CloseSmall.vue";
 import { ref, shallowRef } from "vue";
 import { useTemplateRef } from "vue";
 import { writeFile, BaseDirectory } from "@tauri-apps/plugin-fs";
@@ -108,9 +108,9 @@ onKeyStroke("Enter", () => {
     <div
       v-if="previewUrl"
       @click="previewUrl = ''"
-      class="absolute size-5 text-white grid place-items-center bg-gray-300 hover:bg-red-300 rounded-full top-0 right-0 translate-x-1/2 -translate-y-1/2"
+      class="absolute size-5 grid place-items-center bg-gray-300 rounded-md cursor-pointer text-gray-600 hover:bg-red-100 hover:text-red-600 top-0 right-0 translate-x-1/2 -translate-y-1/2"
     >
-      <Close />
+      <CloseSmall class="size-3.5" />
     </div>
   </div>
   <div class="h-6"></div>

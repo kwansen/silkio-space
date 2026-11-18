@@ -2,6 +2,7 @@ import { Doc, DocEntry, DocType } from "@/types/doc";
 import { acceptHMRUpdate, defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useRichtextStore } from "./richtextStore";
+import { useUiStore } from "./uiStore";
 
 export const useEditorStore = defineStore("editor", () => {
   const id = ref<string>();
@@ -59,6 +60,14 @@ export const useEditorStore = defineStore("editor", () => {
     setDocType(doc?.doc_type);
     setPlainText("");
     setKey(Date.now().toString());
+    // 左栏 tab 降级保护：大纲仅对富文本有意义，从大纲切到非富文本文档时
+    // 回退到目录，避免出现永远为空的大纲面板。不做反向自动升级——
+    // 归档模式下点击条目切换文档不应打断用户手动选择的 tab；
+    // tab 的初始归属（doc 打开 → toc、archive 打开 → 目录）由 EditorView.runOpen 决定
+    const ui = useUiStore();
+    if (ui.leftbarOption === "toc" && doc?.doc_type !== "richText") {
+      ui.setLeftbarOption("docEntries");
+    }
     // 大纲随文档清空：空态下 RichText 已卸载、不会回填新 toc，不清会残留上一文档的旧标题
     useRichtextStore().setToc([]);
   };

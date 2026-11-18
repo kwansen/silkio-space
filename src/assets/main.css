@@ -22,6 +22,14 @@
   background-color: rgba(255, 0, 255, 0.1);
 }
 
+/* 浏览器 UA 样式把 <button> 强制为 default 箭头且不继承父级 pointer，
+   与项目中大量 div 按钮的手型不一致（条目删除、对话框取消/确认等）；
+   统一为可点击即手型。禁用态不在此列，仍由各处的 disabled:cursor-not-allowed 控制；
+   个别需要箭头的场景可用 cursor-default 类覆盖（类选择器优先级更高） */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
 .desktop-draggable {
   -webkit-app-region: drag;
 }

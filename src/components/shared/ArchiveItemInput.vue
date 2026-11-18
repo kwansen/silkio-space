@@ -76,10 +76,10 @@ onClickOutside(box, () => {
       <Check class="size-5" />
     </button>
     <div
-      class="size-7 hover:bg-red-200 cursor-pointer rounded-md grid place-items-center"
+      class="size-7 cursor-pointer rounded-md grid place-items-center text-gray-500 hover:bg-red-100 hover:text-red-600"
       @click="close"
     >
-      <Close class="size-5" />
+      <Close class="size-4" />
     </div>
   </div>
 </template>

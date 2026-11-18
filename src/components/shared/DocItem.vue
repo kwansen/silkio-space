@@ -136,11 +136,12 @@ const getClass = () => {
     >
       {{ meta }}
     </div>
-    <!-- 悬浮按钮 -->
+    <!-- 悬浮按钮：同 ArchiveItem，mask 与行背景同色不可见，
+         More 按钮经 pr-4 落在 item 内容轴上，与头部添加按钮近似同轴 -->
     <div
       v-if="hoverKey === itemKey || openedKey === itemKey"
       :class="active ? 'bg-purple-100' : 'bg-gray-100'"
-      class="h-full aspect-square absolute top-0 right-0 grid place-items-center"
+      class="h-full aspect-square absolute top-0 right-0 flex items-center justify-end pr-4"
     >
       <div
         ref="target"

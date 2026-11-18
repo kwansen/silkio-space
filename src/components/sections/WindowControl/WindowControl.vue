@@ -21,13 +21,15 @@ defineProps<Props>();
 
 <template>
   <div class="h-10 flex items-center pl-1.5 select-none">
-    <!-- 必须是编辑器窗口的archive模式以及有激活的id；
-         「大纲」tab 仅富文本可显示（tocApplicable）：mindMap/flowChart 不产生大纲数据 -->
+    <!-- 必须是编辑器窗口的archive模式、有激活的id且当前是富文本（tocApplicable）：
+         切换按钮的意义在于目录/大纲互切，思维导图/流程图没有大纲，单挂一个
+         「目录」tab 没有交互意义，整组隐藏 -->
     <div
       v-if="
         label === 'editor' &&
         editorStore.editorMode === 'archive' &&
-        editorStore.id
+        editorStore.id &&
+        editorStore.tocApplicable
       "
       class="flex gap-1 bg-white p-0.5 rounded-md"
     >
@@ -43,7 +45,6 @@ defineProps<Props>();
         目录
       </div>
       <div
-        v-if="editorStore.tocApplicable"
         class="px-2 rounded-sm cursor-pointer"
         @click="uiStore.setLeftbarOption('toc')"
         :class="

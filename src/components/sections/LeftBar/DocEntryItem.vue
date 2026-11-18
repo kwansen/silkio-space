@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Close from "@/components/icons/Close.vue";
+import CloseSmall from "@/components/icons/CloseSmall.vue";
 import Doc from "@/components/icons/Doc.vue";
 import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
@@ -52,7 +52,7 @@ const emit = defineEmits<{
       title="移出归档"
       @click.stop="emit('remove')"
     >
-      <Close class="size-3.5" />
+      <CloseSmall class="size-3" />
     </button>
   </div>
 </template>

@@ -23,9 +23,6 @@ export const useUiStore = defineStore("ui", () => {
   };
 
   const showLeftbar = ref<boolean>(true);
-  const setLeftbarShow = (v: boolean) => {
-    showLeftbar.value = v;
-  };
   const toggleLeftbar = () => {
     showLeftbar.value = !showLeftbar.value;
   };
@@ -78,7 +75,6 @@ export const useUiStore = defineStore("ui", () => {
     leftbarOption,
     setLeftbarOption,
     showLeftbar,
-    setLeftbarShow,
     toggleLeftbar,
     showRightbar,
     setRightbarShow,

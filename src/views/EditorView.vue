@@ -14,7 +14,7 @@ import {
 } from "@/infrastructure/api/windowEvent";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { computed, nextTick, onMounted, onUnmounted, watch } from "vue";
+import { computed, nextTick, onMounted, onUnmounted } from "vue";
 import { useDocSvc } from "@/services/document";
 import { useEditorStore } from "@/stores/editorStore";
 import { storeToRefs } from "pinia";
@@ -34,16 +34,9 @@ const leftbarVisible = computed(
     uiStore.showLeftbar && editorStore.leftbarApplicable && uiStore.leftbarFits,
 );
 
-// 大纲（TOC）只对富文本有意义：归档模式下切到 mindMap/flowChart 时，
-// 若左栏停留在「大纲」tab 则回退到「目录」，避免出现永远为空的大纲面板
-watch(
-  () => [editorStore.docType, uiStore.leftbarOption] as const,
-  ([type, option]) => {
-    if (option === "toc" && type !== "richText") {
-      uiStore.setLeftbarOption("docEntries");
-    }
-  },
-);
+// 左栏「目录/大纲」tab 的初始归属由 runOpen 决定（doc → toc、archive →
+// 目录）；归档内的文档切换不重设，setDoc 仅做「大纲 → 目录」的降级保护
+// （切到非富文本文档时大纲必然为空）
 
 const fdSvc = useFdSvc();
 let stopOnOpen: (() => void) | null = null;
@@ -72,6 +65,8 @@ const runOpen = async (data: EditorOpenPayload) => {
   const t = data.type;
   if (t === "doc") {
     editorStore.setEditorMode("doc");
+    // doc 模式无目录/大纲切换按钮，左栏固定显示大纲（非富文本由
+    // setDoc 的降级保护回退到目录）
     uiStore.setLeftbarOption("toc");
     // 切到独立文档视图必须清掉归档态，否则对账逻辑仍挂在旧归档上，
     // 会把不在该归档目录中的当前文档误判为失效并回切到目录首项
@@ -83,6 +78,8 @@ const runOpen = async (data: EditorOpenPayload) => {
     pendingDocChanged = true;
   } else if (t === "archive") {
     editorStore.setEditorMode("archive");
+    // 打开归档回到目录视图：归档内的文档切换不重设 tab（由用户手动
+    // 切换或 setDoc 降级保护调整），避免浏览条目时被强制跳到大纲
     uiStore.setLeftbarOption("docEntries");
     setArchiveId(data.id);
     const docEntries = await fdSvc.getArchiveDocEntries({ id: data.id });

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ArrowDown from "@/components/icons/ArrowDown.vue";
 import ArrowTop from "@/components/icons/ArrowTop.vue";
-import Close from "@/components/icons/Close.vue";
+import CloseSmall from "@/components/icons/CloseSmall.vue";
 import MatchCase from "@/components/icons/MatchCase.vue";
 import Regex from "@/components/icons/Regex.vue";
 import WholeWord from "@/components/icons/WholeWord.vue";
@@ -82,9 +82,9 @@ onUnmounted(() => {
         <div class="flex justify-end">
           <div
             @click="emit('close')"
-            class="grid place-items-center hover:bg-red-200 size-5 bg-gray-200 rounded-full"
+            class="grid place-items-center size-6 bg-gray-200 rounded-md cursor-pointer text-gray-500 hover:bg-red-100 hover:text-red-600"
           >
-            <Close />
+            <CloseSmall class="size-3.5" />
           </div>
         </div>
 
