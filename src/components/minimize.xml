@@ -1,0 +1,10 @@
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 16 16"
+  >
+    <path
+      d="M1.5 7.5 L14.5 7.5 C14.776 7.5 15 7.724 15 8 L15 8 C15 8.276 14.776 8.5 14.5 8.5 L1.5 8.5 C1.224 8.5 1 8.276 1 8 L1 8 C1 7.724 1.224 7.5 1.5 7.5 Z"
+      stroke="currentColor"
+    />
+  </svg>

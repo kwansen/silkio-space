@@ -2,6 +2,7 @@
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { Btn } from "./type";
 import { ref, useTemplateRef } from "vue";
+import PixelAlign from "@/components/shared/PixelAlign.vue";
 
 interface Prop {
   b: Btn;
@@ -34,7 +35,7 @@ defineProps<Prop>();
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
   >
-    <component :is="b.icon" class="size-6" />
+    <PixelAlign><component :is="b.icon" class="size-6" /></PixelAlign>
     <!-- <Teleport to="body"> -->
     <div
       :style="floatingStyles"

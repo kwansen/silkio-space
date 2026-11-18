@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Maximize from "@/components/icons/Maximize.vue";
 import UnMaximize from "@/components/icons/UnMaximize.vue";
+import PixelAlign from "@/components/shared/PixelAlign.vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { onMounted, ref } from "vue";
 
@@ -28,7 +29,7 @@ onMounted(async () => {
     class="h-full aspect-square grid place-items-center hover:bg-gray-100"
     @click="handleClick"
   >
-    <Maximize v-if="isMax" class="size-4" />
-    <UnMaximize v-else class="size-4" />
+    <PixelAlign v-if="isMax"><UnMaximize class="text-black" /></PixelAlign>
+    <PixelAlign v-else><Maximize class="text-black" /></PixelAlign>
   </div>
 </template>

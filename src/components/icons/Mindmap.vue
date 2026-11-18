@@ -10,10 +10,10 @@
     stroke-linecap="round"
     stroke-linejoin="round"
   >
-    <rect x="2.5" y="9.5" width="6" height="5" rx="1" />
-    <rect x="15.5" y="4.5" width="6" height="5" rx="1" />
-    <rect x="15.5" y="14.5" width="6" height="5" rx="1" />
-    <path d="M8.5 12H12V7h3.5" />
-    <path d="M12 12v5h3.5" />
+    <rect x="2.5" y="9.5" width="6" height="5" rx="1" vector-effect="non-scaling-stroke" />
+    <rect x="15.5" y="4.5" width="6" height="5" rx="1" vector-effect="non-scaling-stroke" />
+    <rect x="15.5" y="14.5" width="6" height="5" rx="1" vector-effect="non-scaling-stroke" />
+    <path d="M8.5 12H12V7h3.5" vector-effect="non-scaling-stroke" />
+    <path d="M12 12v5h3.5" vector-effect="non-scaling-stroke" />
   </svg>
 </template>

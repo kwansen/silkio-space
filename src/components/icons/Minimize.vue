@@ -1,17 +1,10 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="1em"
-    height="1em"
-    viewBox="0 0 24 24"
+    viewBox="0 0 16 16"
+    width="16"
+    height="16"
   >
-    <path d="M0 0h24v24H0z" fill="none" />
-    <path
-      fill="none"
-      stroke="currentColor"
-      stroke-linecap="round"
-      stroke-width="0.6"
-      d="M5 12h14"
-    />
+    <rect x="1" y="7" width="14" height="1" fill="currentColor" />
   </svg>
 </template>

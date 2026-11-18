@@ -5,6 +5,7 @@ import { useEditorStore } from "@/stores/editorStore";
 import { useDocSvc } from "@/services/document";
 import { useFdSvc } from "@/services/folder";
 import { DocEntry, DocType } from "@/types/doc";
+import { typedDocDefaults } from "@/utils/docDefaults";
 import { storeToRefs } from "pinia";
 import Drag from "vuedraggable";
 import Archive from "@/components/icons/Archive.vue";
@@ -63,7 +64,10 @@ const dragEnd = async () => {
 const createDoc = async (newType: DocType) => {
   try {
     if (!archiveId.value) return;
-    const docId = await docSvc.create({ doc_type: newType });
+    const docId = await docSvc.create({
+      doc_type: newType,
+      ...typedDocDefaults(newType),
+    });
     await fdSvc.addDocToFolder({ folderId: archiveId.value, docId });
     setDocEntries(await fdSvc.getArchiveDocEntries({ id: archiveId.value }));
     await openDocById(docId);

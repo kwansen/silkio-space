@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Minimize from "@/components/icons/Minimize.vue";
+import PixelAlign from "@/components/shared/PixelAlign.vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { ref } from "vue";
 
@@ -31,6 +32,6 @@ const unhover = () => {
     @mouseleave="unhover"
     @click="handleClick"
   >
-    <Minimize class="size-4" />
+    <PixelAlign><Minimize class="text-black" /></PixelAlign>
   </div>
 </template>

@@ -11,6 +11,7 @@
       d="m9.5 6 6 6-6 6"
       stroke="currentColor"
       stroke-width="0.6"
+      vector-effect="non-scaling-stroke"
       stroke-linecap="round"
       stroke-linejoin="round"
     />

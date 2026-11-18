@@ -10,6 +10,7 @@
       fill="none"
       stroke="currentColor"
       stroke-width="1"
+      vector-effect="non-scaling-stroke"
       stroke-linecap="round"
       stroke-linejoin="round"
       d="M3 3h18v5H3zM5 8v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M9.5 12.5h5"
