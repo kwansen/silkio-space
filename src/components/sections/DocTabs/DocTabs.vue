@@ -38,14 +38,17 @@ const options: {
     <div
       v-for="option in options"
       class="w-full aspect-square grid place-items-center cursor-pointer relative group"
-      :class="tab === option.key ? 'bg-purple-200' : 'hover:bg-gray-100'"
       @click="setDocTab(option.key)"
     >
-      <component
-        :is="tab === option.key ? option.activeIcon : option.icon"
-        class="size-5"
-        :class="tab === option.key ? 'text-purple-700' : 'text-gray-500'"
-      />
+      <div
+        class="size-7 rounded-md grid place-items-center hover:bg-gray-100"
+      >
+        <component
+          :is="tab === option.key ? option.activeIcon : option.icon"
+          class="size-5"
+          :class="tab === option.key ? 'text-purple-700' : 'text-gray-500'"
+        />
+      </div>
       <div
         class="hidden bg-white text-xs shadow-xs px-4 py-1 rounded-md group-hover:block absolute left-12 top-1/2 -translate-y-1/2 z-100 whitespace-nowrap"
       >

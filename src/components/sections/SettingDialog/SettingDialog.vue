@@ -26,7 +26,9 @@ const navKeys: string[] = navList.map((n) => n.key);
 const uiStore = useUiStore();
 const nav = computed<NavKey>({
   get: () =>
-    (navKeys.includes(uiStore.settingNav) ? uiStore.settingNav : "common") as NavKey,
+    (navKeys.includes(uiStore.settingNav)
+      ? uiStore.settingNav
+      : "common") as NavKey,
   set: (v) => uiStore.setSettingNav(v),
 });
 
@@ -41,7 +43,7 @@ const close = () => {
       class="w-full max-w-2xl h-120 bg-white rounded-2xl overflow-hidden flex flex-col"
     >
       <div
-        class="h-16 flex items-center justify-between px-4 text-2xl border-b border-purple-300"
+        class="h-16 text-lg shrink-0 flex items-center justify-between px-4 font-medium border-b border-purple-300"
       >
         设置
         <div
