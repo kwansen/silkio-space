@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useDocAction } from "@/actions/docAction";
 import Add from "@/components/icons/Add.vue";
-import DocMian from "@/components/icons/DocMian.vue";
-import FlowchartMian from "@/components/icons/FlowchartMian.vue";
-import MindmapMian from "@/components/icons/MindmapMian.vue";
+import DocIcon from "@/components/icons/Doc.vue";
+import FlowchartIcon from "@/components/icons/Flowchart.vue";
+import MindmapIcon from "@/components/icons/Mindmap.vue";
 import { useDocSortStore } from "@/stores/docSortStore";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
@@ -53,7 +53,7 @@ const { createRichtext, createMindmap, createFlowchart } = useDocAction();
 
 const popoverList: PopoverListItem[] = [
   {
-    icon: DocMian,
+    icon: DocIcon,
     text: "富文本",
     action: () => {
       createRichtext();
@@ -61,7 +61,7 @@ const popoverList: PopoverListItem[] = [
     },
   },
   {
-    icon: MindmapMian,
+    icon: MindmapIcon,
     text: "思维导图",
     action: () => {
       createMindmap();
@@ -69,7 +69,7 @@ const popoverList: PopoverListItem[] = [
     },
   },
   {
-    icon: FlowchartMian,
+    icon: FlowchartIcon,
     text: "流程图",
     action: () => {
       createFlowchart();

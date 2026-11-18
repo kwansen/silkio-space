@@ -1,19 +1,18 @@
 <template>
+  <!-- lucide archive：归档容器标识，线性规格与其余图标统一 -->
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"
     viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
   >
-    <path d="M0 0h24v24H0z" fill="none" />
-    <path
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1"
-      vector-effect="non-scaling-stroke"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      d="M3 3h18v5H3zM5 8v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8M9.5 12.5h5"
-    />
+    <rect width="20" height="5" x="2" y="3" rx="1" />
+    <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
+    <path d="M10 12h4" />
   </svg>
 </template>

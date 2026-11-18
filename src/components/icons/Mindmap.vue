@@ -1,4 +1,5 @@
 <template>
+  <!-- lucide network：顶部根节点向下分叉两子节点，契合思维导图层级语义 -->
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
@@ -6,14 +7,14 @@
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    stroke-width="1"
+    stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
   >
-    <rect x="2.5" y="9.5" width="6" height="5" rx="1" vector-effect="non-scaling-stroke" />
-    <rect x="15.5" y="4.5" width="6" height="5" rx="1" vector-effect="non-scaling-stroke" />
-    <rect x="15.5" y="14.5" width="6" height="5" rx="1" vector-effect="non-scaling-stroke" />
-    <path d="M8.5 12H12V7h3.5" vector-effect="non-scaling-stroke" />
-    <path d="M12 12v5h3.5" vector-effect="non-scaling-stroke" />
+    <rect x="16" y="16" width="6" height="6" rx="1" />
+    <rect x="2" y="16" width="6" height="6" rx="1" />
+    <rect x="9" y="2" width="6" height="6" rx="1" />
+    <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" />
+    <path d="M12 12V8" />
   </svg>
 </template>

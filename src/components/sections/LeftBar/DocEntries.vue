@@ -10,9 +10,9 @@ import { storeToRefs } from "pinia";
 import Drag from "vuedraggable";
 import Archive from "@/components/icons/Archive.vue";
 import Add from "@/components/icons/Add.vue";
-import DocMian from "@/components/icons/DocMian.vue";
-import MindmapMian from "@/components/icons/MindmapMian.vue";
-import FlowchartMian from "@/components/icons/FlowchartMian.vue";
+import DocIcon from "@/components/icons/Doc.vue";
+import MindmapIcon from "@/components/icons/Mindmap.vue";
+import FlowchartIcon from "@/components/icons/Flowchart.vue";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
 import { type Component, computed, ref, useTemplateRef } from "vue";
@@ -125,7 +125,7 @@ interface PopoverListItem {
 
 const popoverList: PopoverListItem[] = [
   {
-    icon: DocMian,
+    icon: DocIcon,
     text: "富文本",
     action: () => {
       createDoc("richText");
@@ -133,7 +133,7 @@ const popoverList: PopoverListItem[] = [
     },
   },
   {
-    icon: MindmapMian,
+    icon: MindmapIcon,
     text: "思维导图",
     action: () => {
       createDoc("mindMap");
@@ -141,7 +141,7 @@ const popoverList: PopoverListItem[] = [
     },
   },
   {
-    icon: FlowchartMian,
+    icon: FlowchartIcon,
     text: "流程图",
     action: () => {
       createDoc("flowChart");
@@ -157,7 +157,7 @@ const handleClickBtn = () => {
 
 <template>
   <div
-    class="h-11 shrink-0 flex items-center pl-3 pr-2 gap-1.5 border-b border-gray-100"
+    class="h-11 shrink-0 flex items-center pl-[18px] pr-2 gap-1.5 border-b border-gray-100"
   >
     <Archive class="size-4 shrink-0 text-neutral-400" />
     <span class="flex-1 min-w-0 truncate">{{ name }}</span>

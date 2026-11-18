@@ -8,8 +8,9 @@
 // 含经 noteShapes 插件注册的便签）。
 import { FlowChart, type FlowData, type ShapeKind } from "silkio-flowchart";
 import { onClickOutside } from "@vueuse/core";
-import { onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef } from "vue";
 import Delete from "@/components/icons/Delete.vue";
+import Edit from "@/components/icons/Edit.vue";
 import Maximize from "@/components/icons/Maximize.vue";
 import PlusBox from "@/components/icons/PlusBox.vue";
 import Redo from "@/components/icons/Redo.vue";
@@ -32,11 +33,33 @@ const emit = defineEmits<{
 const canvasRef = ref<HTMLCanvasElement>();
 const flowchart = shallowRef<FlowChart>();
 
-// 文档标题：画布内容无天然标题节点（不像 MindMap 的根节点），由用户独立编辑
+// 文档标题：画布内容无天然标题节点（不像 MindMap 的根节点），由用户独立编辑。
+// 默认只读展示，点铅笔按钮进入编辑态；回车/失焦保存，Esc 取消
 const editorStore = useEditorStore();
 const { setDocTitle } = useEditorAction();
-const onTitleInput = (e: Event) => {
-  setDocTitle((e.target as HTMLInputElement).value);
+const titleEditing = ref(false);
+const titleDraft = ref("");
+const titleInputRef = useTemplateRef<HTMLInputElement>("titleInputRef");
+const startTitleEdit = () => {
+  titleDraft.value = editorStore.title;
+  titleEditing.value = true;
+  nextTick(() => titleInputRef.value?.select());
+};
+const commitTitleEdit = () => {
+  if (!titleEditing.value) return;
+  titleEditing.value = false;
+  setDocTitle(titleDraft.value);
+};
+const cancelTitleEdit = () => {
+  titleEditing.value = false;
+};
+const onTitleKeydown = (e: KeyboardEvent) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    commitTitleEdit();
+  } else if (e.key === "Escape") {
+    cancelTitleEdit();
+  }
 };
 
 // 工具栏状态：撤销重做可用性、选中态、缩放百分比
@@ -217,17 +240,36 @@ onBeforeUnmount(() => {
     <div class="absolute inset-0">
       <canvas ref="canvasRef" class="block h-full w-full bg-white"></canvas>
     </div>
-    <!-- 文档标题：左上角浮动 chip，样式与工具条一致 -->
+    <!-- 文档标题：左上角浮动 chip，样式与工具条一致；默认只读展示，点铅笔进入编辑 -->
     <div
-      class="absolute top-2 left-2 z-10 flex items-center h-8 px-2 bg-white/85 backdrop-blur-md rounded-lg shadow-lg"
+      class="absolute top-2 left-2 z-10 flex items-center h-8 px-2 gap-1 bg-white/85 backdrop-blur-md rounded-lg shadow-lg"
     >
       <input
-        class="w-36 bg-transparent outline-none text-sm text-gray-700 placeholder:text-gray-300 cursor-text"
-        :value="editorStore.title"
+        v-if="titleEditing"
+        ref="titleInputRef"
+        class="w-36 bg-transparent outline-none text-sm text-gray-700 placeholder:text-gray-300"
+        v-model="titleDraft"
         placeholder="未命名标题"
         title="文档标题"
-        @input="onTitleInput"
+        @keydown="onTitleKeydown"
+        @blur="commitTitleEdit"
       />
+      <template v-else>
+        <span
+          class="max-w-36 truncate text-sm text-gray-700"
+          :class="editorStore.title ? '' : 'text-gray-300'"
+          :title="editorStore.title || '未命名标题'"
+        >
+          {{ editorStore.title || "未命名标题" }}
+        </span>
+        <button
+          class="size-6 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200 text-gray-400 hover:text-gray-600"
+          title="编辑标题"
+          @click="startTitleEdit"
+        >
+          <Edit class="size-3.5" />
+        </button>
+      </template>
     </div>
     <div
       class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-0.5 px-2 py-1 bg-white/85 backdrop-blur-md rounded-lg shadow-lg text-gray-700"
