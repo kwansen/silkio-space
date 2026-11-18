@@ -1,5 +1,10 @@
 <template>
-  <div class="h-15 flex items-center justify-center border-b border-gray-100">
+  <!-- 搜索无结果：语义区别于空列表，文案保留引导；样式统一走 EmptyHint -->
+  <EmptyHint class="h-15 border-b border-gray-100">
     未找到匹配的归档，尝试使用其他关键词搜索。
-  </div>
+  </EmptyHint>
 </template>
+
+<script setup lang="ts">
+import EmptyHint from "@/components/shared/EmptyHint.vue";
+</script>

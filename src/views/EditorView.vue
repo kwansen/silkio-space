@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import EditorEmpty from "@/components/sections/EditorEmpty.vue";
+import EmptyHint from "@/components/shared/EmptyHint.vue";
 import FlowChart from "@/components/sections/FlowChart/FlowChart.vue";
 import LeftBar from "@/components/sections/LeftBar/LeftBar.vue";
 import MindMap from "@/components/sections/MindMap/MindMap.vue";
@@ -159,12 +160,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div
-    class="w-full h-full grid place-items-center"
+  <EmptyHint
+    class="w-full h-full"
     v-if="editorStore.editorMode === 'doc' && !id"
-  >
-    空空如也
-  </div>
+  />
   <!-- 行容器统一控制四周与列间留白（8px），各卡片不再自带边距，避免叠加 -->
   <div class="relative w-full h-full flex gap-2 px-2 pb-2" v-else>
     <!-- 左侧栏：与编辑区一致的白色圆角卡片 -->

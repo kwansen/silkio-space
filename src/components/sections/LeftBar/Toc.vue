@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import Doc from "@/components/icons/Doc.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
+import EmptyHint from "@/components/shared/EmptyHint.vue";
 import { useEditorStore } from "@/stores/editorStore";
 import { useRichtextStore } from "@/stores/richtextStore";
 const editorStore = useEditorStore();
@@ -33,12 +34,7 @@ const indentOf = (level: number) =>
     </span>
   </div>
   <ScrollArea class="flex-1 min-h-0 px-2 py-2">
-    <div
-      v-if="richtextStore.toc.length === 0"
-      class="h-11 flex items-center justify-center text-xs text-neutral-400"
-    >
-      空空如也
-    </div>
+    <EmptyHint v-if="richtextStore.toc.length === 0" class="h-11" />
     <a
       :href="`#${item.id}`"
       v-for="item in richtextStore.toc"

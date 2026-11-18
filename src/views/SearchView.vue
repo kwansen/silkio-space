@@ -9,6 +9,7 @@ import { onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
 import Search from "@/components/icons/Search.vue";
+import EmptyHint from "@/components/shared/EmptyHint.vue";
 import { ScoredDoc } from "@/types/doc";
 const store = useDocSearchStore();
 const { setPageSize, setDocs, setQuery } = store;
@@ -129,12 +130,12 @@ onUnmounted(() => {
         />
       </div>
 
-      <div
-        class="h-16 border-t border-gray-100 grid place-items-center text-neutral-400"
+      <EmptyHint
+        class="h-16 border-t border-gray-100"
         v-if="docsThisPage.length === 0 && !!query?.trim()"
       >
-        无匹配的文档，请更换关键词
-      </div>
+        未找到匹配的文档，尝试使用其他关键词搜索。
+      </EmptyHint>
       <div
         v-if="docsThisPage.length > 0"
         v-for="(d, index) in docsThisPage"

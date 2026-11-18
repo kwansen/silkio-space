@@ -53,7 +53,7 @@ onUnmounted(() => end());
         {{ shortcutToShow(shortcut) }}
       </div>
       <!-- 正在记录但无内容 -->
-      <div v-if="isRecording && !shortcut" class="">正在录制...</div>
+      <div v-if="isRecording && !shortcut" class="">正在录制…</div>
       <!-- 没有记录 -->
       <div v-if="!isRecording">
         {{ shortcutToShow(v) }}

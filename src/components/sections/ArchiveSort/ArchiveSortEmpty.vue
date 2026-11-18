@@ -1,5 +1,7 @@
 <template>
-  <div class="h-15 flex items-center justify-center border-b border-gray-100">
-    暂无归档，新建一个吧！
-  </div>
+  <EmptyHint class="h-15" />
 </template>
+
+<script setup lang="ts">
+import EmptyHint from "@/components/shared/EmptyHint.vue";
+</script>
