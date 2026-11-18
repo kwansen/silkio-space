@@ -16,6 +16,7 @@
     "core:window:allow-set-title",
     "core:window:allow-close",
     "sql:default",
+    "dialog:default",
     "sql:allow-execute",
     "fs:default",
     "fs:allow-write-file",

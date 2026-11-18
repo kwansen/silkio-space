@@ -12,13 +12,20 @@ import { MindMap, type MindMapNode, type MindMapOptions } from "silkio-mindmap";
 import type { EdgeShape } from "@silkor/core";
 import type { Style } from "silkio-mindmap";
 import { onClickOutside } from "@vueuse/core";
-import { onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef } from "vue";
+import {
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  shallowRef,
+  useTemplateRef,
+} from "vue";
 import ArrowDown from "@/components/icons/ArrowDown.vue";
 import Maximize from "@/components/icons/Maximize.vue";
 import Redo from "@/components/icons/Redo.vue";
 import Undo from "@/components/icons/Undo.vue";
 import { useEditorAction } from "@/actions/editorAction";
 import { useEditorStore } from "@/stores/editorStore";
+import { exportImage } from "@/utils/exportImage";
 
 const props = defineProps<{ content: string }>();
 
@@ -271,13 +278,14 @@ const centerView = () => mindmap.value?.center();
 const exportPng = async () => {
   const mm = mindmap.value;
   if (!mm) return;
-  const blob = await mm.toImage({ background: "#ffffff" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "mindmap.png";
-  a.click();
-  URL.revokeObjectURL(url);
+  try {
+    const blob = await mm.toImage({ background: "#ffffff" });
+    // 弹原生保存对话框写盘；用户取消返回 false，静默忽略
+    await exportImage("mindmap.png", blob);
+  } catch (e) {
+    console.log("1");
+    console.error(e);
+  }
 };
 
 // 下拉菜单开关与外点关闭

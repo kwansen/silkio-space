@@ -14,6 +14,7 @@ import Delete from "@/components/icons/Delete.vue";
 import Maximize from "@/components/icons/Maximize.vue";
 import Redo from "@/components/icons/Redo.vue";
 import Undo from "@/components/icons/Undo.vue";
+import { exportImage } from "@/utils/exportImage";
 
 const props = defineProps<{ content: string }>();
 
@@ -135,13 +136,13 @@ const zoomOut = () => setZoom((zoom.value - 10) / 100);
 const exportPng = async () => {
   const fc = flowchart.value;
   if (!fc) return;
-  const blob = await fc.toImage({ background: "#ffffff" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "flowchart.png";
-  a.click();
-  URL.revokeObjectURL(url);
+  try {
+    const blob = await fc.toImage({ background: "#ffffff" });
+    // 弹原生保存对话框写盘；用户取消返回 false，静默忽略
+    await exportImage("flowchart.png", blob);
+  } catch (e) {
+    console.error(e);
+  }
 };
 
 // 下拉菜单开关与外点关闭
