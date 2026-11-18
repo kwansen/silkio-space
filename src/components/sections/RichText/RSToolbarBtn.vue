@@ -36,16 +36,17 @@ defineProps<Prop>();
     @mouseleave="hovered = false"
   >
     <PixelAlign><component :is="b.icon" class="size-6" /></PixelAlign>
-    <!-- <Teleport to="body"> -->
+    <!-- Teleport 到 body 脱离父容器裁剪；v-if 懒挂载，autoUpdate 仅在 hover 期间活跃 -->
+    <Teleport to="body">
     <div
+      v-if="hovered"
       :style="floatingStyles"
       ref="floating"
-      v-show="hovered"
-      class="flex items-center gap-2 px-2 py-1 rounded-md bg-white shadow-md whitespace-nowrap pointer-events-none"
+      class="z-50 flex items-center gap-2 px-2 py-1 rounded-md bg-white shadow-md whitespace-nowrap pointer-events-none"
     >
       <span class="text-xs">{{ b.name }}</span>
       <span class="text-[10px]">{{ b.shortcut }}</span>
     </div>
-    <!-- </Teleport> -->
+    </Teleport>
   </div>
 </template>
