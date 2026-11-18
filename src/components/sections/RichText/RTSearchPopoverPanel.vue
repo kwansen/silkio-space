@@ -76,7 +76,7 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <div class="bg-white p-4 rounded-md shadow-2xl select-none relative">
+  <div class="bg-white p-4 rounded-lg shadow-2xl select-none relative">
     <FocusScope autofocus>
       <div class="space-y-4">
         <div class="flex justify-end">

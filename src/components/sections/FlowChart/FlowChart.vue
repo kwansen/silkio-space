@@ -304,7 +304,7 @@ onBeforeUnmount(() => {
         </button>
         <div
           v-if="shapeMenuOpen"
-          class="absolute top-full left-0 mt-1.5 z-10 flex flex-row flex-wrap w-60 gap-0.5 p-1 bg-white rounded-[10px] shadow-2xl before:absolute before:-top-1.5 before:left-0 before:right-0 before:h-1.5 before:content-['']"
+          class="absolute top-full left-0 mt-1.5 z-10 flex flex-row flex-wrap w-60 gap-0.5 p-1 bg-white rounded-lg shadow-2xl before:absolute before:-top-1.5 before:left-0 before:right-0 before:h-1.5 before:content-['']"
         >
           <button
             v-for="s in SHAPE_OPTIONS"
@@ -334,7 +334,7 @@ onBeforeUnmount(() => {
         </button>
         <div
           v-if="replaceMenuOpen"
-          class="absolute top-full left-0 mt-1.5 z-10 flex flex-row flex-wrap w-60 gap-0.5 p-1 bg-white rounded-[10px] shadow-2xl before:absolute before:-top-1.5 before:left-0 before:right-0 before:h-1.5 before:content-['']"
+          class="absolute top-full left-0 mt-1.5 z-10 flex flex-row flex-wrap w-60 gap-0.5 p-1 bg-white rounded-lg shadow-2xl before:absolute before:-top-1.5 before:left-0 before:right-0 before:h-1.5 before:content-['']"
         >
           <button
             v-for="s in SHAPE_OPTIONS"

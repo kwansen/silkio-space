@@ -381,7 +381,7 @@ onBeforeUnmount(() => {
           <div
             v-for="d in DIRECTION_OPTIONS"
             :key="d.value"
-            class="px-3 py-1.5 rounded-md cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+            class="px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100 whitespace-nowrap"
             @click="
               setLayout(d.value);
               directionMenuOpen = false;
@@ -409,7 +409,7 @@ onBeforeUnmount(() => {
           <div
             v-for="e in EDGE_OPTIONS"
             :key="e.value"
-            class="px-3 py-1.5 rounded-md cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+            class="px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100 whitespace-nowrap"
             @click="
               setEdgeStyle(e.value);
               edgeMenuOpen = false;

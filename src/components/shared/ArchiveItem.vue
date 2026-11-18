@@ -152,7 +152,7 @@ const action = useArchiveAction();
             :class="i.class"
             @click.stop="i.action"
           >
-            <component :is="i.icon" class="size-5" />
+            <component :is="i.icon" class="size-4" />
             <span>{{ i.text }}</span>
           </div>
         </div>

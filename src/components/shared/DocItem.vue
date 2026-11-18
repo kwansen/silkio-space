@@ -166,7 +166,7 @@ const getClass = () => {
       :class="i.class"
       @click="i.action"
     >
-      <component :is="i.icon" class="size-5" />
+      <component :is="i.icon" class="size-4" />
       <span>{{ i.text }}</span>
     </div>
   </div>
