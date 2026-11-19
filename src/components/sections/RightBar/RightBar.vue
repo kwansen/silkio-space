@@ -4,6 +4,7 @@
 // 状态与网络逻辑在 aiStore + aiAction；服务配置在设置对话框的「AI 服务」页签。
 import AIMarkdown from "./AIMarkdown.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
+import { isOpsStream } from "@/infrastructure/api/ai";
 import { useAiAction } from "@/actions/aiAction";
 import { useAiStore } from "@/stores/aiStore";
 import { storeToRefs } from "pinia";
@@ -13,12 +14,14 @@ import Stop from "@/components/icons/Stop.vue";
 import ArrowUp from "@/components/icons/ArrowUp.vue";
 
 const aiStore = useAiStore();
-const { messages, pending, busy, prompt } = storeToRefs(aiStore);
+const { messages, pending, busy, prompt, ready } = storeToRefs(aiStore);
 const { send, stop, clear } = useAiAction();
 
 const pendingStatus = computed(() => {
   const p = pending.value;
   if (!p) return "";
+  // 编辑类指令模型输出的是操作 JSON（由包内控制器解析执行），不实时渲染
+  if (isOpsStream(p.content)) return "正在应用 AI 操作…";
   if (p.content) return "回答中…";
   return p.reasoning ? "思考中…" : "等待响应…";
 });
@@ -66,7 +69,10 @@ const onKeydown = (event: KeyboardEvent) => {
           class="mt-8 text-center text-xs leading-[1.9] text-gray-400"
         >
           询问当前文档内容，或输入任意问题
-          <br />尚未配置 AI 服务，请在主页窗口的设置中配置
+          <br />思维导图/流程图支持 AI 直接改图，如"补充三个子节点"
+          <template v-if="!ready">
+            <br />尚未配置 AI 服务，请在主页窗口的设置中配置
+          </template>
         </div>
 
         <div v-for="m in messages" :key="m.id">
@@ -85,7 +91,7 @@ const onKeydown = (event: KeyboardEvent) => {
           >
             {{ m.text }}
           </div>
-          <!-- AI 回复：思考过程（可折叠）+ 回答 -->
+          <!-- AI 回复：思考过程（可折叠）+ 回答 + 执行反馈链 -->
           <div v-else class="flex flex-col gap-2">
             <details v-if="m.reasoning" class="rounded-lg bg-gray-50 px-2.5 py-1.5">
               <summary class="cursor-pointer text-xs text-gray-400 select-none">
@@ -102,6 +108,29 @@ const onKeydown = (event: KeyboardEvent) => {
               :value="m.text"
               class="text-xs leading-5 text-gray-600"
             />
+            <!-- 执行反馈链（参照 .examples AISidebar）：AI 改图指令逐步应用的结果 -->
+            <div v-if="m.steps?.length" class="flex flex-col gap-1">
+              <div
+                v-for="(s, i) in m.steps"
+                :key="i"
+                class="flex items-start gap-1.5 text-xs leading-5"
+              >
+                <span
+                  :class="
+                    s.status === 'applied'
+                      ? 'text-emerald-500'
+                      : 'text-gray-300'
+                  "
+                  >{{ s.status === "applied" ? "✓" : "–" }}</span
+                >
+                <span
+                  :class="
+                    s.status === 'applied' ? 'text-gray-600' : 'text-gray-400'
+                  "
+                  >{{ s.label }}</span
+                >
+              </div>
+            </div>
           </div>
         </div>
 
@@ -122,7 +151,7 @@ const onKeydown = (event: KeyboardEvent) => {
             </div>
           </details>
           <AIMarkdown
-            v-if="pending.content"
+            v-if="pending.content && !isOpsStream(pending.content)"
             :value="pending.content"
             class="text-xs leading-5 text-gray-600"
           />

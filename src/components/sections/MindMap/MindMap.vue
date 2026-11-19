@@ -26,6 +26,8 @@ import Undo from "@/components/icons/Undo.vue";
 import DirectionGlyph from "./DirectionGlyph.vue";
 import EdgeGlyph from "./EdgeGlyph.vue";
 import { useEditorAction } from "@/actions/editorAction";
+import { mindMapAIGenerate } from "@/actions/aiAction";
+import { setMindMapInstance } from "@/actions/canvasRegistry";
 import { useHoverMenu } from "@/utils/toolbarMenu";
 import { exportImage } from "@/utils/exportImage";
 import { countWords } from "@/utils/text";
@@ -343,11 +345,16 @@ onMounted(async () => {
     direction: parsed.direction,
     edgeStyle: parsed.edgeStyle,
     levelStyles: LEVEL_STYLES,
+    // AI 编辑适配器（参照 .examples/mindmap）：指令经 ai.run 直接改图，
+    // 模型输出由包内 AIEditingController 容错解析，操作原子可撤销
+    ai: mindMapAIGenerate,
     onChange: () => {
       save();
       syncState();
     },
   });
+  // 注册活实例：AI 面板（RightBar）经注册表取用 ai 控制器
+  setMindMapInstance(mindmap.value);
   offViewport = app.value.camera.onViewportChange(() => {
     zoom.value = Math.round((app.value?.camera.scale ?? 1) * 100);
   });
@@ -361,6 +368,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  setMindMapInstance(null);
   offViewport?.();
   mindmap.value?.destroy();
   mindmap.value = undefined;

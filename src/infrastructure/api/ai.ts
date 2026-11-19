@@ -26,7 +26,7 @@ export interface AIDelta {
   content?: string;
 }
 
-const AI_CONFIG_KEY = "keyflow-ai-config";
+export const AI_CONFIG_KEY = "keyflow-ai-config";
 
 export function loadAIConfig(): AIConfig {
   const empty: AIConfig = {
@@ -53,6 +53,13 @@ export function saveAIConfig(config: AIConfig): void {
 
 const joinURL = (baseURL: string, path: string) =>
   baseURL.replace(/\/+$/, "") + path;
+
+// 判断一段流式输出是否为 AI 编辑协议的操作 JSON（silkio 包控制器解析）：
+// 编辑类指令模型直接输出 ops JSON/代码块，不应作为 Markdown 实时渲染
+export function isOpsStream(text: string): boolean {
+  const s = text.trimStart();
+  return s.startsWith("{") || s.startsWith("[") || s.startsWith("```");
+}
 
 // OpenAI Chat Completions 兼容格式：SSE 解析 choices[0].delta，
 // 思考过程取 reasoning_content / reasoning（DeepSeek 等兼容字段）
@@ -241,14 +248,32 @@ async function fetchAnthropicStream(
   return content;
 }
 
-// 统一入口：按配置格式分发，流式增量经 onDelta 回调，返回完整回答文本
+// 统一入口：按配置格式分发，流式增量经 onDelta 回调，返回完整回答文本。
+// 网络层瞬时失败（如连接池旧连接被服务端关闭后 POST 不会被 reqwest 自动重试，
+// 表现为「第一次成功、第二次发送失败」）在尚未收到任何流式增量时自动重试一次；
+// 已有增量则不重试，避免内容重复。
+const RETRYABLE = /error sending request|error trying to connect|timed out|connection/i;
+
 export async function fetchAIStream(
   cfg: AIConfig,
   messages: AIMessage[],
   onDelta: (d: AIDelta) => void,
   signal: AbortSignal,
 ): Promise<string> {
-  return cfg.format === "anthropic"
-    ? fetchAnthropicStream(cfg, messages, onDelta, signal)
-    : fetchOpenAIStream(cfg, messages, onDelta, signal);
+  let received = false;
+  const track = (d: AIDelta) => {
+    received = true;
+    onDelta(d);
+  };
+  const doFetch = () =>
+    cfg.format === "anthropic"
+      ? fetchAnthropicStream(cfg, messages, track, signal)
+      : fetchOpenAIStream(cfg, messages, track, signal);
+  try {
+    return await doFetch();
+  } catch (e) {
+    if (received || signal.aborted || !RETRYABLE.test(String(e))) throw e;
+    received = false;
+    return doFetch();
+  }
 }

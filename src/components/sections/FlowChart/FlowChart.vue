@@ -19,6 +19,8 @@ import Undo from "@/components/icons/Undo.vue";
 import ShapeIcon from "./ShapeIcon.vue";
 import { noteShapes } from "./noteShape";
 import { useEditorAction } from "@/actions/editorAction";
+import { flowChartAIGenerate } from "@/actions/aiAction";
+import { setFlowChartInstance } from "@/actions/canvasRegistry";
 import { useEditorStore } from "@/stores/editorStore";
 import { useHoverMenu } from "@/utils/toolbarMenu";
 import { exportImage } from "@/utils/exportImage";
@@ -246,11 +248,16 @@ onMounted(async () => {
     canvas,
     data: parseDoc(props.content),
     plugins: [noteShapes],
+    // AI 生成适配器（参照 .examples/flowchart）：模型只输出语义图，
+    // 坐标与端口方向由包内布局器计算，generate 入口整图替换/改图
+    ai: flowChartAIGenerate,
     onChange: () => {
       save();
       syncState();
     },
   });
+  // 注册活实例：AI 面板（RightBar）经注册表取用 generate 入口
+  setFlowChartInstance(flowchart.value);
   offSelection = flowchart.value.onSelectionChange(() => syncState());
   offViewport = flowchart.value.onViewportChange((scale) => {
     zoom.value = Math.round(scale * 100);
@@ -272,6 +279,7 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  setFlowChartInstance(null);
   offSelection?.();
   offViewport?.();
   flowchart.value?.destroy();
