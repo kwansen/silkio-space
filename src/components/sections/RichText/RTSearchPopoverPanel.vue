@@ -82,7 +82,7 @@ onUnmounted(() => {
         <div class="flex justify-end">
           <div
             @click="emit('close')"
-            class="grid place-items-center size-6 bg-gray-200 rounded-md cursor-pointer text-gray-500 hover:bg-red-100 hover:text-red-600"
+            class="grid place-items-center size-6 bg-gray-200 rounded-md cursor-pointer text-gray-500 hover:bg-red-50 hover:text-red-500"
           >
             <CloseSmall class="size-3.5" />
           </div>

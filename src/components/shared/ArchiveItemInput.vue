@@ -76,7 +76,7 @@ onClickOutside(box, () => {
       <Check class="size-5" />
     </button>
     <div
-      class="size-7 cursor-pointer rounded-md grid place-items-center text-gray-500 hover:bg-red-100 hover:text-red-600"
+      class="size-7 cursor-pointer rounded-md grid place-items-center text-gray-500 hover:bg-red-50 hover:text-red-500"
       @click="close"
     >
       <Close class="size-4" />

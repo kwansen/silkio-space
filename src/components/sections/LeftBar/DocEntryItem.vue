@@ -47,7 +47,7 @@ const emit = defineEmits<{
       {{ entry.title || "未命名标题" }}
     </span>
     <button
-      class="size-6 shrink-0 grid place-items-center rounded-md text-gray-400 hover:bg-red-100 hover:text-red-600 transition-opacity"
+      class="size-6 shrink-0 grid place-items-center rounded-md text-gray-400 hover:bg-red-50 hover:text-red-500 transition-opacity"
       :class="hovered ? 'opacity-100' : 'opacity-0 pointer-events-none'"
       title="移出归档"
       @click.stop="emit('remove')"

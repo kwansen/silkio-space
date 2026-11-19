@@ -108,7 +108,7 @@ onKeyStroke("Enter", () => {
     <div
       v-if="previewUrl"
       @click="previewUrl = ''"
-      class="absolute size-5 grid place-items-center bg-gray-300 rounded-md cursor-pointer text-gray-600 hover:bg-red-100 hover:text-red-600 top-0 right-0 translate-x-1/2 -translate-y-1/2"
+      class="absolute size-5 grid place-items-center bg-gray-300 rounded-md cursor-pointer text-gray-600 hover:bg-red-50 hover:text-red-500 top-0 right-0 translate-x-1/2 -translate-y-1/2"
     >
       <CloseSmall class="size-3.5" />
     </div>
