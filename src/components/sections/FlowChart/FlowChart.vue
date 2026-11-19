@@ -35,16 +35,22 @@ const canvasRef = ref<HTMLCanvasElement>();
 const flowchart = shallowRef<FlowChart>();
 
 // 文档标题：画布内容无天然标题节点（不像 MindMap 的根节点），由用户独立编辑。
-// 默认只读展示，点铅笔按钮进入编辑态；回车/失焦保存，Esc 取消
+// 默认只读展示，点铅笔按钮进入编辑态；回车/失焦保存，Esc 取消。
+// 输入过程中实时同步 store.title 与左侧目录条目（与 RichText/MindMap 行为一致）
 const editorStore = useEditorStore();
 const { setDocTitle } = useEditorAction();
 const titleEditing = ref(false);
 const titleDraft = ref("");
+const titleBeforeEdit = ref("");
 const titleInputRef = useTemplateRef<HTMLInputElement>("titleInputRef");
 const startTitleEdit = () => {
+  titleBeforeEdit.value = editorStore.title;
   titleDraft.value = editorStore.title;
   titleEditing.value = true;
   nextTick(() => titleInputRef.value?.select());
+};
+const onTitleInput = () => {
+  setDocTitle(titleDraft.value);
 };
 const commitTitleEdit = () => {
   if (!titleEditing.value) return;
@@ -52,6 +58,9 @@ const commitTitleEdit = () => {
   setDocTitle(titleDraft.value);
 };
 const cancelTitleEdit = () => {
+  if (titleDraft.value !== titleBeforeEdit.value) {
+    setDocTitle(titleBeforeEdit.value);
+  }
   titleEditing.value = false;
 };
 const onTitleKeydown = (e: KeyboardEvent) => {
@@ -289,6 +298,7 @@ onBeforeUnmount(() => {
         v-model="titleDraft"
         placeholder="未命名标题"
         title="文档标题"
+        @input="onTitleInput"
         @keydown="onTitleKeydown"
         @blur="commitTitleEdit"
       />
