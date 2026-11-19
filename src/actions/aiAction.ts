@@ -13,6 +13,7 @@ import {
   getMindMapInstance,
   getRichTextInstance,
 } from "@/actions/canvasRegistry";
+import { useEditorAction } from "@/actions/editorAction";
 import { useAiStore } from "@/stores/aiStore";
 import { useEditorStore } from "@/stores/editorStore";
 import { useUiStore } from "@/stores/uiStore";
@@ -228,6 +229,8 @@ export const useAiAction = () => {
           const result = await richtext.run(text, {
             history,
             title: editorStore.title,
+            // setTitle 走统一落库链路（store/左侧目录/防抖落库三处同步）
+            setTitle: (v) => useEditorAction().setDocTitle(v),
           });
           if (gen !== generation) return;
           const reasoning = aiStore.pending?.reasoning || undefined;

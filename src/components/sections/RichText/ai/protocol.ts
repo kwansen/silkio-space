@@ -37,13 +37,20 @@ export interface RichTextRedoOp {
   op: "redo";
 }
 
+// 文档标题在编辑器外单独维护：改标题不是文档事务，走宿主注入的回调落库
+export interface RichTextSetTitleOp {
+  op: "setTitle";
+  title: string;
+}
+
 export type RichTextOp =
   | RichTextInsertOp
   | RichTextReplaceOp
   | RichTextDeleteOp
   | RichTextAnswerOp
   | RichTextUndoOp
-  | RichTextRedoOp;
+  | RichTextRedoOp
+  | RichTextSetTitleOp;
 
 export interface RichTextAITurn {
   role: "user" | "assistant";
@@ -125,6 +132,9 @@ export function normalizeAIOps(raw: unknown): RichTextOp[] {
     } else if (op.op === "answer") {
       if (typeof op.text !== "string" || !op.text)
         throw new Error(`AI answer 操作缺少 text${no}`);
+    } else if (op.op === "setTitle") {
+      if (typeof op.title !== "string" || !op.title.trim())
+        throw new Error(`AI setTitle 操作缺少 title（新标题文本）${no}`);
     } else if (op.op !== "undo" && op.op !== "redo") {
       throw new Error(`AI 返回了未知操作类型${no}: ${String(op?.op)}`);
     }

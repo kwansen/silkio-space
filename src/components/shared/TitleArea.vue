@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import clsx from "clsx";
 import { twMerge } from "tailwind-merge";
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
 import { nextTick, useAttrs, useTemplateRef } from "vue";
 
 defineOptions({
@@ -54,6 +54,10 @@ const handleOnInput = () => {
   resize();
   emit("onInput");
 };
+
+// 程序化改值（AI setTitle、文档切换回填等）不触发 input 事件，
+// 元素尺寸也未变（ResizeObserver 不感知），须监听 model 主动自适应
+watch(v, () => resize());
 
 let resizeObserver: ResizeObserver | null = null;
 

@@ -79,8 +79,11 @@ const normalizeTargetText = (s: string) =>
 export interface RichTextAIRunOptions {
   // AI 编辑对话历史（不含本次指令）
   history?: RichTextAITurn[];
-  // 文档标题：仅作上下文提示（标题在编辑器外单独维护，AI 无需也无法修改）
+  // 文档标题：仅作上下文提示（标题在编辑器外单独维护）
   title?: string;
+  // 修改文档标题的回调（"setTitle" 操作）：标题不在 Tiptap 文档内，由宿主
+  // 注入统一落库链路（store/目录项/防抖落库）；缺省时该操作报错拒绝
+  setTitle?: (title: string) => void;
 }
 
 export class RichTextAIController {
@@ -149,7 +152,11 @@ export class RichTextAIController {
     if (
       ops.some((o) => o.op === "undo" || o.op === "redo") &&
       ops.some(
-        (o) => o.op === "insert" || o.op === "replace" || o.op === "delete",
+        (o) =>
+          o.op === "insert" ||
+          o.op === "replace" ||
+          o.op === "delete" ||
+          o.op === "setTitle",
       )
     )
       throw new Error("AI 的 undo/redo 操作不能与编辑类操作混用，请分开执行");
@@ -179,7 +186,10 @@ export class RichTextAIController {
       }
       return { applied, ops, steps, answer };
     }
-    const { steps, applied } = this.compile(ops, snapshotDoc, snapshotBlocks);
+    const { steps, applied } = this.compile(ops, snapshotDoc, snapshotBlocks, {
+      setTitle: options.setTitle,
+      currentTitle: options.title,
+    });
     return { applied, ops, steps, answer };
   }
 
@@ -190,6 +200,7 @@ export class RichTextAIController {
     ops: RichTextOp[],
     snapshotDoc: PMNode,
     snapshotBlocks: BlockInfo[],
+    titleCtx: { setTitle?: (title: string) => void; currentTitle?: string } = {},
   ): { steps: RichTextAIStep[]; applied: number } {
     const editor = this.editor;
     const schema = editor.schema;
@@ -213,17 +224,21 @@ export class RichTextAIController {
     // 全文精确匹配 → 片段匹配 → "文本[n]" 序号消歧）；多个匹配且未给序号
     // 即抛消歧错误，列出候选块预览供模型改用锚点或更长片段
     const resolveTarget = (raw: string, no: string): BlockInfo & { trackedRef?: TrackedBlock } => {
+      // 形似 id 但文档中查无此块时记录，最终报错点名（模型编造 id 的常见幻觉）
+      let idMiss = "";
       const trimmed = raw.trim();
       // 持久化块 id（UniqueID 注入，可带 "id:" 前缀）：每条操作在当前 tr.doc
       // 上按 id 直接重查，跨操作稳定（insert/delete 移位不影响），最可靠的定位方式。
-      // id 形如 12 位 base36；形似 id 但查无此块时退回锚点/文本定位（模型可能幻觉编造）
+      // 兼容 base36（12 位）与 UUID 形态（含连字符）；形似 id 但查无此块时
+      // 记录并退回锚点/文本定位，最终报错时点名 id 缺失（模型可能编造 id）
       const idCandidate = trimmed.replace(/^id:/, "").trim();
-      if (/^[a-z0-9]{6,}$/i.test(idCandidate)) {
+      if (/^[a-z0-9][a-z0-9-]{5,}$/i.test(idCandidate)) {
         const deletedAt = deletedIds.get(idCandidate);
         if (deletedAt)
           throw new Error(`块（id: ${idCandidate}）已在${deletedAt}被移除${no}`);
         const hit = blocksOf().find((b) => b.id === idCandidate);
         if (hit) return { ...hit };
+        idMiss = idCandidate;
       }
       // 块序号锚点：定位快照块并经事务映射跟踪到当前位置
       const anchor = trimmed.match(/^#(\d+)$/) ?? trimmed.match(/^\[(\d+)\]$/);
@@ -285,7 +300,11 @@ export class RichTextAIController {
         .slice(0, 5)
         .map((b) => `「${preview(b.text)}」`);
       throw new Error(
-        `无法定位 AI 操作目标块: "${raw}"${no}${near.length ? `；相近块：${near.join("、")}` : ""}`,
+        `无法定位 AI 操作目标块: "${raw}"${no}` +
+          (idMiss
+            ? `；目标块 id「${idMiss}」在当前文档中不存在（可能编造了 id 或该块已被删除），请改用块文本或块序号锚点（"#n"）`
+            : "") +
+          (near.length ? `；相近块：${near.join("、")}` : ""),
       );
     };
 
@@ -309,10 +328,32 @@ export class RichTextAIController {
       }
     };
 
+    // setTitle 延迟应用：编译期先收集，全部操作通过后再写入宿主，
+    // 保证"任一操作非法即整体无效"的原子语义不被回调副作用破坏
+    let pendingTitle: { title: string; no: string } | null = null;
+
     for (const [i, op] of ops.entries()) {
       const no = `（第 ${i + 1} 项）`;
       // answer 已在解析期提取为 answer、undo/redo 已在 run 分流：防御性跳过
       if (op.op === "answer" || op.op === "undo" || op.op === "redo") continue;
+      if (op.op === "setTitle") {
+        if (!titleCtx.setTitle)
+          throw new Error(`宿主未提供标题修改能力，无法应用 setTitle 操作${no}`);
+        const title = op.title.trim();
+        if (!title) throw new Error(`AI setTitle 操作缺少 title（新标题文本）${no}`);
+        if (titleCtx.currentTitle !== undefined && title === titleCtx.currentTitle) {
+          steps.push({ op, label: "标题未变化，已跳过", status: "skipped" });
+          continue;
+        }
+        pendingTitle = { title, no };
+        steps.push({
+          op,
+          label: `修改文档标题：${preview(op.title)}`,
+          status: "applied",
+        });
+        applied++;
+        continue;
+      }
       if (op.op === "insert") {
         const nodes = parseBlocks(op.content, no);
         if (op.target) {
@@ -373,6 +414,8 @@ export class RichTextAIController {
     if (applied) {
       tr.scrollIntoView();
       editor.view.dispatch(tr);
+      // 文档事务落定后再写标题（宿主回调走统一落库链路）
+      if (pendingTitle) titleCtx.setTitle!(pendingTitle.title);
     }
     return { steps, applied };
   }
