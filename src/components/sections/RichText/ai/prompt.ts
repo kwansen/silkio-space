@@ -13,6 +13,8 @@ export function defaultRichTextPrompt(req: RichTextAIRequest): string {
     '- {"op":"insert","target":"<可选>","where":"before"|"after"<可选，缺省 after>,"content":"<Markdown>"} 在目标块前/后插入新内容块；无 target 时追加到文档末尾',
     '- {"op":"replace","target":"<必需>","content":"<Markdown>"} 用新内容整体替换目标块',
     '- {"op":"delete","target":"<必需>"} 删除目标块（谨慎使用）',
+    '- {"op":"searchReplace","find":"<必需>","replace":"<必需，可为空串=删除>","target":"<可选，缺省整个文档>","all":<可选布尔，缺省只替换第一处>} 在作用范围内查找纯文本并原位替换，保留其余内容与格式；只改局部文字（措辞/错别字/术语统一）时优先用本操作而非整块 replace',
+    'searchReplace 的 find 为精确纯文本匹配（不解析 Markdown，不跨块；带行内格式的同段文字通常仍可匹配）；未找到会跳过并反馈，找不到时改用整块 replace',
     '- {"op":"undo"} 撤销最近一次变更（可多条连用，不能与编辑类操作混用）；用户要求撤销/撤回/反悔时使用',
     '- {"op":"redo"} 重做最近一次被撤销的变更（限制同 undo）；用户要求恢复被撤销的修改时使用',
     '- {"op":"setTitle","title":"<新标题>"} 修改文档标题；用户要求改名/改标题/重命名文档时使用（文档正文内的标题块不属于文档标题）',

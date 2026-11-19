@@ -156,6 +156,7 @@ export class RichTextAIController {
           o.op === "insert" ||
           o.op === "replace" ||
           o.op === "delete" ||
+          o.op === "searchReplace" ||
           o.op === "setTitle",
       )
     )
@@ -382,6 +383,65 @@ export class RichTextAIController {
         steps.push({
           op,
           label: `将「${preview(target.text)}」替换为新内容（${nodes.length} 个块）`,
+          status: "applied",
+        });
+        applied++;
+        continue;
+      }
+      if (op.op === "searchReplace") {
+        // 原位局部替换：在作用范围内逐顶层块收集文本节点（位置连续的相邻
+        // 片段合并，被行内标记切开的同段文本仍可整段匹配），精确纯文本匹配
+        // find，自后向前 insertText 写入——替换区间外的节点与标记不受影响；
+        // 匹配不跨块（跨块会破坏块结构），找不到时记 skipped 反馈而非整体拒绝
+        const scope = op.target
+          ? (() => {
+              const t = resolveTarget(op.target, no);
+              return { from: t.from, to: t.to, label: `「${preview(t.text)}」` };
+            })()
+          : { from: 0, to: tr.doc.content.size, label: "整个文档" };
+        const matches: { start: number; end: number }[] = [];
+        tr.doc.forEach((child, offset) => {
+          if (offset + child.nodeSize <= scope.from || offset >= scope.to)
+            return;
+          const segs: { text: string; pos: number }[] = [];
+          child.descendants((n, p) => {
+            if (n.isText && n.text)
+              segs.push({ text: n.text, pos: offset + p + 1 });
+          });
+          // 位置连续的相邻文本节点合并（pos 连续即中间无行内节点）
+          const merged: { text: string; pos: number }[] = [];
+          for (const s of segs) {
+            const last = merged[merged.length - 1];
+            if (last && s.pos === last.pos + last.text.length)
+              last.text += s.text;
+            else merged.push({ text: s.text, pos: s.pos });
+          }
+          for (const seg of merged) {
+            let i = seg.text.indexOf(op.find);
+            while (i !== -1) {
+              matches.push({
+                start: seg.pos + i,
+                end: seg.pos + i + op.find.length,
+              });
+              i = seg.text.indexOf(op.find, i + op.find.length);
+            }
+          }
+        });
+        const selected = op.all ? matches : matches.slice(0, 1);
+        if (!selected.length) {
+          steps.push({
+            op,
+            label: `未在${scope.label}中找到「${preview(op.find)}」，已跳过`,
+            status: "skipped",
+          });
+          continue;
+        }
+        // 自后向前替换：靠后的替换不影响靠前位置，无需坐标重映射
+        for (const m of [...selected].sort((a, b) => b.start - a.start))
+          tr.insertText(op.replace, m.start, m.end);
+        steps.push({
+          op,
+          label: `在${scope.label}内将「${preview(op.find)}」替换为「${preview(op.replace)}」（${selected.length} 处）`,
           status: "applied",
         });
         applied++;

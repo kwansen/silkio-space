@@ -24,6 +24,18 @@ export interface RichTextDeleteOp {
   target: string;
 }
 
+// 原位局部替换：在作用范围内精确匹配纯文本并替换，保留块内其余内容与格式
+// （比整块 replace 粒度更细，适合改措辞/错别字类指令）
+export interface RichTextSearchReplaceOp {
+  op: "searchReplace";
+  // 作用范围：目标块文本/锚点；缺省为整个文档
+  target?: string;
+  find: string;
+  replace: string;
+  // 缺省只替换第一处；true 替换作用范围内所有匹配
+  all?: boolean;
+}
+
 export interface RichTextAnswerOp {
   op: "answer";
   text: string;
@@ -47,6 +59,7 @@ export type RichTextOp =
   | RichTextInsertOp
   | RichTextReplaceOp
   | RichTextDeleteOp
+  | RichTextSearchReplaceOp
   | RichTextAnswerOp
   | RichTextUndoOp
   | RichTextRedoOp
@@ -129,6 +142,15 @@ export function normalizeAIOps(raw: unknown): RichTextOp[] {
     } else if (op.op === "delete") {
       if (typeof op.target !== "string" || !op.target.trim())
         throw new Error(`AI delete 操作缺少 target${no}`);
+    } else if (op.op === "searchReplace") {
+      if (typeof op.find !== "string" || !op.find.trim())
+        throw new Error(`AI searchReplace 操作缺少 find（查找文本）${no}`);
+      if (typeof op.replace !== "string")
+        throw new Error(
+          `AI searchReplace 操作缺少 replace（替换文本，可为空串表示删除）${no}`,
+        );
+      if (op.all !== undefined && typeof op.all !== "boolean")
+        throw new Error(`AI searchReplace 操作的 all 应为布尔值${no}`);
     } else if (op.op === "answer") {
       if (typeof op.text !== "string" || !op.text)
         throw new Error(`AI answer 操作缺少 text${no}`);
