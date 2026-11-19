@@ -13,17 +13,20 @@ import type { EdgeShape } from "@silkor/core";
 import type { Style } from "silkio-mindmap";
 import { onClickOutside } from "@vueuse/core";
 import {
+  computed,
   onBeforeUnmount,
   onMounted,
   ref,
   shallowRef,
   useTemplateRef,
 } from "vue";
-import ArrowDown from "@/components/icons/ArrowDown.vue";
-import Maximize from "@/components/icons/Maximize.vue";
+import FitView from "@/components/icons/FitView.vue";
 import Redo from "@/components/icons/Redo.vue";
 import Undo from "@/components/icons/Undo.vue";
+import DirectionGlyph from "./DirectionGlyph.vue";
+import EdgeGlyph from "./EdgeGlyph.vue";
 import { useEditorAction } from "@/actions/editorAction";
+import { useHoverMenu } from "@/utils/toolbarMenu";
 import { exportImage } from "@/utils/exportImage";
 import { countWords } from "@/utils/text";
 
@@ -45,16 +48,21 @@ const zoom = ref(100);
 
 // 布局方向与连线样式清单
 type LayoutDirection = NonNullable<MindMapOptions["direction"]>;
-const DIRECTION_OPTIONS: { value: LayoutDirection; label: string }[] = [
-  { value: "right", label: "向右展开" },
-  { value: "left", label: "向左展开" },
-  { value: "both", label: "两侧展开" },
-  { value: "down", label: "向下展开" },
+const DIRECTION_OPTIONS: {
+  value: LayoutDirection;
+  label: string;
+  short: string;
+}[] = [
+  { value: "right", label: "向右展开", short: "向右" },
+  { value: "left", label: "向左展开", short: "向左" },
+  { value: "both", label: "两侧展开", short: "两侧" },
+  { value: "down", label: "向下展开", short: "向下" },
 ];
-const EDGE_OPTIONS: { value: EdgeShape; label: string }[] = [
-  { value: "bezier", label: "贝塞尔曲线" },
-  { value: "path", label: "直线" },
-  { value: "rPath", label: "直角折线" },
+// 连线形状选项：'bezier' 纯贝塞尔 S 曲线，'path' 直角 Z 字折线，'rPath' 圆角折线
+const EDGE_OPTIONS: { value: EdgeShape; label: string; short: string }[] = [
+  { value: "bezier", label: "贝塞尔曲线", short: "曲线" },
+  { value: "path", label: "直角折线", short: "折线" },
+  { value: "rPath", label: "圆角折线", short: "圆角" },
 ];
 
 // 级数样式配置（参照 .examples/mindmap 的 levelStyles）：index 0 为根节点（一级），
@@ -260,6 +268,18 @@ const setZoom = (scale: number) => {
 const zoomIn = () => setZoom((zoom.value + 10) / 100);
 const zoomOut = () => setZoom((zoom.value - 10) / 100);
 
+// 缩放滑块轨道填充：左侧紫色已填充段，右侧浅色剩余段
+const zoomTrackStyle = computed(() => {
+  const value = Math.min(800, Math.max(20, zoom.value));
+  const fill = ((value - 20) / (800 - 20)) * 100;
+  return {
+    background: `linear-gradient(to right, #8b5cf6 ${fill}%, #e5e7eb ${fill}%)`,
+  };
+});
+const onZoomInput = (event: Event) => {
+  setZoom(Number((event.target as HTMLInputElement).value) / 100);
+};
+
 // 工具栏手动「适应视图」：真实拟合，允许放大（参照 .examples/mindmap 的 fit）
 const fitView = () => mindmap.value?.fit();
 
@@ -282,18 +302,30 @@ const exportPng = async () => {
     // 弹原生保存对话框写盘；用户取消返回 false，静默忽略
     await exportImage("mindmap.png", blob);
   } catch (e) {
-    console.log("1");
     console.error(e);
   }
 };
 
-// 下拉菜单开关与外点关闭
-const directionMenuOpen = ref(false);
-const edgeMenuOpen = ref(false);
+// 悬浮面板（hover intent）：延迟展开/移出即收/点击切换；外点关闭兜底
+const { openMenu, scheduleMenu, closeMenu, toggleMenu } = useHoverMenu();
 const directionMenuRef = useTemplateRef<HTMLDivElement>("directionMenuRef");
 const edgeMenuRef = useTemplateRef<HTMLDivElement>("edgeMenuRef");
-onClickOutside(directionMenuRef, () => (directionMenuOpen.value = false));
-onClickOutside(edgeMenuRef, () => (edgeMenuOpen.value = false));
+const zoomMenuRef = useTemplateRef<HTMLDivElement>("zoomMenuRef");
+onClickOutside(directionMenuRef, closeMenu);
+onClickOutside(edgeMenuRef, closeMenu);
+onClickOutside(zoomMenuRef, closeMenu);
+
+// 工具栏统一样式：动作按钮点击立即执行用 pointer；悬浮菜单触发器主交互是
+// hover 展开（菜单栏惯例），用 default 光标，避免 pointer 承诺「点击即执行」
+const btnClass =
+  "size-7 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
+const triggerClass =
+  "size-7 grid place-items-center rounded-md cursor-default text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
+const tileClass =
+  "w-16 flex flex-col items-center gap-1 py-2 rounded-md cursor-pointer transition-colors";
+// 方向/连线选项面板：图标磁贴竖排（参照 .examples/mindmap）
+const optionMenuClass =
+  "absolute top-[calc(100%+10px)] left-0 z-10 flex flex-col items-center gap-1 p-1.5 bg-white rounded-xl shadow-lg shadow-black/10 ring-1 ring-black/10 before:content-[''] before:absolute before:-top-2 before:left-0 before:right-0 before:h-2";
 
 let offViewport: (() => void) | null = null;
 
@@ -342,156 +374,203 @@ onBeforeUnmount(() => {
     <div class="absolute inset-0">
       <canvas ref="canvasRef" class="block h-full w-full bg-white"></canvas>
     </div>
+
+    <!-- 顶部悬浮工具条：全图标化 + hover intent 悬浮面板（参照 .examples/mindmap） -->
     <div
-      class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-0.5 px-2 py-1 bg-white/85 backdrop-blur-md rounded-lg shadow-lg text-gray-700"
+      class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-0.5 px-1.5 py-1 bg-white/90 backdrop-blur-md rounded-xl shadow-md shadow-black/5 ring-1 ring-black/10 text-gray-600"
     >
-      <button
-        class="size-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
-        :disabled="!canUndo"
-        title="撤销"
-        @click="undo"
-      >
+      <!-- 历史 -->
+      <button :class="btnClass" :disabled="!canUndo" title="撤销" @click="undo">
         <Undo class="size-4" />
       </button>
-      <button
-        class="size-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
-        :disabled="!canRedo"
-        title="重做"
-        @click="redo"
-      >
+      <button :class="btnClass" :disabled="!canRedo" title="重做" @click="redo">
         <Redo class="size-4" />
       </button>
 
-      <div class="w-px h-5 bg-gray-200 mx-1.5"></div>
+      <div class="w-px h-4 bg-gray-200 mx-1"></div>
 
-      <!-- 布局方向 -->
-      <div ref="directionMenuRef" class="relative">
+      <!-- 布局方向：触发器随当前方向变化，面板为图标磁贴 -->
+      <div
+        ref="directionMenuRef"
+        class="relative"
+        @mouseenter="scheduleMenu('layout')"
+        @mouseleave="closeMenu"
+      >
         <button
-          class="h-7 px-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-gray-200 text-xs"
+          :class="[triggerClass, openMenu === 'layout' ? 'bg-gray-100 text-gray-700' : '']"
           title="布局方向"
-          @click="directionMenuOpen = !directionMenuOpen"
+          @click="toggleMenu('layout')"
         >
-          方向
-          <ArrowDown class="size-3 text-gray-400" />
+          <DirectionGlyph :value="direction" />
         </button>
-        <div
-          v-if="directionMenuOpen"
-          class="absolute top-full left-0 mt-1 z-10 w-32 p-1 bg-white rounded-lg shadow-2xl text-xs"
-        >
-          <div
+        <div v-show="openMenu === 'layout'" :class="optionMenuClass">
+          <button
             v-for="d in DIRECTION_OPTIONS"
             :key="d.value"
-            class="px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+            :class="[
+              tileClass,
+              d.value === direction
+                ? 'bg-violet-100 text-violet-600'
+                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700',
+            ]"
+            :title="d.label"
             @click="
               setLayout(d.value);
-              directionMenuOpen = false;
+              closeMenu();
             "
           >
-            {{ d.label }}
-          </div>
+            <DirectionGlyph :value="d.value" class="size-8" />
+            <span class="text-[10px] leading-none">{{ d.short }}</span>
+          </button>
         </div>
       </div>
 
-      <!-- 连线样式 -->
-      <div ref="edgeMenuRef" class="relative">
+      <!-- 连线样式：触发器随当前线型变化 -->
+      <div
+        ref="edgeMenuRef"
+        class="relative"
+        @mouseenter="scheduleMenu('edge')"
+        @mouseleave="closeMenu"
+      >
         <button
-          class="h-7 px-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-gray-200 text-xs"
+          :class="[triggerClass, openMenu === 'edge' ? 'bg-gray-100 text-gray-700' : '']"
           title="连线样式"
-          @click="edgeMenuOpen = !edgeMenuOpen"
+          @click="toggleMenu('edge')"
         >
-          连线
-          <ArrowDown class="size-3 text-gray-400" />
+          <EdgeGlyph :value="edgeShape" />
         </button>
-        <div
-          v-if="edgeMenuOpen"
-          class="absolute top-full left-0 mt-1 z-10 w-32 p-1 bg-white rounded-lg shadow-2xl text-xs"
-        >
-          <div
+        <div v-show="openMenu === 'edge'" :class="optionMenuClass">
+          <button
             v-for="e in EDGE_OPTIONS"
             :key="e.value"
-            class="px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100 whitespace-nowrap"
+            :class="[
+              tileClass,
+              e.value === edgeShape
+                ? 'bg-violet-100 text-violet-600'
+                : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700',
+            ]"
+            :title="e.label"
             @click="
               setEdgeStyle(e.value);
-              edgeMenuOpen = false;
+              closeMenu();
             "
           >
-            {{ e.label }}
-          </div>
+            <EdgeGlyph :value="e.value" class="size-8" />
+            <span class="text-[10px] leading-none">{{ e.short }}</span>
+          </button>
         </div>
       </div>
 
-      <button
-        class="h-7 px-2 rounded-md cursor-pointer hover:bg-gray-200 text-xs"
-        title="收起根节点外的其他分支"
-        @click="collapseOthers"
-      >
-        收起其他
-      </button>
-      <button
-        class="h-7 px-2 rounded-md cursor-pointer hover:bg-gray-200 text-xs"
-        title="展开全部折叠节点"
-        @click="expandAll"
-      >
-        全部展开
-      </button>
-
-      <div class="w-px h-5 bg-gray-200 mx-1.5"></div>
-
-      <button
-        class="size-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200"
-        title="适应视图"
-        @click="fitView"
-      >
-        <Maximize class="size-4" />
-      </button>
-      <button
-        class="size-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200"
-        title="居中"
-        @click="centerView"
-      >
+      <!-- 折叠 / 展开：两个低频但常用的动作直接平铺，双 V 形向内收=折叠、向外张=展开 -->
+      <button :class="btnClass" title="折叠其他分支" @click="collapseOthers">
         <svg
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="0.6"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4"
+        >
+          <path d="M7 4.5 12 9.5 17 4.5" />
+          <path d="M7 19.5 12 14.5 17 19.5" />
+        </svg>
+      </button>
+      <button :class="btnClass" title="展开全部" @click="expandAll">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="size-4"
+        >
+          <path d="M7 9.5 12 4.5 17 9.5" />
+          <path d="M7 14.5 12 19.5 17 14.5" />
+        </svg>
+      </button>
+
+      <div class="w-px h-4 bg-gray-200 mx-1"></div>
+
+      <button :class="btnClass" title="适应视图" @click="fitView">
+        <FitView class="size-4" />
+      </button>
+      <button :class="btnClass" title="居中" @click="centerView">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
           stroke-linecap="round"
           class="size-4"
         >
           <circle cx="12" cy="12" r="3" />
-          <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+          <path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" />
         </svg>
       </button>
 
-      <div class="w-px h-5 bg-gray-200 mx-1.5"></div>
+      <div class="w-px h-4 bg-gray-200 mx-1"></div>
 
-      <button
-        class="w-7 h-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200"
-        title="缩小"
-        @click="zoomOut"
-      >
-        <span class="text-sm leading-none">−</span>
-      </button>
-      <span class="w-10 text-center text-xs tabular-nums">{{ zoom }}%</span>
-      <button
-        class="w-7 h-7 grid place-items-center rounded-md cursor-pointer hover:bg-gray-200"
-        title="放大"
-        @click="zoomIn"
-      >
-        <span class="text-sm leading-none">+</span>
-      </button>
+      <!-- 缩放：± 步进快捷微调；百分比点击展开滑块（交互控件不走 hover 触发，避免误弹挡画布） -->
+      <div ref="zoomMenuRef" class="relative flex items-center gap-0.5">
+        <button :class="btnClass" title="缩小" @click="zoomOut">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            class="size-4"
+          >
+            <path d="M5 12h14" />
+          </svg>
+        </button>
+        <button
+          class="h-7 px-1 flex items-center justify-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          :class="openMenu === 'zoom' ? 'bg-gray-100 text-gray-700' : ''"
+          title="缩放"
+          @click="toggleMenu('zoom')"
+        >
+          <span class="w-9 text-center text-[11px] tabular-nums">{{ zoom }}%</span>
+        </button>
+        <button :class="btnClass" title="放大" @click="zoomIn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.7"
+            stroke-linecap="round"
+            class="size-4"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </button>
+        <div
+          v-show="openMenu === 'zoom'"
+          class="absolute top-[calc(100%+8px)] right-0 z-10 min-w-45 flex items-center px-3.5 py-2.5 bg-white rounded-xl shadow-lg shadow-black/10 ring-1 ring-black/10"
+        >
+          <input
+            class="h-1 w-36 cursor-pointer appearance-none rounded-full outline-none [&::-moz-range-thumb]:h-3.5 [&::-moz-range-thumb]:w-3.5 [&::-moz-range-thumb]:cursor-grab [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:cursor-grab [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-violet-500 [&::-webkit-slider-thumb]:shadow-[0_1px_3px_rgba(0,0,0,0.35)]"
+            :style="zoomTrackStyle"
+            type="range"
+            min="20"
+            max="800"
+            step="5"
+            :value="zoom"
+            @input="onZoomInput"
+          />
+        </div>
+      </div>
 
-      <div class="w-px h-5 bg-gray-200 mx-1.5"></div>
+      <div class="w-px h-4 bg-gray-200 mx-1"></div>
 
-      <button
-        class="h-7 px-2 flex items-center gap-1 rounded-md cursor-pointer hover:bg-gray-200 text-xs"
-        title="导出 PNG"
-        @click="exportPng"
-      >
+      <button :class="btnClass" title="导出 PNG" @click="exportPng">
         <svg
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="0.6"
+          stroke-width="1.7"
           stroke-linecap="round"
           stroke-linejoin="round"
           class="size-4"
@@ -500,7 +579,6 @@ onBeforeUnmount(() => {
           <path d="m7 10 5 5 5-5" />
           <path d="M4 21h16" />
         </svg>
-        导出
       </button>
     </div>
   </div>
