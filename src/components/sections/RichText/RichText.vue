@@ -25,6 +25,9 @@ import { useRichtextStore } from "@/stores/richtextStore.ts";
 import { countWords } from "@/utils/text";
 import type { OverlayScrollbars } from "overlayscrollbars";
 import { createExtensions } from "./extensions";
+import { RichTextAIController } from "./ai/aiController";
+import { richTextAIGenerate } from "@/actions/aiAction";
+import { setRichTextInstance } from "@/actions/canvasRegistry";
 
 const node = ref<Node>();
 const pos = ref<number>(0);
@@ -122,6 +125,9 @@ interface Props {
 }
 
 const editor = shallowRef<Editor>();
+// AI 编辑控制器：随编辑器创建并注册到全局注册表，供 AI 面板（RightBar）
+// 经 aiAction 分支取用；实例仅存内存，不入 pinia
+const aiController = shallowRef<RichTextAIController>();
 
 const props = defineProps<Props>();
 
@@ -137,9 +143,15 @@ onMounted(async () => {
     v = c;
   }
   editor.value = createEditor(v);
+  // AI 编辑适配器（参照 MindMap/FlowChart）：指令经控制器 run 走块级 ops
+  // 协议改文档，Markdown 载荷按当前 schema 转换，单条事务原子可撤销
+  aiController.value = new RichTextAIController(editor.value, richTextAIGenerate);
+  setRichTextInstance(aiController.value);
 });
 
 onBeforeUnmount(() => {
+  setRichTextInstance(null);
+  aiController.value = undefined;
   editor.value?.destroy();
 });
 

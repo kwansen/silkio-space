@@ -29,6 +29,8 @@ import Text from "@tiptap/extension-text";
 import TextAlign from "@tiptap/extension-text-align";
 import Underline from "@tiptap/extension-underline";
 import { UndoRedo, Gapcursor, TrailingNode } from "@tiptap/extensions";
+import { Markdown } from "@tiptap/markdown";
+import { UniqueID } from "@tiptap/extension-unique-id";
 import {
   Table,
   TableCell,
@@ -87,6 +89,34 @@ export const createExtensions = (options: {
     ],
   }),
   UndoRedo,
+  // Markdown 扩展：文档 ↔ Markdown 双向转换，AI 编辑控制器据此把模型输出的
+  // Markdown content 转成合法文档块（默认 contentType 仍为 json，不影响既有存取链路）
+  Markdown,
+  // UniqueID：为顶层块节点注入持久化 id 属性（随文档 JSON 落库），供 AI 编辑
+  // 协议按 id 稳定定位目标块（旧文档在 onCreate 时自动补齐，不进撤销历史）。
+  // 仅顶层块类型：target 定位粒度为顶层块，嵌套节点不参与定位；
+  // generateID 用 12 位 base36（文档内唯一即可，比默认 UUID v4 省提示词体积）
+  UniqueID.configure({
+    types: [
+      "paragraph",
+      "heading",
+      "blockquote",
+      "codeBlock",
+      "bulletList",
+      "orderedList",
+      "taskList",
+      "table",
+      "image",
+      "horizontalRule",
+      "blockMath",
+    ],
+    generateID: () => {
+      // 12 位 base36；随机数转 base36 可能因尾零变短，循环补齐保证定长
+      let s = Math.random().toString(36).slice(2);
+      while (s.length < 12) s += Math.floor(Math.random() * 36).toString(36);
+      return s.slice(0, 12);
+    },
+  }),
   Mathematics.configure({
     inlineOptions: {
       onClick: (node, pos) => options.onMathClick(node, pos, false),

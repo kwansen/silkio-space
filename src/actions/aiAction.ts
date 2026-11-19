@@ -1,6 +1,8 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { defaultAIFlowPrompt, type AIFlowGenerate } from "silkio-flowchart";
 import { defaultAIEditPrompt, type AIEditGenerate } from "silkio-mindmap";
+import { defaultRichTextPrompt } from "@/components/sections/RichText/ai/prompt";
+import type { RichTextAIGenerate } from "@/components/sections/RichText/ai/protocol";
 import {
   fetchAIStream,
   isOpsStream,
@@ -9,6 +11,7 @@ import {
 import {
   getFlowChartInstance,
   getMindMapInstance,
+  getRichTextInstance,
 } from "@/actions/canvasRegistry";
 import { useAiStore } from "@/stores/aiStore";
 import { useEditorStore } from "@/stores/editorStore";
@@ -78,6 +81,27 @@ export const flowChartAIGenerate: AIFlowGenerate = async (req) => {
     return await fetchAIStream(
       { baseURL, apiKey, model, format },
       [{ role: "user", content: defaultAIFlowPrompt(req) }],
+      onDeltaFactory(),
+      ac.signal,
+    );
+  } finally {
+    if (abort === ac) abort = null;
+  }
+};
+
+// 富文本 AI 编辑适配器：注入 RichTextAIController，模型输出交给控制器
+// 容错解析为 ops（块级 insert/replace/delete + undo/redo），Markdown 载荷
+// 经编辑器 Markdown 扩展转成文档块，单条事务原子应用
+export const richTextAIGenerate: RichTextAIGenerate = async (req) => {
+  const store = useAiStore();
+  const { baseURL, apiKey, model, format } = store.config;
+  if (!(baseURL && apiKey && model)) throw new Error("AI 服务未配置");
+  const ac = new AbortController();
+  abort = ac;
+  try {
+    return await fetchAIStream(
+      { baseURL, apiKey, model, format },
+      [{ role: "user", content: defaultRichTextPrompt(req) }],
       onDeltaFactory(),
       ac.signal,
     );
@@ -188,6 +212,27 @@ export const useAiAction = () => {
           if (gen !== generation) return;
           const reasoning = aiStore.pending?.reasoning || undefined;
           aiStore.setPending(null);
+          aiStore.appendMessage({
+            role: "assistant",
+            text: result.answer ?? (result.applied ? "" : "（未产生任何操作）"),
+            steps: result.steps.length ? result.steps : undefined,
+            reasoning,
+          });
+          return;
+        }
+      } else if (editorStore.docType === "richText") {
+        // 富文本：交给 RichTextAIController（块级 ops 协议，Markdown 载荷原子应用）；
+        // 编辑器未挂载（极小概率竞态）时退回聊天
+        const richtext = getRichTextInstance();
+        if (richtext) {
+          const result = await richtext.run(text, {
+            history,
+            title: editorStore.title,
+          });
+          if (gen !== generation) return;
+          const reasoning = aiStore.pending?.reasoning || undefined;
+          aiStore.setPending(null);
+          // 有回答展示回答；改图/撤销/重做无回答时以反馈链说明执行结果
           aiStore.appendMessage({
             role: "assistant",
             text: result.answer ?? (result.applied ? "" : "（未产生任何操作）"),
