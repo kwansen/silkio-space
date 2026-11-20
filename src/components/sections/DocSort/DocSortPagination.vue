@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ArrowLeft from "@/components/icons/ArrowLeft.vue";
-import ArrowRight from "@/components/icons/ArrowRight.vue";
+import LeftFill from "@/components/icons/LeftFill.vue";
+import RightFill from "@/components/icons/RightFill.vue";
 import { useDocSortStore } from "@/stores/docSortStore";
 import { storeToRefs } from "pinia";
 
@@ -17,7 +17,7 @@ const { currentPage, totalPages } = storeToRefs(store);
       class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[currentPage <= 1 ? 'opacity-40' : 'hover:bg-gray-100']"
     >
-      <ArrowLeft class="size-4" />
+      <LeftFill class="size-4" />
     </div>
 
     <div
@@ -41,7 +41,7 @@ const { currentPage, totalPages } = storeToRefs(store);
           : 'hover:bg-gray-100',
       ]"
     >
-      <ArrowRight class="size-4" />
+      <RightFill class="size-4" />
     </div>
   </div>
 </template>

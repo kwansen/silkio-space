@@ -25,6 +25,7 @@ import { useRichtextStore } from "@/stores/richtextStore.ts";
 import { countWords } from "@/utils/text";
 import type { OverlayScrollbars } from "overlayscrollbars";
 import { createExtensions } from "./extensions";
+import LinkPopover from "./extensions/LinkPopover.vue";
 import { RichTextAIController } from "./ai/aiController";
 import { richTextAIGenerate } from "@/actions/aiAction";
 import { setRichTextInstance } from "@/actions/canvasRegistry";
@@ -199,6 +200,8 @@ watch(
     </div>
   </div>
   <RichTextLinkDialog :editor="editor" v-if="dialog === 'link'" />
+  <!-- 全局唯一的链接悬浮弹层：所有链接 mark view 共享 -->
+  <LinkPopover />
   <RichtextImageDialog :editor="editor" v-if="dialog === 'image'" />
   <RichTextMathInsertDialog :editor="editor" v-if="dialog === 'math'" />
   <RichTextMathUpdateDialog

@@ -10,7 +10,7 @@ import { typedDocDefaults } from "@/utils/docDefaults";
 import { storeToRefs } from "pinia";
 import Drag from "vuedraggable";
 import Archive from "@/components/icons/Archive.vue";
-import Add from "@/components/icons/Add.vue";
+import Plus from "@/components/icons/Plus.vue";
 import DocIcon from "@/components/icons/Doc.vue";
 import MindmapIcon from "@/components/icons/Mindmap.vue";
 import FlowchartIcon from "@/components/icons/Flowchart.vue";
@@ -172,7 +172,7 @@ const handleClickBtn = () => {
       :class="show ? 'bg-gray-100' : 'hover:bg-gray-100'"
       @click="handleClickBtn"
     >
-      <Add class="size-4" />
+      <Plus class="size-4" />
     </div>
   </div>
   <div
@@ -198,17 +198,17 @@ const handleClickBtn = () => {
       item-key="id"
       @end="dragEnd"
     >
-    <template #item="{ element }: { element: DocEntry }">
-      <DocEntryItem
-        :entry="element"
-        :active="id === element.id"
-        :hovered="hoverId === element.id"
-        @mouseenter="handleEnter(element.id)"
-        @mouseleave="hoverId = ''"
-        @open="openEntry(element)"
-        @remove="removeEntry(element)"
-      />
-    </template>
+      <template #item="{ element }: { element: DocEntry }">
+        <DocEntryItem
+          :entry="element"
+          :active="id === element.id"
+          :hovered="hoverId === element.id"
+          @mouseenter="handleEnter(element.id)"
+          @mouseleave="hoverId = ''"
+          @open="openEntry(element)"
+          @remove="removeEntry(element)"
+        />
+      </template>
     </Drag>
   </ScrollArea>
 </template>

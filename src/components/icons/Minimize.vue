@@ -1,3 +1,4 @@
+<!-- 自绘：因为要细，而且保证不虚化 -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"

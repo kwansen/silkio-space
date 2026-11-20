@@ -1,3 +1,4 @@
+<!-- lucide -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -7,8 +8,12 @@
   >
     <path d="M0 0h24v24H0z" fill="none" />
     <path
-      fill="currentColor"
-      d="M4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h6l2 2h8q.825 0 1.413.588T22 8v10q0 .825-.587 1.413T20 20z"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="m16 18l6-6l-6-6M8 6l-6 6l6 6"
     />
   </svg>
 </template>

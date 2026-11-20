@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import AlignCenter from "@/components/icons/AlignCenter.vue";
 import AlignJustify from "@/components/icons/AlignJustify.vue";
-import AlignLeft from "@/components/icons/AlignLeft.vue";
-import AlignRight from "@/components/icons/AlignRight.vue";
+import AlignStart from "@/components/icons/AlignStart.vue";
+import AlignEnd from "@/components/icons/AlignEnd.vue";
 import Bold from "@/components/icons/Bold.vue";
-import CodeBlock from "@/components/icons/CodeBlock.vue";
+import SquareCode from "@/components/icons/SquareCode.vue";
 import H1 from "@/components/icons/H1.vue";
 import H2 from "@/components/icons/H2.vue";
 import H3 from "@/components/icons/H3.vue";
@@ -13,11 +13,11 @@ import H5 from "@/components/icons/H5.vue";
 import H6 from "@/components/icons/H6.vue";
 import Highlight from "@/components/icons/Highlight.vue";
 import Image from "@/components/icons/Image.vue";
-import InlineCode from "@/components/icons/InlineCode.vue";
+import Code from "@/components/icons/Code.vue";
 import Italic from "@/components/icons/Italic.vue";
 import LetterT from "@/components/icons/LetterT.vue";
 import Link from "@/components/icons/Link.vue";
-import Math from "@/components/icons/Math.vue";
+import Sigma from "@/components/icons/Sigma.vue";
 import OrderedList from "@/components/icons/OrderedList.vue";
 import Quote from "@/components/icons/Quote.vue";
 import Redo from "@/components/icons/Redo.vue";
@@ -25,10 +25,10 @@ import Strike from "@/components/icons/Strike.vue";
 import Subscript from "@/components/icons/Subscript.vue";
 import Superscript from "@/components/icons/Superscript.vue";
 import Table from "@/components/icons/Table.vue";
-import TaskList from "@/components/icons/TaskList.vue";
+import CheckList from "@/components/icons/CheckList.vue";
 import Underline from "@/components/icons/Underline.vue";
 import Undo from "@/components/icons/Undo.vue";
-import UnorderList from "@/components/icons/UnorderList.vue";
+import BulletList from "@/components/icons/BulletList.vue";
 import RSToolbarDropdown from "./RSToolbarDropdown.vue";
 import RTSearchPopover from "./RTSearchPopover.vue";
 import { Editor } from "@tiptap/vue-3";
@@ -115,7 +115,7 @@ const subscript: Btn = {
 };
 const inlineCode: Btn = {
   name: "行内代码",
-  icon: InlineCode,
+  icon: Code,
   shortcut: "Ctrl + E",
   action: () => props.editor?.chain().focus().toggleCode().run(),
   disabled: () => !props.editor?.can().toggleCode(),
@@ -201,7 +201,7 @@ const orderedList: Btn = {
 };
 const bulletList: Btn = {
   name: "无序列表",
-  icon: UnorderList,
+  icon: BulletList,
   shortcut: "Ctrl + Shift + 8",
   action: () => props.editor?.chain().focus().toggleBulletList().run(),
   disabled: () => !props.editor?.can().toggleBulletList(),
@@ -209,7 +209,7 @@ const bulletList: Btn = {
 };
 const taskList: Btn = {
   name: "任务列表",
-  icon: TaskList,
+  icon: CheckList,
   shortcut: "Ctrl + Shift + 9",
   action: () => props.editor?.chain().focus().toggleTaskList().run(),
   disabled: () => !props.editor?.can().toggleTaskList(),
@@ -220,7 +220,7 @@ const taskList: Btn = {
 //#region 对齐
 const alignLeft: Btn = {
   name: "左对齐",
-  icon: AlignLeft,
+  icon: AlignStart,
   shortcut: "Ctrl + Shift + L",
   action: () => props.editor?.chain().focus().setTextAlign("left").run(),
   disabled: () => !props.editor?.can().setTextAlign("left"),
@@ -236,7 +236,7 @@ const alignCenter: Btn = {
 };
 const alignRight: Btn = {
   name: "右对齐",
-  icon: AlignRight,
+  icon: AlignEnd,
   shortcut: "Ctrl + Shift + R",
   action: () => props.editor?.chain().focus().setTextAlign("right").run(),
   disabled: () => !props.editor?.can().setTextAlign("right"),
@@ -263,7 +263,7 @@ const link: Btn = {
 };
 const math: Btn = {
   name: "公式",
-  icon: Math,
+  icon: Sigma,
   shortcut: "Ctrl + Shift + M",
   action: () => setDialog("math"),
   disabled: () => !props.editor?.can().insertContent("$ E = mc^2 $"),
@@ -279,7 +279,7 @@ const blockquote: Btn = {
 };
 const codeBlock: Btn = {
   name: "代码块",
-  icon: CodeBlock,
+  icon: SquareCode,
   shortcut: "Ctrl + Alt + C",
   action: () => props.editor?.chain().focus().toggleCodeBlock().run(),
   disabled: () => !props.editor?.can().toggleCodeBlock(),
@@ -360,7 +360,7 @@ const groupList: Group[] = [
       {
         kind: "choice",
         buttons: [orderedList, bulletList, taskList],
-        icon: UnorderList,
+        icon: BulletList,
       },
       {
         kind: "choice",
@@ -390,8 +390,8 @@ const groupList: Group[] = [
 </script>
 
 <template>
-  <div class="w-full z-10 h-11 px-2 bg-gray-100 flex items-center">
-    <div v-for="group in groupList" class="flex h-full items-center">
+  <div class="w-full z-10 h-11 px-1.5 bg-gray-100 flex items-center gap-2">
+    <div v-for="group in groupList" class="flex h-full items-center gap-2">
       <div v-for="item in group.items">
         <RSToolbarBtn v-if="item.kind === 'button'" :b="item.btn" />
         <RSToolbarDropdown
@@ -405,10 +405,7 @@ const groupList: Group[] = [
           :editor="editor"
         />
       </div>
-      <div
-        v-if="group.divider"
-        class="h-1/3 border-x text-neutral-300 mx-1"
-      ></div>
+      <div v-if="group.divider" class="h-1/3 border-x text-neutral-300"></div>
     </div>
   </div>
 </template>

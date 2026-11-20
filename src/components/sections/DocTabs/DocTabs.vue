@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import Doc from "@/components/icons/Doc.vue";
-import DocMian from "@/components/icons/DocMian.vue";
+import DocFill from "@/components/icons/DocFill.vue";
 import Archive from "@/components/icons/Archive.vue";
-import ArchiveMian from "@/components/icons/ArchiveMian.vue";
+import ArchiveFill from "@/components/icons/ArchiveFill.vue";
 import DocSearch from "@/components/icons/DocSearch.vue";
-import DocSearchMian from "@/components/icons/DocSearchMian.vue";
+import DocSearchFill from "@/components/icons/DocSearchFill.vue";
 import ArchiveSearch from "@/components/icons/ArchiveSearch.vue";
-import ArchiveSearchMian from "@/components/icons/ArchiveSearchMian.vue";
+import ArchiveSearchFill from "@/components/icons/ArchiveSearchFill.vue";
 import { useUiStore } from "@/stores/uiStore.ts";
 import { storeToRefs } from "pinia";
 import type { Component } from "vue";
@@ -21,23 +21,23 @@ const options: {
   activeIcon: Component;
   pop: string;
 }[] = [
-  { key: "docSort", icon: Doc, activeIcon: DocMian, pop: "文档概览" },
+  { key: "docSort", icon: Doc, activeIcon: DocFill, pop: "文档概览" },
   {
     key: "docSearch",
     icon: DocSearch,
-    activeIcon: DocSearchMian,
+    activeIcon: DocSearchFill,
     pop: "文档搜索",
   },
   {
     key: "archiveSort",
     icon: Archive,
-    activeIcon: ArchiveMian,
+    activeIcon: ArchiveFill,
     pop: "归档概览",
   },
   {
     key: "archiveSearch",
     icon: ArchiveSearch,
-    activeIcon: ArchiveSearchMian,
+    activeIcon: ArchiveSearchFill,
     pop: "归档搜索",
   },
 ];

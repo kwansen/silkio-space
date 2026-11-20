@@ -1,3 +1,4 @@
+<!-- lucide -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -9,8 +10,10 @@
     <path
       fill="none"
       stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
       stroke-width="2"
-      d="M19.25 9.75V6c0-.69-.56-1.25-1.25-1.25H6c-.69 0-1.25.56-1.25 1.25v3.75m14.5 0V18c0 .69-.56 1.25-1.25 1.25H6c-.69 0-1.25-.56-1.25-1.25V9.75m14.5 0H4.75m5.129 6.871L12 14.5m2.121-2.121L12 14.5m0 0l2.121 2.121M12 14.5l-2.121-2.121"
+      d="M18 7V5a1 1 0 0 0-1-1H6.5a.5.5 0 0 0-.4.8l4.5 6a2 2 0 0 1 0 2.4l-4.5 6a.5.5 0 0 0 .4.8H17a1 1 0 0 0 1-1v-2"
     />
   </svg>
 </template>

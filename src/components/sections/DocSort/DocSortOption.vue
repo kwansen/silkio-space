@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDocAction } from "@/actions/docAction";
-import Add from "@/components/icons/Add.vue";
+import Plus from "@/components/icons/Plus.vue";
 import DocIcon from "@/components/icons/Doc.vue";
 import FlowchartIcon from "@/components/icons/Flowchart.vue";
 import MindmapIcon from "@/components/icons/Mindmap.vue";
@@ -106,7 +106,7 @@ const handleClickBtn = () => {
       :class="show ? 'bg-gray-100' : 'hover:bg-gray-100'"
       @click="handleClickBtn"
     >
-      <Add class="size-4" />
+      <Plus class="size-4" />
     </div>
   </div>
   <div

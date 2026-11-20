@@ -1,3 +1,4 @@
+<!-- material design icons：没有图标库满足有线性、有面性、而且额外有搜索 -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -8,7 +9,7 @@
     <path d="M0 0h24v24H0z" fill="none" />
     <path
       fill="currentColor"
-      d="M20 19V5h-6.558v14zM5 20v-3.116h1V19h6.442V5H6v2.116H5V4h16v16zm8.442-8h-1zM5 14.5v-2H3v-1h2v-2h1v2h2v1H6v2z"
+      d="M3 3h18v4H3zm1 5h16v13H4zm5.5 3a.5.5 0 0 0-.5.5V13h6v-1.5a.5.5 0 0 0-.5-.5z"
     />
   </svg>
 </template>

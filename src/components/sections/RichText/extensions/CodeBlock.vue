@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Copy from "@/components/icons/Copy.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
-import Success from "@/components/icons/Success.vue";
+import CheckCircle from "@/components/icons/CheckCircle.vue";
 import { NodeViewContent, NodeViewWrapper, nodeViewProps } from "@tiptap/vue-3";
 import { ref } from "vue";
 const props = defineProps(nodeViewProps);
@@ -32,12 +32,14 @@ const copy = async () => {
         class="size-7 grid place-items-center"
         :class="success ? '' : 'hover:bg-gray-200 '"
       >
-        <Success class="size-5 text-green-500" v-if="success" />
+        <CheckCircle class="size-5 text-green-500" v-if="success" />
         <Copy class="size-5" v-else />
       </button>
     </div>
     <ScrollArea class="text-sm bg-gray-50">
-      <pre class="p-4"><code><NodeViewContent class="whitespace-pre!" /></code></pre>
+      <pre
+        class="p-4"
+      ><code><NodeViewContent class="whitespace-pre!" /></code></pre>
     </ScrollArea>
   </NodeViewWrapper>
 </template>

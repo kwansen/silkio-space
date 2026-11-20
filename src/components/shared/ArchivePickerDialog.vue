@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { FocusScope } from "@zhencai/vue-focus-scope";
 import ScrollArea from "./ScrollArea.vue";
-import CheckBoxMian from "../icons/CheckBoxMian.vue";
+import CheckCircleFill from "../icons/CheckCircleFill.vue";
 import { onMounted, ref } from "vue";
 import { useArchiveAction } from "@/actions/archiveAction.ts";
 import { CheckedArchive } from "@/types/archive.ts";
-import CheckBoxEmpty from "../icons/CheckBoxEmpty.vue";
+import Square from "../icons/Square.vue";
 
 interface Props {
   id: string;
@@ -59,8 +59,11 @@ onKeyStroke("Enter", () => {
               class="h-10 hover:bg-gray-100 rounded-md flex px-2 gap-2 items-center cursor-pointer"
               @click="a.checked = !a.checked"
             >
-              <CheckBoxMian v-if="a.checked" class="size-5 text-purple-700" />
-              <CheckBoxEmpty v-else class="size-5" />
+              <CheckCircleFill
+                v-if="a.checked"
+                class="size-5 text-purple-700"
+              />
+              <Square v-else class="size-5" />
               <span>{{ a.name }}</span>
             </div>
           </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AddImage from "@/components/icons/AddImage.vue";
+import ImagePlus from "@/components/icons/ImagePlus.vue";
 import CloseSmall from "@/components/icons/CloseSmall.vue";
 import { ref, shallowRef } from "vue";
 import { useTemplateRef } from "vue";
@@ -100,7 +100,7 @@ onKeyStroke("Enter", () => {
         class="w-full h-full object-contain"
       />
       <div v-else class="text-center">
-        <AddImage class="w-20 h-20" />
+        <ImagePlus class="w-20 h-20" />
         <div>本地上传</div>
       </div>
       <div class="absolute inset-0 top-0 left-0 hover:bg-black/10"></div>

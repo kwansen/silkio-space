@@ -1,3 +1,4 @@
+<!-- lucide：mingcute不好看，同时存在虚化 -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -7,8 +8,12 @@
   >
     <path d="M0 0h24v24H0z" fill="none" />
     <path
-      fill="currentColor"
-      d="M6.143 16.356Q6 16.213 6 16V8q0-.213.144-.356t.357-.144t.356.144T7 8v3.5h5V8q0-.213.144-.356t.357-.144t.356.144T13 8v8q0 .213-.144.356t-.357.144t-.356-.144T12 16v-3.5H7V16q0 .213-.144.356t-.357.144t-.356-.144m11 0Q17 16.213 17 16V8.5h-1.5q-.213 0-.356-.144T15 7.999t.144-.356t.356-.143h1.683q.357 0 .587.232t.23.576V16q0 .213-.144.356t-.357.144t-.356-.144"
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d="M4 12h8m-8 6V6m8 12V6m5 6l3-2v8"
     />
   </svg>
 </template>

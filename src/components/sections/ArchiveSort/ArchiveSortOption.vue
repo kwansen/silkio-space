@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Add from "@/components/icons/Add.vue";
+import Plus from "@/components/icons/Plus.vue";
 import { useArchiveStore } from "@/stores/archiveStore";
 import { storeToRefs } from "pinia";
 
@@ -44,7 +44,7 @@ const handleClick = (option: ArchiveSortOption) => {
       @click="setShow(true)"
       class="size-7 cursor-pointer grid place-items-center rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100"
     >
-      <Add class="size-4" />
+      <Plus class="size-4" />
     </div>
   </div>
 </template>

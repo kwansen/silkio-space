@@ -8,9 +8,17 @@
 // 含经 noteShapes 插件注册的便签）。
 import { FlowChart, type FlowData, type ShapeKind } from "silkio-flowchart";
 import { onClickOutside } from "@vueuse/core";
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, useTemplateRef, watch } from "vue";
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  shallowRef,
+  useTemplateRef,
+  watch,
+} from "vue";
 import Delete from "@/components/icons/Delete.vue";
-import Edit from "@/components/icons/Edit.vue";
 import FitView from "@/components/icons/FitView.vue";
 import PlusBox from "@/components/icons/PlusBox.vue";
 import Redo from "@/components/icons/Redo.vue";
@@ -25,6 +33,7 @@ import { useEditorStore } from "@/stores/editorStore";
 import { useHoverMenu } from "@/utils/toolbarMenu";
 import { exportImage } from "@/utils/exportImage";
 import { countWords } from "@/utils/text";
+import Pencil from "@/components/icons/Pencil.vue";
 
 const props = defineProps<{ content: string }>();
 
@@ -91,9 +100,24 @@ const SHAPE_OPTIONS: {
   { kind: "rect", label: "矩形 · 步骤", short: "矩形", text: "新步骤" },
   { kind: "diamond", label: "菱形 · 判断", short: "菱形", text: "新判断" },
   { kind: "ellipse", label: "椭圆 · 起止", short: "椭圆", text: "新端点" },
-  { kind: "parallelogram", label: "平行四边形 · 输入输出", short: "平行四边形", text: "输入数据" },
-  { kind: "hexagon", label: "六边形 · 准备", short: "六边形", text: "准备阶段" },
-  { kind: "database", label: "数据库 · 存储", short: "数据库", text: "存储数据" },
+  {
+    kind: "parallelogram",
+    label: "平行四边形 · 输入输出",
+    short: "平行四边形",
+    text: "输入数据",
+  },
+  {
+    kind: "hexagon",
+    label: "六边形 · 准备",
+    short: "六边形",
+    text: "准备阶段",
+  },
+  {
+    kind: "database",
+    label: "数据库 · 存储",
+    short: "数据库",
+    text: "存储数据",
+  },
   { kind: "note", label: "便签 · 自定义形状", short: "便签", text: "便签" },
 ];
 
@@ -118,12 +142,7 @@ const save = () => {
     .map((n) => n.text ?? "")
     .filter(Boolean)
     .join("\n");
-  emit(
-    "onContentSave",
-    JSON.stringify(data),
-    plainText,
-    countWords(plainText),
-  );
+  emit("onContentSave", JSON.stringify(data), plainText, countWords(plainText));
 };
 
 // 同步工具栏状态（canUndo/canRedo 为 getter，需在读数时机回填 ref）
@@ -323,7 +342,7 @@ onBeforeUnmount(() => {
           title="编辑标题"
           @click="startTitleEdit"
         >
-          <Edit class="size-3.5" />
+          <Pencil class="size-3" />
         </button>
       </template>
     </div>
@@ -350,7 +369,10 @@ onBeforeUnmount(() => {
         @mouseleave="closeMenu"
       >
         <button
-          :class="[triggerClass, openMenu === 'add' ? 'bg-gray-100 text-gray-700' : '']"
+          :class="[
+            triggerClass,
+            openMenu === 'add' ? 'bg-gray-100 text-gray-700' : '',
+          ]"
           title="添加形状"
           @click="toggleMenu('add')"
         >
@@ -382,7 +404,10 @@ onBeforeUnmount(() => {
         @mouseleave="closeMenu"
       >
         <button
-          :class="[triggerClass, openMenu === 'replace' ? 'bg-gray-100 text-gray-700' : '']"
+          :class="[
+            triggerClass,
+            openMenu === 'replace' ? 'bg-gray-100 text-gray-700' : '',
+          ]"
           :disabled="!hasSelection"
           title="替换选中形状"
           @click="hasSelection && toggleMenu('replace')"
@@ -457,7 +482,9 @@ onBeforeUnmount(() => {
           title="缩放"
           @click="toggleMenu('zoom')"
         >
-          <span class="w-9 text-center text-[11px] tabular-nums">{{ zoom }}%</span>
+          <span class="w-9 text-center text-[11px] tabular-nums"
+            >{{ zoom }}%</span
+          >
         </button>
         <button :class="btnClass" title="放大" @click="zoomIn">
           <svg

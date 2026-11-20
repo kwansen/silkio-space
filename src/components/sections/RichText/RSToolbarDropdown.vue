@@ -37,30 +37,30 @@ onClickOutside(
     :class="show ? 'bg-gray-200' : 'hover:bg-gray-200'"
     @click="show = !show"
   >
-    <component :is="icon" class="size-6" />
-    <ArrowDown class="size-3.5" />
+    <component :is="icon" class="size-5" />
+    <ArrowDown class="size-3" />
   </div>
   <div
     v-if="show"
     ref="floating"
-    class="rounded-lg shadow-md bg-white px-1 py-1 select-none"
+    class="rounded-lg shadow-md bg-white px-1 py-1 select-none space-y-1"
     :style="floatingStyles"
   >
     <div
       v-for="b in buttons"
-      class="px-4 py-1 flex items-center rounded-md"
+      class="px-4 h-12 flex items-center rounded-md"
       :class="[
         b.active()
-          ? 'bg-purple-200 text-purple-700'
+          ? 'bg-purple-50 text-purple-400'
           : 'text-gray-500 hover:text-gray-700',
         !b.active() && !b.disabled() ? 'hover:bg-gray-100' : '',
         b.disabled() ? 'opacity-30' : '',
       ]"
       @click="!b.disabled() && (b.action(), (show = false))"
     >
-      <component :is="b.icon" class="size-6 mr-2" />
+      <component :is="b.icon" class="size-5 mr-2" />
       <span class="text-xs">{{ b.name }}</span>
-      <span class="text-[10px] ml-auto pl-6">{{ b.shortcut }}</span>
+      <span class="text-[10px] ml-auto">（{{ b.shortcut }}）</span>
     </div>
   </div>
 </template>

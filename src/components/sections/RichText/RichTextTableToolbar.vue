@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AddBottomRow from "@/components/icons/AddBottomRow.vue";
-import AddLeftCol from "@/components/icons/AddLeftCol.vue";
-import AddRightCol from "@/components/icons/AddRightCol.vue";
-import AddTopRow from "@/components/icons/AddTopRow.vue";
+import AddRowBelow from "@/components/icons/AddRowBelow.vue";
+import AddColLeft from "@/components/icons/AddColLeft.vue";
+import AddColRight from "@/components/icons/AddColRight.vue";
+import AddRowAbove from "@/components/icons/AddRowAbove.vue";
 import Delete from "@/components/icons/Delete.vue";
 import DeleteCol from "@/components/icons/DeleteCol.vue";
 import DeleteRow from "@/components/icons/DeleteRow.vue";
@@ -52,7 +52,7 @@ interface SelfBtn extends Btn {
 const btnList: SelfBtn[] = [
   {
     name: "添加左侧列",
-    icon: AddLeftCol,
+    icon: AddColLeft,
     action: () => props.editor?.chain().focus().addColumnBefore().run(),
     shortcut: "",
     active: () => false,
@@ -61,7 +61,7 @@ const btnList: SelfBtn[] = [
   },
   {
     name: "添加右侧列",
-    icon: AddRightCol,
+    icon: AddColRight,
     action: () => props.editor?.chain().focus().addColumnAfter().run(),
     shortcut: "",
     active: () => false,
@@ -75,11 +75,11 @@ const btnList: SelfBtn[] = [
     shortcut: "",
     active: () => false,
     disabled: () => false,
-    class: "hover:bg-red-200",
+    class: "hover:bg-red-50 hover:text-red-400",
   },
   {
     name: "添加上方行",
-    icon: AddTopRow,
+    icon: AddRowAbove,
     action: () => props.editor?.chain().focus().addRowBefore().run(),
     shortcut: "",
     active: () => false,
@@ -88,7 +88,7 @@ const btnList: SelfBtn[] = [
   },
   {
     name: "添加下方行",
-    icon: AddBottomRow,
+    icon: AddRowBelow,
     action: () => props.editor?.chain().focus().addRowAfter().run(),
     shortcut: "",
     active: () => false,
@@ -102,7 +102,7 @@ const btnList: SelfBtn[] = [
     shortcut: "",
     active: () => false,
     disabled: () => false,
-    class: "hover:bg-red-200",
+    class: "hover:bg-red-50 hover:text-red-400",
   },
   {
     name: "合并单元格",
@@ -129,25 +129,29 @@ const btnList: SelfBtn[] = [
     shortcut: "",
     active: () => false,
     disabled: () => false,
-    class: "hover:bg-red-200",
+    class: "hover:bg-red-50 hover:text-red-400",
   },
 ];
 </script>
 
 <template>
   <div
-    class="z-9 absolute left-1/2 -translate-x-1/2 w-fit flex items-center gap-2 p-2 bg-white rounded-lg shadow-lg text-gray-500"
+    class="z-9 absolute left-1/2 -translate-x-1/2 w-fit flex items-center gap-2.5 p-1.5 bg-white rounded-lg shadow-md ring ring-neutral-100 text-gray-500"
     :style="{ top: `${y}px` }"
   >
     <div
       v-for="btn in btnList"
       :key="btn.name"
-      class="size-7 rounded-md grid place-items-center"
-      :class="btn.disabled() ? 'opacity-30 cursor-not-allowed' : btn.class"
+      class="size-8 rounded-md grid place-items-center"
+      :class="
+        btn.disabled()
+          ? 'opacity-30 cursor-default'
+          : ['cursor-pointer', btn.class]
+      "
       :title="btn.name"
       @click="btn.action()"
     >
-      <component :is="btn.icon" class="size-4" />
+      <component :is="btn.icon" class="size-5" />
     </div>
   </div>
 </template>

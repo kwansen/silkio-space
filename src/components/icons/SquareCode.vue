@@ -1,18 +1,21 @@
+<!-- lucide -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
     width="1em"
     height="1em"
     viewBox="0 0 24 24"
-    fill="none"
   >
     <path d="M0 0h24v24H0z" fill="none" />
-    <path
-      d="m14.5 6-6 6 6 6"
+    <g
+      fill="none"
       stroke="currentColor"
-      stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-    />
+      stroke-width="2"
+    >
+      <path d="m10 9l-3 3l3 3m4 0l3-3l-3-3" />
+      <rect width="18" height="18" x="3" y="3" rx="2" />
+    </g>
   </svg>
 </template>

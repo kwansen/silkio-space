@@ -28,7 +28,7 @@ const show = ref(false);
     :class="show ? 'bg-gray-200' : 'hover:bg-gray-200'"
     class="size-7 rounded-md mx-1 grid place-items-center select-none text-gray-500 hover:text-gray-700"
   >
-    <Search class="size-6" />
+    <Search class="size-4" />
   </div>
   <div v-if="show" ref="floating" :style="floatingStyles">
     <RTSearchPopoverPanel :editor="editor" @close="show = false" />
