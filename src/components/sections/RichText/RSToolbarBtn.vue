@@ -22,7 +22,7 @@ defineProps<Prop>();
 <template>
   <div
     ref="target"
-    class="group size-8 rounded-md grid place-items-center relative"
+    class="group size-8 shrink-0 rounded-md grid place-items-center relative"
     :class="[
       b.active()
         ? 'bg-purple-50 text-purple-400'

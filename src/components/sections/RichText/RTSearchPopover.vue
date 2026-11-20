@@ -30,7 +30,10 @@ const show = ref(false);
   >
     <Search class="size-4" />
   </div>
-  <div v-if="show" ref="floating" :style="floatingStyles">
-    <RTSearchPopoverPanel :editor="editor" @close="show = false" />
-  </div>
+  <!-- Teleport 到 body，避免被工具栏 overflow-hidden 裁剪 -->
+  <Teleport to="body">
+    <div v-if="show" ref="floating" :style="floatingStyles">
+      <RTSearchPopoverPanel :editor="editor" @close="show = false" />
+    </div>
+  </Teleport>
 </template>

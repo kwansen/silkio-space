@@ -35,8 +35,10 @@ import { Editor } from "@tiptap/vue-3";
 import { useRichtextStore } from "@/stores/richtextStore";
 import Eraser from "@/components/icons/Eraser.vue";
 import Divider from "@/components/icons/Divider.vue";
-import { Btn, Group } from "./type.ts";
+import { Btn } from "./type.ts";
 import RSToolbarBtn from "./RSToolbarBtn.vue";
+import { computed, useTemplateRef } from "vue";
+import { useElementSize } from "@vueuse/core";
 const { setDialog } = useRichtextStore();
 
 interface Props {
@@ -328,84 +330,106 @@ const clear: Btn = {
 };
 //#endregion
 
-const groupList: Group[] = [
-  {
-    items: [
-      { kind: "button", btn: undo },
-      { kind: "button", btn: redo },
-    ],
-    divider: true,
-  },
-  {
-    items: [
-      { kind: "button", btn: bold },
-      { kind: "button", btn: italic },
-      { kind: "button", btn: underline },
-      { kind: "button", btn: strike },
-      { kind: "button", btn: superscript },
-      { kind: "button", btn: subscript },
-      { kind: "button", btn: inlineCode },
-      { kind: "button", btn: highlight },
-      { kind: "button", btn: clear },
-    ],
-    divider: true,
-  },
-  {
-    items: [
-      {
-        kind: "choice",
-        buttons: [paragraph, h1, h2, h3, h4, h5, h6],
-        icon: H1,
-      },
-      {
-        kind: "choice",
-        buttons: [orderedList, bulletList, taskList],
-        icon: BulletList,
-      },
-      {
-        kind: "choice",
-        buttons: [alignLeft, alignCenter, alignRight, alignJustify],
-        icon: AlignJustify,
-      },
-    ],
-    divider: true,
-  },
-  {
-    items: [
-      { kind: "button", btn: link },
-      { kind: "button", btn: math },
-      { kind: "button", btn: blockquote },
-      { kind: "button", btn: codeBlock },
-      { kind: "button", btn: table },
-      { kind: "button", btn: image },
-      { kind: "button", btn: divider },
-    ],
-    divider: true,
-  },
-  {
-    items: [{ kind: "custom", component: RTSearchPopover }],
-    divider: false,
-  },
+// 五个类别：文字 / 正文与标题 / 列表 / 对齐 / 插入
+const textBtns: Btn[] = [
+  bold,
+  italic,
+  underline,
+  strike,
+  superscript,
+  subscript,
+  inlineCode,
+  highlight,
+  clear,
 ];
+const headingBtns: Btn[] = [paragraph, h1, h2, h3, h4, h5, h6];
+const listBtns: Btn[] = [orderedList, bulletList, taskList];
+const alignBtns: Btn[] = [alignLeft, alignCenter, alignRight, alignJustify];
+const insertBtns: Btn[] = [
+  link,
+  math,
+  blockquote,
+  codeBlock,
+  table,
+  image,
+  divider,
+];
+
+// —— 手动精算的档位表 ——
+// 每档折叠项按"折叠收益 ≈ 溢出量"配平，剩余空白 ≤60px，工具栏始终接近满宽。
+// 折叠收益（平铺宽 - 折叠后下拉 48px）：列表 64 / 对齐 104 / 正文 224 / 插入 224 / 文字 304
+// 全平铺 ≈1366px，全折叠 ≈446px（窗口最小宽度已保证放得下）。
+// 阈值含少量安全余量，如实际渲染有偏差可微调。
+const TIERS: { min: number; flat: string[] }[] = [
+  { min: 1366, flat: ["text", "heading", "list", "align", "insert"] },
+  { min: 1310, flat: ["text", "heading", "align", "insert"] },
+  { min: 1206, flat: ["text", "heading", "insert"] },
+  { min: 982, flat: ["text", "insert"] },
+  { min: 758, flat: ["text"] },
+  { min: 678, flat: ["insert"] },
+  { min: 622, flat: ["list", "align"] },
+  { min: 558, flat: ["align"] },
+  { min: 518, flat: ["list"] },
+  { min: 0, flat: [] },
+];
+
+const containerRef = useTemplateRef("containerRef");
+const { width } = useElementSize(containerRef);
+
+// 当前档位下平铺的类别
+const flatSet = computed(
+  () =>
+    new Set(
+      (TIERS.find((t) => width.value >= t.min) ?? TIERS[TIERS.length - 1])
+        .flat,
+    ),
+);
 </script>
 
 <template>
-  <div class="w-full h-11 px-1.5 bg-gray-100 flex items-center gap-2">
-    <div v-for="group in groupList" class="flex h-full items-center gap-2">
-      <div v-for="item in group.items">
-        <RSToolbarBtn v-if="item.kind === 'button'" :b="item.btn" />
-        <RSToolbarDropdown
-          v-if="item.kind === 'choice'"
-          :icon="item.icon"
-          :buttons="item.buttons"
-        />
-        <component
-          v-if="item.kind === 'custom'"
-          :is="item.component"
-          :editor="editor"
-        />
-      </div>
-      <div v-if="group.divider" class="h-1/3 border-x text-neutral-300"></div>
+  <div
+    ref="containerRef"
+    class="w-full h-11 px-1.5 bg-gray-100 flex items-center gap-2 overflow-hidden"
+  >
+    <RSToolbarBtn :b="undo" />
+    <RSToolbarBtn :b="redo" />
+    <div class="h-1/3 border-x text-neutral-300 shrink-0"></div>
+
+    <!-- 文字 -->
+    <div v-if="flatSet.has('text')" class="flex items-center gap-2 shrink-0">
+      <RSToolbarBtn v-for="b in textBtns" :key="b.name" :b="b" />
     </div>
+    <RSToolbarDropdown v-else :icon="Bold" :buttons="textBtns" />
+
+    <!-- 正文与标题 -->
+    <div v-if="flatSet.has('heading')" class="flex items-center gap-2 shrink-0">
+      <RSToolbarBtn v-for="b in headingBtns" :key="b.name" :b="b" />
+    </div>
+    <RSToolbarDropdown v-else :icon="LetterT" :buttons="headingBtns" />
+
+    <div class="h-1/3 border-x text-neutral-300 shrink-0"></div>
+
+    <!-- 列表 -->
+    <div v-if="flatSet.has('list')" class="flex items-center gap-2 shrink-0">
+      <RSToolbarBtn v-for="b in listBtns" :key="b.name" :b="b" />
+    </div>
+    <RSToolbarDropdown v-else :icon="BulletList" :buttons="listBtns" />
+
+    <!-- 对齐 -->
+    <div v-if="flatSet.has('align')" class="flex items-center gap-2 shrink-0">
+      <RSToolbarBtn v-for="b in alignBtns" :key="b.name" :b="b" />
+    </div>
+    <RSToolbarDropdown v-else :icon="AlignJustify" :buttons="alignBtns" />
+
+    <div class="h-1/3 border-x text-neutral-300 shrink-0"></div>
+
+    <!-- 插入 -->
+    <div v-if="flatSet.has('insert')" class="flex items-center gap-2 shrink-0">
+      <RSToolbarBtn v-for="b in insertBtns" :key="b.name" :b="b" />
+    </div>
+    <RSToolbarDropdown v-else :icon="Table" :buttons="insertBtns" />
+
+    <div class="h-1/3 border-x text-neutral-300 shrink-0"></div>
+    <RTSearchPopover :editor="editor" />
   </div>
 </template>
