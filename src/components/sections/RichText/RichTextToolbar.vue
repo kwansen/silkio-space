@@ -390,7 +390,7 @@ const groupList: Group[] = [
 </script>
 
 <template>
-  <div class="w-full z-10 h-11 px-1.5 bg-gray-100 flex items-center gap-2">
+  <div class="w-full h-11 px-1.5 bg-gray-100 flex items-center gap-2">
     <div v-for="group in groupList" class="flex h-full items-center gap-2">
       <div v-for="item in group.items">
         <RSToolbarBtn v-if="item.kind === 'button'" :b="item.btn" />

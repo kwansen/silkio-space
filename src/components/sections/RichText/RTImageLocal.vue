@@ -103,7 +103,7 @@ onKeyStroke("Enter", () => {
         <ImagePlus class="w-20 h-20" />
         <div>本地上传</div>
       </div>
-      <div class="absolute inset-0 top-0 left-0 hover:bg-black/10"></div>
+      <div class="absolute inset-0 top-0 left-0 hover:bg-black/5"></div>
     </div>
     <div
       v-if="previewUrl"

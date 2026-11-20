@@ -112,12 +112,12 @@ const handleClickBtn = () => {
   <div
     v-if="show"
     ref="floating"
-    class="bg-white z-10 select-none text-xs rounded-lg overflow-hidden p-1 shadow-2xl"
+    class="bg-white z-10 select-none text-xs rounded-lg overflow-hidden p-1 shadow-2xl space-y-1"
     :style="floatingStyles"
   >
     <div
       v-for="i in popoverList"
-      class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md hover:bg-gray-100"
+      class="pl-4 pr-8 h-12 flex items-center gap-2 rounded-md hover:bg-gray-100"
       @click="i.action()"
     >
       <component :is="i.icon" class="size-4" />
