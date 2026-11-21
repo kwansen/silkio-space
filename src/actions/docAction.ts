@@ -80,6 +80,7 @@ export const useDocAction = () => {
 
   return {
     openDoc,
+    createTyped,
     createRichtext,
     createMindmap,
     createFlowchart,

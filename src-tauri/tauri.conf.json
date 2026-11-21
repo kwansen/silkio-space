@@ -13,8 +13,9 @@
     "windows": [
       {
         "label": "main",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 800,
+        "center": true,
         "minWidth": 760,
         "minHeight": 600,
         "backgroundColor": "#e5e7eb",
@@ -23,8 +24,9 @@
       },
       {
         "label": "editor",
-        "width": 800,
-        "height": 600,
+        "width": 1200,
+        "height": 800,
+        "center": true,
         "minWidth": 760,
         "minHeight": 600,
         "visible": false,
@@ -34,9 +36,12 @@
       },
       {
         "label": "tool",
-        "width": 800,
-        "height": 600,
+        "width": 288,
+        "height": 248,
         "visible": false,
+        "center": true,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
         "backgroundColor": "#00000000",
         "decorations": false,
         "dragDropEnabled": false,
