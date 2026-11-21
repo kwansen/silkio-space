@@ -13,7 +13,7 @@ const hoverId = ref<string>("");
 </script>
 
 <template>
-  <div>
+  <div class="space-y-1">
     <ArchiveItem
       v-for="a in store.searchedArchives"
       :key="a.id"

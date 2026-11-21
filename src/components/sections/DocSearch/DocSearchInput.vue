@@ -34,7 +34,7 @@ watch(
     <input
       ref="inputRef"
       v-model="query"
-      class="h-16 flex-1 bg-white outline-none pr-4"
+      class="flex-1 bg-white outline-none pr-4"
       type="text"
       placeholder="搜索文档"
     />

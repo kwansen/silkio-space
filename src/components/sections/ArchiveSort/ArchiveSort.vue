@@ -12,7 +12,11 @@ const { show, sortedArchives } = storeToRefs(store);
 <template>
   <div>
     <ArchiveSortOption />
-    <div class="p-1">
+    <!-- 垂直 padding 只在有输入行或列表时应用，空态提示行保持自身 h-15 总高 -->
+    <div
+      class="px-1"
+      :class="sortedArchives.length > 0 || show ? 'pt-1 pb-4' : ''"
+    >
       <ArchiveInput v-if="show" />
       <ArchiveSortEmpty v-if="!show && sortedArchives.length === 0" />
       <ArchiveSortList />

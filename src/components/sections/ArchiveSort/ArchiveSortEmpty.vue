@@ -1,5 +1,5 @@
 <template>
-  <EmptyHint class="h-15" />
+  <EmptyHint class="h-16" />
 </template>
 
 <script setup lang="ts">

@@ -29,9 +29,11 @@ onClickOutside(
 const action = useArchiveAction();
 const name = ref("");
 
-const handleClick = () => {
+// 等创建+列表刷新完成后再关闭输入框：若先 setShow(false)，刷新落地前
+// sortedArchives 仍为空，首次添加时会先闪一帧空态
+const handleClick = async () => {
   if (!name.value) return;
-  action.createArchive(name.value);
+  await action.createArchive(name.value);
   setShow(false);
 };
 

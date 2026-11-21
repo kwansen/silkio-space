@@ -1,16 +1,3 @@
-/* @import "./p.css";
-@import "./heading.css";
-@import "./blockquote.css";
-@import "./code.css";
-@import "./code-block.css";
-@import "./horizontal-rule.css";
-@import "./link.css";
-@import "./highlight.css";
-@import "./image.css";
-@import "./list.css";
-@import "./task-list.css";
-@import "./mathematics.css"; */
-
 @import "./inlineCode.css";
 @import "./heading.css";
 @import "./p.css";
@@ -22,7 +9,7 @@
 
 .tiptap {
   font-size: 1rem;
-  padding: 0px 4px;
+  padding: 0px 8px;
 }
 
 /* 

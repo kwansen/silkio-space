@@ -116,7 +116,12 @@ onUnmounted(() => {
       data-card
       class="bg-white rounded-2xl overflow-hidden shadow-[0_0_10px_rgba(0,0,0,0.1)]"
     >
-      <div class="flex">
+      <!-- 分隔线与主窗口 DocSearch 同策略：仅有搜索词时显示，border 在
+           h-16 头部内部，位置与其他 tab 一致 -->
+      <div
+        class="flex h-16"
+        :class="query?.trim() ? 'border-b border-purple-300' : ''"
+      >
         <div class="size-16 grid place-items-center">
           <Search class="size-5" />
         </div>
@@ -126,7 +131,7 @@ onUnmounted(() => {
           name=""
           id=""
           v-model="query"
-          class="h-16 flex-1 pr-4 outline-none"
+          class="flex-1 pr-4 outline-none"
         />
       </div>
 

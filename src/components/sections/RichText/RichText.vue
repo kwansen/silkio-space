@@ -145,7 +145,10 @@ onMounted(async () => {
   editor.value = createEditor(v);
   // AI 编辑适配器（参照 MindMap/FlowChart）：指令经控制器 run 走块级 ops
   // 协议改文档，Markdown 载荷按当前 schema 转换，单条事务原子可撤销
-  aiController.value = new RichTextAIController(editor.value, richTextAIGenerate);
+  aiController.value = new RichTextAIController(
+    editor.value,
+    richTextAIGenerate,
+  );
   setRichTextInstance(aiController.value);
 });
 
@@ -185,7 +188,7 @@ watch(
       <ScrollArea class="relative" @os-scroll="onScrollViewport">
         <div class="w-full max-w-176 mx-auto relative">
           <RichTextTitle :editor="editor" />
-          <EditorContent :editor="editor" class="" />
+          <EditorContent :editor="editor" />
           <div
             class="h-screen cursor-text"
             @click="editor?.chain().focus('end').run()"
