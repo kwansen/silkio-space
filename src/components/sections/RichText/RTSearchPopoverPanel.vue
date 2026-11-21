@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import ArrowDown from "@/components/icons/ArrowDown.vue";
-import ArrowTop from "@/components/icons/ArrowTop.vue";
-import CloseSmall from "@/components/icons/CloseSmall.vue";
-import MatchCase from "@/components/icons/MatchCase.vue";
+import ChevronDown from "@/components/icons/ChevronDown.vue";
+import ChevronUp from "@/components/icons/ChevronUp.vue";
+import Close from "@/components/icons/Close.vue";
+import CaseSensitive from "@/components/icons/CaseSensitive.vue";
 import Regex from "@/components/icons/Regex.vue";
 import WholeWord from "@/components/icons/WholeWord.vue";
 import { Editor } from "@tiptap/vue-3";
@@ -63,7 +63,7 @@ interface Item {
 
 const list: Item[] = [
   {
-    icon: MatchCase,
+    icon: CaseSensitive,
     state: () => caseSensitive.value,
     action: setCaseSensitive,
   },
@@ -82,9 +82,9 @@ onUnmounted(() => {
         <div class="flex justify-end">
           <div
             @click="emit('close')"
-            class="grid place-items-center size-6 bg-gray-200 rounded-md cursor-pointer text-gray-500 hover:bg-red-50 hover:text-red-500"
+            class="grid place-items-center size-5 bg-gray-200 rounded-md cursor-pointer text-gray-500 hover:bg-red-50 hover:text-red-500"
           >
-            <CloseSmall class="size-3.5" />
+            <Close class="size-5" />
           </div>
         </div>
 
@@ -103,7 +103,7 @@ onUnmounted(() => {
             class="size-5 grid place-items-center mr-1 rounded-xs"
             :class="item.state() ? 'bg-purple-200' : 'hover:bg-gray-200'"
           >
-            <component :is="item.icon" class="size-4" />
+            <component :is="item.icon" class="size-5" />
           </div>
         </div>
         <div
@@ -130,17 +130,17 @@ onUnmounted(() => {
           </div>
           <div class="flex-1"></div>
           <div
-            class="size-7 grid place-items-center hover:bg-gray-100 mr-2 rounded-md"
+            class="size-8 grid place-items-center hover:bg-gray-100 mr-2 rounded-md"
             @click="editor?.commands.goToPreviousResult()"
           >
-            <ArrowTop class="size-5" />
+            <ChevronUp class="size-5" />
           </div>
 
           <div
-            class="size-7 grid place-items-center hover:bg-gray-100 rounded-md"
+            class="size-8 grid place-items-center hover:bg-gray-100 rounded-md"
             @click="editor?.commands.goToNextResult()"
           >
-            <ArrowDown class="size-5" />
+            <ChevronDown class="size-5" />
           </div>
         </div>
       </div>

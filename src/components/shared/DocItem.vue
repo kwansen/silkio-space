@@ -114,7 +114,7 @@ const getClass = () => {
     <!-- 图标 -->
     <div class="w-full h-full grid place-items-center">
       <div class="h-7 w-7 bg-gray-50 rounded-md grid place-items-center">
-        <component :is="icon" class="size-4 text-gray-400" />
+        <component :is="icon" class="size-5 text-gray-400" />
       </div>
     </div>
 
@@ -130,9 +130,7 @@ const getClass = () => {
     <div
       v-if="meta"
       class="whitespace-nowrap px-4 text-right text-xs text-neutral-400 flex items-center transition-opacity"
-      :class="
-        hoverKey === itemKey || openedKey === itemKey ? 'opacity-0' : ''
-      "
+      :class="hoverKey === itemKey || openedKey === itemKey ? 'opacity-0' : ''"
     >
       {{ meta }}
     </div>
@@ -145,11 +143,11 @@ const getClass = () => {
     >
       <div
         ref="target"
-        class="size-7 grid place-items-center rounded-md relative"
+        class="size-8 grid place-items-center rounded-md relative"
         :class="openedKey === itemKey ? 'bg-gray-200' : 'hover:bg-gray-200'"
         @click.stop="handleClickBtn"
       >
-        <More class="size-4" />
+        <More class="size-5" />
       </div>
     </div>
   </div>
@@ -166,7 +164,7 @@ const getClass = () => {
       :class="i.class"
       @click="i.action"
     >
-      <component :is="i.icon" class="size-4" />
+      <component :is="i.icon" class="size-5" />
       <span>{{ i.text }}</span>
     </div>
   </div>

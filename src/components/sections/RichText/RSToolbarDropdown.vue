@@ -2,7 +2,7 @@
 import { type Component, computed, ref, useTemplateRef } from "vue";
 import { autoUpdate, flip, offset, useFloating } from "@floating-ui/vue";
 import { onClickOutside } from "@vueuse/core";
-import ArrowDown from "@/components/icons/ArrowDown.vue";
+import ChevronDown from "@/components/icons/ChevronDown.vue";
 import { Btn } from "./type.ts";
 
 interface Prop {
@@ -38,7 +38,7 @@ onClickOutside(
     @click="show = !show"
   >
     <component :is="icon" class="size-5" />
-    <ArrowDown class="size-3" />
+    <ChevronDown class="size-3" />
   </div>
   <!-- Teleport 到 body，避免被工具栏 overflow-hidden 裁剪 -->
   <Teleport to="body">

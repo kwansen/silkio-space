@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import LeftFill from "@/components/icons/LeftFill.vue";
-import RightFill from "@/components/icons/RightFill.vue";
+import ChevronLeft from "@/components/icons/ChevronLeft.vue";
+import ChevronRight from "@/components/icons/ChevronRight.vue";
 import { useDocSortStore } from "@/stores/docSortStore";
 import { storeToRefs } from "pinia";
 
@@ -17,7 +17,7 @@ const { currentPage, totalPages } = storeToRefs(store);
       class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[currentPage <= 1 ? 'opacity-40' : 'hover:bg-gray-100']"
     >
-      <LeftFill class="size-4" />
+      <ChevronLeft class="size-5" />
     </div>
 
     <div
@@ -41,7 +41,7 @@ const { currentPage, totalPages } = storeToRefs(store);
           : 'hover:bg-gray-100',
       ]"
     >
-      <RightFill class="size-4" />
+      <ChevronRight class="size-5" />
     </div>
   </div>
 </template>

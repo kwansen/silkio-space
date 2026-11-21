@@ -26,9 +26,9 @@ const show = ref(false);
     ref="traget"
     @click="show = !show"
     :class="show ? 'bg-gray-200' : 'hover:bg-gray-200'"
-    class="size-7 rounded-md mx-1 grid place-items-center select-none text-gray-500 hover:text-gray-700"
+    class="size-8 rounded-md mx-1 grid place-items-center select-none text-gray-500 hover:text-gray-700"
   >
-    <Search class="size-4" />
+    <Search class="size-5" />
   </div>
   <!-- Teleport 到 body，避免被工具栏 overflow-hidden 裁剪 -->
   <Teleport to="body">

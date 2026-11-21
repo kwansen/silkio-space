@@ -50,7 +50,7 @@ const options: {
       class="w-full aspect-square grid place-items-center cursor-pointer"
     >
       <div
-        class="size-7 rounded-md grid place-items-center hover:bg-gray-100 relative group"
+        class="size-8 rounded-md grid place-items-center hover:bg-gray-100 relative group"
         @click="setDocTab(option.key)"
       >
         <component
@@ -59,7 +59,7 @@ const options: {
           :class="tab === option.key ? 'text-purple-700' : 'text-gray-500'"
         />
         <div
-          class="hidden bg-white text-xs shadow-xs px-4 py-1 rounded-md group-hover:block absolute left-8 top-1/2 -translate-y-1/2 z-100 whitespace-nowrap"
+          class="hidden bg-white text-xs shadow-xs px-4 py-1 rounded-md group-hover:block absolute left-10 top-1/2 -translate-y-1/2 z-100 whitespace-nowrap"
         >
           {{ option.pop }}
         </div>

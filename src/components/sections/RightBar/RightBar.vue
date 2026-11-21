@@ -11,7 +11,7 @@ import { storeToRefs } from "pinia";
 import { computed, nextTick, useTemplateRef, watch } from "vue";
 import Sparkles from "@/components/icons/Sparkles.vue";
 import Stop from "@/components/icons/Stop.vue";
-import ArrowUp from "@/components/icons/ArrowUp.vue";
+import ChevronUp from "@/components/icons/ChevronUp.vue";
 
 const aiStore = useAiStore();
 const { messages, pending, busy, prompt, ready } = storeToRefs(aiStore);
@@ -46,10 +46,12 @@ const onKeydown = (event: KeyboardEvent) => {
 
 <template>
   <div class="w-75 h-full flex">
-    <div class="flex-1 min-h-0 bg-white rounded-lg overflow-hidden flex flex-col">
+    <div
+      class="flex-1 min-h-0 bg-white rounded-lg overflow-hidden flex flex-col"
+    >
       <!-- 头部 -->
       <div class="h-10 shrink-0 flex items-center px-3 gap-1.5">
-        <Sparkles class="size-4 text-violet-500" />
+        <Sparkles class="size-5 text-violet-500" />
         <div class="font-medium">AI 助手</div>
         <div class="flex-1"></div>
         <button
@@ -64,106 +66,111 @@ const onKeydown = (event: KeyboardEvent) => {
       <!-- 消息流 -->
       <ScrollArea ref="chatBox" class="flex-1 min-h-0 px-2.5">
         <div class="flex flex-col gap-3 py-2">
-        <div
-          v-if="!messages.length && !pending"
-          class="mt-8 text-center text-xs leading-[1.9] text-gray-400"
-        >
-          询问当前文档内容，或输入任意问题
-          <br />思维导图/流程图支持 AI 直接改图，如"补充三个子节点"
-          <template v-if="!ready">
-            <br />尚未配置 AI 服务，请在主页窗口的设置中配置
-          </template>
-        </div>
+          <div
+            v-if="!messages.length && !pending"
+            class="mt-8 text-center text-xs leading-[1.9] text-gray-400"
+          >
+            询问当前文档内容，或输入任意问题
+            <br />思维导图/流程图支持 AI 直接改图，如"补充三个子节点"
+            <template v-if="!ready">
+              <br />尚未配置 AI 服务，请在主页窗口的设置中配置
+            </template>
+          </div>
 
-        <div v-for="m in messages" :key="m.id">
-          <!-- 用户指令 -->
-          <div v-if="m.role === 'user'" class="flex justify-end">
+          <div v-for="m in messages" :key="m.id">
+            <!-- 用户指令 -->
+            <div v-if="m.role === 'user'" class="flex justify-end">
+              <div
+                class="max-w-[85%] rounded-xl rounded-br-sm bg-violet-500 px-3 py-2 text-xs leading-5 text-white whitespace-pre-wrap wrap-break-word"
+              >
+                {{ m.text }}
+              </div>
+            </div>
+            <!-- 错误 -->
             <div
-              class="max-w-[85%] rounded-xl rounded-br-sm bg-violet-500 px-3 py-2 text-xs leading-5 text-white whitespace-pre-wrap break-words"
+              v-else-if="m.role === 'error'"
+              class="text-xs leading-5 text-red-500 whitespace-pre-wrap wrap-break-word"
             >
               {{ m.text }}
             </div>
+            <!-- AI 回复：思考过程（可折叠）+ 回答 + 执行反馈链 -->
+            <div v-else class="flex flex-col gap-2">
+              <details
+                v-if="m.reasoning"
+                class="rounded-lg bg-gray-50 px-2.5 py-1.5"
+              >
+                <summary
+                  class="cursor-pointer text-xs text-gray-400 select-none"
+                >
+                  思考过程
+                </summary>
+                <div
+                  class="mt-1 text-[11px] leading-5 text-gray-400 whitespace-pre-wrap"
+                >
+                  {{ m.reasoning }}
+                </div>
+              </details>
+              <AIMarkdown
+                v-if="m.text"
+                :value="m.text"
+                class="text-xs leading-5 text-gray-600"
+              />
+              <!-- 执行反馈链（参照 .examples AISidebar）：AI 改图指令逐步应用的结果 -->
+              <div v-if="m.steps?.length" class="flex flex-col gap-1">
+                <div
+                  v-for="(s, i) in m.steps"
+                  :key="i"
+                  class="flex items-start gap-1.5 text-xs leading-5"
+                >
+                  <span
+                    :class="
+                      s.status === 'applied'
+                        ? 'text-emerald-500'
+                        : 'text-gray-300'
+                    "
+                    >{{ s.status === "applied" ? "✓" : "–" }}</span
+                  >
+                  <span
+                    :class="
+                      s.status === 'applied' ? 'text-gray-600' : 'text-gray-400'
+                    "
+                    >{{ s.label }}</span
+                  >
+                </div>
+              </div>
+            </div>
           </div>
-          <!-- 错误 -->
-          <div
-            v-else-if="m.role === 'error'"
-            class="text-xs leading-5 text-red-500 whitespace-pre-wrap break-words"
-          >
-            {{ m.text }}
-          </div>
-          <!-- AI 回复：思考过程（可折叠）+ 回答 + 执行反馈链 -->
-          <div v-else class="flex flex-col gap-2">
-            <details v-if="m.reasoning" class="rounded-lg bg-gray-50 px-2.5 py-1.5">
+
+          <!-- 进行中：流式思考实时展示，回答文本流式渲染 -->
+          <div v-if="pending" class="flex flex-col gap-2">
+            <details
+              v-if="pending.reasoning"
+              open
+              class="rounded-lg bg-gray-50 px-2.5 py-1.5"
+            >
               <summary class="cursor-pointer text-xs text-gray-400 select-none">
-                思考过程
+                思考中…
               </summary>
               <div
                 class="mt-1 text-[11px] leading-5 text-gray-400 whitespace-pre-wrap"
               >
-                {{ m.reasoning }}
+                {{ pending.reasoning }}
               </div>
             </details>
             <AIMarkdown
-              v-if="m.text"
-              :value="m.text"
+              v-if="pending.content && !isOpsStream(pending.content)"
+              :value="pending.content"
               class="text-xs leading-5 text-gray-600"
             />
-            <!-- 执行反馈链（参照 .examples AISidebar）：AI 改图指令逐步应用的结果 -->
-            <div v-if="m.steps?.length" class="flex flex-col gap-1">
-              <div
-                v-for="(s, i) in m.steps"
-                :key="i"
-                class="flex items-start gap-1.5 text-xs leading-5"
-              >
-                <span
-                  :class="
-                    s.status === 'applied'
-                      ? 'text-emerald-500'
-                      : 'text-gray-300'
-                  "
-                  >{{ s.status === "applied" ? "✓" : "–" }}</span
-                >
-                <span
-                  :class="
-                    s.status === 'applied' ? 'text-gray-600' : 'text-gray-400'
-                  "
-                  >{{ s.label }}</span
-                >
-              </div>
+            <div class="flex items-center gap-1.5 text-xs text-gray-400">
+              <Sparkles class="size-5 animate-pulse text-violet-400" />
+              <span>{{ pendingStatus }}</span>
             </div>
           </div>
         </div>
-
-        <!-- 进行中：流式思考实时展示，回答文本流式渲染 -->
-        <div v-if="pending" class="flex flex-col gap-2">
-          <details
-            v-if="pending.reasoning"
-            open
-            class="rounded-lg bg-gray-50 px-2.5 py-1.5"
-          >
-            <summary class="cursor-pointer text-xs text-gray-400 select-none">
-              思考中…
-            </summary>
-            <div
-              class="mt-1 text-[11px] leading-5 text-gray-400 whitespace-pre-wrap"
-            >
-              {{ pending.reasoning }}
-            </div>
-          </details>
-          <AIMarkdown
-            v-if="pending.content && !isOpsStream(pending.content)"
-            :value="pending.content"
-            class="text-xs leading-5 text-gray-600"
-          />
-          <div class="flex items-center gap-1.5 text-xs text-gray-400">
-            <Sparkles class="size-3.5 animate-pulse text-violet-400" />
-            <span>{{ pendingStatus }}</span>
-          </div>
-        </div>
-      </div>
       </ScrollArea>
 
-    <!-- 输入区 -->
+      <!-- 输入区 -->
       <div class="shrink-0 p-2 pt-1 flex items-center gap-1.5">
         <input
           v-model="prompt"
@@ -179,8 +186,8 @@ const onKeydown = (event: KeyboardEvent) => {
           :title="busy ? '停止生成' : '发送'"
           @click="busy ? stop() : send()"
         >
-          <Stop v-if="busy" class="size-4" />
-          <ArrowUp v-else class="size-4" />
+          <Stop v-if="busy" class="size-5" />
+          <ChevronUp v-else class="size-5" />
         </button>
       </div>
     </div>

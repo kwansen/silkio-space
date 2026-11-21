@@ -34,7 +34,7 @@ import RTSearchPopover from "./RTSearchPopover.vue";
 import { Editor } from "@tiptap/vue-3";
 import { useRichtextStore } from "@/stores/richtextStore";
 import Eraser from "@/components/icons/Eraser.vue";
-import Divider from "@/components/icons/Divider.vue";
+import GapVertical from "@/components/icons/GapVertical.vue";
 import { Btn } from "./type.ts";
 import RSToolbarBtn from "./RSToolbarBtn.vue";
 import { computed, useTemplateRef } from "vue";
@@ -311,7 +311,7 @@ const image: Btn = {
 };
 const divider: Btn = {
   name: "分割线",
-  icon: Divider,
+  icon: GapVertical,
   shortcut: "Ctrl + Shift + -",
   action: () => props.editor?.chain().focus().setHorizontalRule().run(),
   disabled: () => !props.editor?.can().setHorizontalRule(),
@@ -380,8 +380,7 @@ const { width } = useElementSize(containerRef);
 const flatSet = computed(
   () =>
     new Set(
-      (TIERS.find((t) => width.value >= t.min) ?? TIERS[TIERS.length - 1])
-        .flat,
+      (TIERS.find((t) => width.value >= t.min) ?? TIERS[TIERS.length - 1]).flat,
     ),
 );
 </script>

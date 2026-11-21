@@ -1,4 +1,4 @@
-<!-- lucide：mingcute的半个箭头看不习惯 -->
+<!-- lucide-->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"

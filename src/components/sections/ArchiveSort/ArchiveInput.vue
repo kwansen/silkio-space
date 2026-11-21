@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useArchiveAction } from "@/actions/archiveAction";
 import Check from "@/components/icons/Check.vue";
-import Close from "@/components/icons/Close.vue";
 import { useArchiveStore } from "@/stores/archiveStore";
 import { onClickOutside } from "@vueuse/core";
 import { ref } from "vue";
@@ -37,6 +36,7 @@ const handleClick = () => {
 };
 
 import { onKeyStroke } from "@vueuse/core";
+import Close from "@/components/icons/Close.vue";
 
 // ESC 关闭
 onKeyStroke("Escape", () => {
@@ -63,16 +63,16 @@ onKeyStroke("Enter", () => {
     />
     <button
       :disabled="!name"
-      class="size-7 enabled:hover:bg-gray-200 enabled:cursor-pointer disabled:opacity-30 grid place-items-center rounded-md"
+      class="size-8 enabled:hover:bg-gray-200 enabled:cursor-pointer disabled:opacity-30 grid place-items-center rounded-md"
       @click="handleClick"
     >
       <Check class="size-5" />
     </button>
     <div
-      class="size-7 cursor-pointer grid place-items-center rounded-md text-gray-500 hover:bg-red-50 hover:text-red-500"
+      class="size-8 cursor-pointer grid place-items-center rounded-md text-gray-500 hover:bg-red-50 hover:text-red-500"
       @click="setShow(false)"
     >
-      <Close class="size-4" />
+      <Close class="size-5" />
     </div>
   </div>
 </template>

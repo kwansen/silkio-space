@@ -1,4 +1,4 @@
-<!-- lucide：mingcute不好看，同时存在虚化 -->
+<!-- lucide -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"

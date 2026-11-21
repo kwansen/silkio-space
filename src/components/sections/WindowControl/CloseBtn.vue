@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import Close from "@/components/icons/Close.vue";
-import PixelAlign from "@/components/shared/PixelAlign.vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { ref } from "vue";
 
@@ -34,6 +33,6 @@ const unhover = () => {
     @mouseleave="unhover"
     @click="handleClick"
   >
-    <PixelAlign><Close /></PixelAlign>
+    <Close class="size-5" />
   </div>
 </template>

@@ -32,7 +32,7 @@ const list = [
   >
     <div class="flex items-center px-4 py-2.5">
       <div class="size-10 bg-gray-200 grid place-items-center rounded-md mr-4">
-        <KeyFlow class="size-7" />
+        <KeyFlow class="size-8" />
       </div>
       <div>
         <div class="text-sm mb-1">版本：{{ appVersion }}</div>

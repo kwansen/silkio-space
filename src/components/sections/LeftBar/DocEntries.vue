@@ -158,21 +158,17 @@ const handleClickBtn = () => {
 
 <template>
   <div
-    class="h-11 shrink-0 flex items-center pl-[18px] pr-4 gap-1.5 border-b border-gray-100"
+    class="h-11 shrink-0 flex items-center pl-4.5 pr-4 gap-1.5 border-b border-gray-100"
   >
-    <Archive class="size-4 shrink-0 text-gray-400" />
+    <Archive class="size-5 shrink-0 text-gray-400" />
     <span class="flex-1 min-w-0 truncate">{{ name }}</span>
-    <!-- pr-4 使添加按钮图标中心（16+14=30px）与条目删除按钮图标中心
-         （列表 px-2 + 条目 px-2.5 + size-6 按钮 + size-3.5 图标 = 18+12=30px）垂直对齐 -->
-    <!-- 添加按钮（全应用统一规格，本处为范本）：ghost 风格，无背景 hover 显灰底；
-         颜色类放按钮上、图标以 currentColor 继承 -->
     <div
       ref="target"
-      class="size-7 shrink-0 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:text-gray-700"
+      class="size-8 shrink-0 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:text-gray-700"
       :class="show ? 'bg-gray-100' : 'hover:bg-gray-100'"
       @click="handleClickBtn"
     >
-      <Plus class="size-4" />
+      <Plus class="size-5" />
     </div>
   </div>
   <div
@@ -186,7 +182,7 @@ const handleClickBtn = () => {
       class="pl-4 pr-8 py-2 flex items-center gap-2 rounded-md hover:bg-gray-100"
       @click="i.action()"
     >
-      <component :is="i.icon" class="size-4" />
+      <component :is="i.icon" class="size-5" />
       <span>{{ i.text }}</span>
     </div>
   </div>

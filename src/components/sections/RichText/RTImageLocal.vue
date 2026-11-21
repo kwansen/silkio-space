@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ImagePlus from "@/components/icons/ImagePlus.vue";
-import CloseSmall from "@/components/icons/CloseSmall.vue";
+import Close from "@/components/icons/Close.vue";
 import { ref, shallowRef } from "vue";
 import { useTemplateRef } from "vue";
 import { writeFile, BaseDirectory } from "@tauri-apps/plugin-fs";
@@ -110,7 +110,7 @@ onKeyStroke("Enter", () => {
       @click="previewUrl = ''"
       class="absolute size-5 grid place-items-center bg-gray-300 rounded-md cursor-pointer text-gray-600 hover:bg-red-50 hover:text-red-500 top-0 right-0 translate-x-1/2 -translate-y-1/2"
     >
-      <CloseSmall class="size-3.5" />
+      <Close class="size-5" />
     </div>
   </div>
   <div class="h-6"></div>

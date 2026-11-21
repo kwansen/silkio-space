@@ -61,7 +61,7 @@ defineProps<Props>();
          flowChart/mindMap 的 doc 模式下无目录也无大纲，隐藏避免无效交互 -->
     <div
       v-if="label === 'editor' && editorStore.leftbarApplicable"
-      class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
+      class="size-8 hover:bg-gray-100 grid place-items-center rounded-md"
       title="目录 / 大纲"
       @click="uiStore.toggleLeftbar"
     >
@@ -73,7 +73,7 @@ defineProps<Props>();
     </div>
     <div
       v-if="label === 'editor'"
-      class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
+      class="size-8 hover:bg-gray-100 grid place-items-center rounded-md"
       title="AI 助手"
       @click="uiStore.toggleRightbar"
     >
@@ -85,7 +85,7 @@ defineProps<Props>();
     <!-- 设置入口仅保留在 main 窗口；editor 窗口经 AI 面板齿轮触达 AI 配置 -->
     <div
       v-if="label === 'main'"
-      class="size-7 hover:bg-gray-100 grid place-items-center rounded-md"
+      class="size-8 hover:bg-gray-100 grid place-items-center rounded-md"
       @click="uiStore.setSettingDialogShow(true)"
     >
       <Setting class="size-5" />

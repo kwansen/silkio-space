@@ -1,4 +1,4 @@
-<!-- mingcute -->
+<!-- mingcute：需要保持doc，docsearch，docfill，docsearchfill的图标一致 -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"

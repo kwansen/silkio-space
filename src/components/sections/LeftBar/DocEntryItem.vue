@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import CloseSmall from "@/components/icons/CloseSmall.vue";
+import Close from "@/components/icons/Close.vue";
 import Doc from "@/components/icons/Doc.vue";
 import Flowchart from "@/components/icons/Flowchart.vue";
 import Mindmap from "@/components/icons/Mindmap.vue";
@@ -27,17 +27,17 @@ const emit = defineEmits<{
   >
     <Mindmap
       v-if="entry.doc_type === 'mindMap'"
-      class="size-4 shrink-0"
+      class="size-5 shrink-0"
       :class="active ? 'text-purple-500' : 'text-gray-400'"
     />
     <Flowchart
       v-else-if="entry.doc_type === 'flowChart'"
-      class="size-4 shrink-0"
+      class="size-5 shrink-0"
       :class="active ? 'text-purple-500' : 'text-gray-400'"
     />
     <Doc
       v-else
-      class="size-4 shrink-0"
+      class="size-5 shrink-0"
       :class="active ? 'text-purple-500' : 'text-gray-400'"
     />
     <span
@@ -47,12 +47,12 @@ const emit = defineEmits<{
       {{ entry.title || "未命名标题" }}
     </span>
     <button
-      class="size-6 shrink-0 grid place-items-center rounded-md cursor-pointer text-gray-400 hover:bg-red-50 hover:text-red-500 transition-opacity"
+      class="size-5 shrink-0 grid place-items-center rounded-md cursor-pointer text-gray-400 hover:bg-red-50 hover:text-red-500 transition-opacity"
       :class="hovered ? 'opacity-100' : 'opacity-0 pointer-events-none'"
       title="移出归档"
       @click.stop="emit('remove')"
     >
-      <CloseSmall class="size-3" />
+      <Close class="size-5" />
     </button>
   </div>
 </template>

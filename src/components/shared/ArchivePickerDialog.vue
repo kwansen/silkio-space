@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FocusScope } from "@zhencai/vue-focus-scope";
 import ScrollArea from "./ScrollArea.vue";
-import CheckCircleFill from "../icons/CheckCircleFill.vue";
+import CheckSquareFill from "../icons/CheckSquareFill.vue";
 import { onMounted, ref } from "vue";
 import { useArchiveAction } from "@/actions/archiveAction.ts";
 import { CheckedArchive } from "@/types/archive.ts";
@@ -59,7 +59,7 @@ onKeyStroke("Enter", () => {
               class="h-10 hover:bg-gray-100 rounded-md flex px-2 gap-2 items-center cursor-pointer"
               @click="a.checked = !a.checked"
             >
-              <CheckCircleFill
+              <CheckSquareFill
                 v-if="a.checked"
                 class="size-5 text-purple-700"
               />

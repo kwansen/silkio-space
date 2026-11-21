@@ -19,18 +19,30 @@ import {
   ref,
   shallowRef,
   useTemplateRef,
+  type Component,
 } from "vue";
-import FitView from "@/components/icons/FitView.vue";
+import Focus from "@/components/icons/Focus.vue";
 import Redo from "@/components/icons/Redo.vue";
 import Undo from "@/components/icons/Undo.vue";
-import DirectionGlyph from "./DirectionGlyph.vue";
-import EdgeGlyph from "./EdgeGlyph.vue";
+import EdgeBezier from "@/components/icons/EdgeBezier.vue";
+import EdgeOrthogonalDouble from "@/components/icons/EdgeOrthogonalDouble.vue";
+import EdgeOrthogonalRounded from "@/components/icons/EdgeOrthogonalRounded.vue";
 import { useEditorAction } from "@/actions/editorAction";
 import { mindMapAIGenerate } from "@/actions/aiAction";
 import { setMindMapInstance } from "@/actions/canvasRegistry";
 import { useHoverMenu } from "@/utils/toolbarMenu";
 import { exportImage } from "@/utils/exportImage";
 import { countWords } from "@/utils/text";
+import ChevronsDownUp from "@/components/icons/ChevronsDownUp.vue";
+import ChevronsUpDown from "@/components/icons/ChevronsUpDown.vue";
+import Aiming from "@/components/icons/Aiming.vue";
+import ZoomOut from "@/components/icons/ZoomOut.vue";
+import ZoomIn from "@/components/icons/ZoomIn.vue";
+import Download from "@/components/icons/Download.vue";
+import RightMindmap from "@/components/icons/RightMindmap.vue";
+import BothMindmap from "@/components/icons/BothMindmap.vue";
+import LeftMindmap from "@/components/icons/LeftMindmap.vue";
+import DownMindmap from "@/components/icons/DownMindmap.vue";
 
 const props = defineProps<{ content: string }>();
 
@@ -54,18 +66,47 @@ const DIRECTION_OPTIONS: {
   value: LayoutDirection;
   label: string;
   short: string;
+  icon: Component;
 }[] = [
-  { value: "right", label: "向右展开", short: "向右" },
-  { value: "left", label: "向左展开", short: "向左" },
-  { value: "both", label: "两侧展开", short: "两侧" },
-  { value: "down", label: "向下展开", short: "向下" },
+  { value: "right", label: "向右展开", short: "向右", icon: RightMindmap },
+  { value: "left", label: "向左展开", short: "向左", icon: LeftMindmap },
+  { value: "both", label: "两侧展开", short: "两侧", icon: BothMindmap },
+  { value: "down", label: "向下展开", short: "向下", icon: DownMindmap },
 ];
+// 触发器图标随当前方向变化
+const directionIcon = computed(
+  () => DIRECTION_OPTIONS.find((d) => d.value === direction.value)?.icon,
+);
 // 连线形状选项：'bezier' 纯贝塞尔 S 曲线，'path' 直角 Z 字折线，'rPath' 圆角折线
-const EDGE_OPTIONS: { value: EdgeShape; label: string; short: string }[] = [
-  { value: "bezier", label: "贝塞尔曲线", short: "曲线" },
-  { value: "path", label: "直角折线", short: "折线" },
-  { value: "rPath", label: "圆角折线", short: "圆角" },
+const EDGE_OPTIONS: {
+  value: EdgeShape;
+  label: string;
+  short: string;
+  icon: Component;
+}[] = [
+  {
+    value: "bezier",
+    label: "贝塞尔曲线",
+    short: "曲线",
+    icon: EdgeBezier,
+  },
+  {
+    value: "path",
+    label: "直角折线",
+    short: "折线",
+    icon: EdgeOrthogonalDouble,
+  },
+  {
+    value: "rPath",
+    label: "圆角折线",
+    short: "圆角",
+    icon: EdgeOrthogonalRounded,
+  },
 ];
+// 触发器图标随当前线型变化
+const edgeIcon = computed(
+  () => EDGE_OPTIONS.find((e) => e.value === edgeShape.value)?.icon,
+);
 
 // 级数样式配置（参照 .examples/mindmap 的 levelStyles）：index 0 为根节点（一级），
 // 依次向深层级递增，超出配置长度套用最后一项。节点一律无边框（borderWidth: 0），
@@ -188,7 +229,8 @@ const collectText = (node: MindMapNode, out: string[] = []): string[] => {
 
 // 根节点文本即文档标题（参照 .examples/mindmap 的 docName = toJSON().text）：
 // 走统一的 setDocTitle 落库链路（防抖 + 快照去重），并实时同步左侧目录
-const { setDocTitle } = useEditorAction();const syncTitle = (rootText: string) => {
+const { setDocTitle } = useEditorAction();
+const syncTitle = (rootText: string) => {
   // 根节点文本清空的瞬间不回写，避免把文档标题清掉
   if (!rootText.trim()) return;
   setDocTitle(rootText);
@@ -320,9 +362,9 @@ onClickOutside(zoomMenuRef, closeMenu);
 // 工具栏统一样式：动作按钮点击立即执行用 pointer；悬浮菜单触发器主交互是
 // hover 展开（菜单栏惯例），用 default 光标，避免 pointer 承诺「点击即执行」
 const btnClass =
-  "size-7 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
+  "size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 const triggerClass =
-  "size-7 grid place-items-center rounded-md cursor-default text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
+  "size-8 grid place-items-center rounded-md cursor-default text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 const tileClass =
   "w-16 flex flex-col items-center gap-1 py-2 rounded-md cursor-pointer transition-colors";
 // 方向/连线选项面板：图标磁贴竖排（参照 .examples/mindmap）
@@ -385,14 +427,14 @@ onBeforeUnmount(() => {
 
     <!-- 顶部悬浮工具条：全图标化 + hover intent 悬浮面板（参照 .examples/mindmap） -->
     <div
-      class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-0.5 px-1.5 py-1 bg-white/90 backdrop-blur-md rounded-xl shadow-md shadow-black/5 ring-1 ring-black/10 text-gray-600"
+      class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-1.5 h-11 bg-white rounded-xl shadow-md ring-1 ring-neutral-50"
     >
       <!-- 历史 -->
       <button :class="btnClass" :disabled="!canUndo" title="撤销" @click="undo">
-        <Undo class="size-4" />
+        <Undo class="size-5" />
       </button>
       <button :class="btnClass" :disabled="!canRedo" title="重做" @click="redo">
-        <Redo class="size-4" />
+        <Redo class="size-5" />
       </button>
 
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
@@ -405,11 +447,14 @@ onBeforeUnmount(() => {
         @mouseleave="closeMenu"
       >
         <button
-          :class="[triggerClass, openMenu === 'layout' ? 'bg-gray-100 text-gray-700' : '']"
+          :class="[
+            triggerClass,
+            openMenu === 'layout' ? 'bg-gray-100 text-gray-700' : '',
+          ]"
           title="布局方向"
           @click="toggleMenu('layout')"
         >
-          <DirectionGlyph :value="direction" />
+          <component :is="directionIcon" class="size-5" />
         </button>
         <div v-show="openMenu === 'layout'" :class="optionMenuClass">
           <button
@@ -427,7 +472,7 @@ onBeforeUnmount(() => {
               closeMenu();
             "
           >
-            <DirectionGlyph :value="d.value" class="size-8" />
+            <component :is="d.icon" class="size-8" />
             <span class="text-[10px] leading-none">{{ d.short }}</span>
           </button>
         </div>
@@ -441,11 +486,14 @@ onBeforeUnmount(() => {
         @mouseleave="closeMenu"
       >
         <button
-          :class="[triggerClass, openMenu === 'edge' ? 'bg-gray-100 text-gray-700' : '']"
+          :class="[
+            triggerClass,
+            openMenu === 'edge' ? 'bg-gray-100 text-gray-700' : '',
+          ]"
           title="连线样式"
           @click="toggleMenu('edge')"
         >
-          <EdgeGlyph :value="edgeShape" />
+          <component :is="edgeIcon" class="size-5" />
         </button>
         <div v-show="openMenu === 'edge'" :class="optionMenuClass">
           <button
@@ -463,7 +511,7 @@ onBeforeUnmount(() => {
               closeMenu();
             "
           >
-            <EdgeGlyph :value="e.value" class="size-8" />
+            <component :is="e.icon" class="size-8" />
             <span class="text-[10px] leading-none">{{ e.short }}</span>
           </button>
         </div>
@@ -471,51 +519,19 @@ onBeforeUnmount(() => {
 
       <!-- 折叠 / 展开：两个低频但常用的动作直接平铺，双 V 形向内收=折叠、向外张=展开 -->
       <button :class="btnClass" title="折叠其他分支" @click="collapseOthers">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="size-4"
-        >
-          <path d="M7 4.5 12 9.5 17 4.5" />
-          <path d="M7 19.5 12 14.5 17 19.5" />
-        </svg>
+        <ChevronsDownUp class="size-5" />
       </button>
       <button :class="btnClass" title="展开全部" @click="expandAll">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="size-4"
-        >
-          <path d="M7 9.5 12 4.5 17 9.5" />
-          <path d="M7 14.5 12 19.5 17 14.5" />
-        </svg>
+        <ChevronsUpDown class="size-5" />
       </button>
 
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
 
       <button :class="btnClass" title="适应视图" @click="fitView">
-        <FitView class="size-4" />
+        <Focus class="size-5" />
       </button>
       <button :class="btnClass" title="居中" @click="centerView">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          class="size-4"
-        >
-          <circle cx="12" cy="12" r="3" />
-          <path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" />
-        </svg>
+        <Aiming class="size-5" />
       </button>
 
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
@@ -523,16 +539,7 @@ onBeforeUnmount(() => {
       <!-- 缩放：± 步进快捷微调；百分比点击展开滑块（交互控件不走 hover 触发，避免误弹挡画布） -->
       <div ref="zoomMenuRef" class="relative flex items-center gap-0.5">
         <button :class="btnClass" title="缩小" @click="zoomOut">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.7"
-            stroke-linecap="round"
-            class="size-4"
-          >
-            <path d="M5 12h14" />
-          </svg>
+          <ZoomOut class="size-5" />
         </button>
         <button
           class="h-7 px-1 flex items-center justify-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
@@ -540,19 +547,12 @@ onBeforeUnmount(() => {
           title="缩放"
           @click="toggleMenu('zoom')"
         >
-          <span class="w-9 text-center text-[11px] tabular-nums">{{ zoom }}%</span>
+          <span class="w-9 text-center text-[11px] tabular-nums"
+            >{{ zoom }}%</span
+          >
         </button>
         <button :class="btnClass" title="放大" @click="zoomIn">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.7"
-            stroke-linecap="round"
-            class="size-4"
-          >
-            <path d="M12 5v14M5 12h14" />
-          </svg>
+          <ZoomIn class="size-5" />
         </button>
         <div
           v-show="openMenu === 'zoom'"
@@ -574,19 +574,7 @@ onBeforeUnmount(() => {
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
 
       <button :class="btnClass" title="导出 PNG" @click="exportPng">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="size-4"
-        >
-          <path d="M12 3v12" />
-          <path d="m7 10 5 5 5-5" />
-          <path d="M4 21h16" />
-        </svg>
+        <Download class="size-5" />
       </button>
     </div>
   </div>

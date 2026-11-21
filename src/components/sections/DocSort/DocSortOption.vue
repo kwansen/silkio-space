@@ -102,11 +102,11 @@ const handleClickBtn = () => {
     <div class="flex-1"></div>
     <div
       ref="target"
-      class="size-7 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:text-gray-700"
+      class="size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:text-gray-700"
       :class="show ? 'bg-gray-100' : 'hover:bg-gray-100'"
       @click="handleClickBtn"
     >
-      <Plus class="size-4" />
+      <Plus class="size-5" />
     </div>
   </div>
   <div
@@ -120,7 +120,7 @@ const handleClickBtn = () => {
       class="pl-4 pr-8 h-12 flex items-center gap-2 rounded-md hover:bg-gray-100"
       @click="i.action()"
     >
-      <component :is="i.icon" class="size-4" />
+      <component :is="i.icon" class="size-5" />
       <span>{{ i.text }}</span>
     </div>
   </div>

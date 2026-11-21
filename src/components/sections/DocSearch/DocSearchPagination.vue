@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import LeftFill from "@/components/icons/LeftFill.vue";
-import RightFill from "@/components/icons/RightFill.vue";
+import ChevronLeft from "@/components/icons/ChevronLeft.vue";
+import ChevronRight from "@/components/icons/ChevronRight.vue";
 import { useDocSearchStore } from "@/stores/docSearchStore";
 import { generatePages } from "@zhencai/generate-pages";
 import { storeToRefs } from "pinia";
@@ -24,7 +24,7 @@ const pages = computed(() =>
       class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[store.currentPage <= 1 ? 'opacity-40' : 'hover:bg-gray-100']"
     >
-      <LeftFill class="size-4" />
+      <ChevronLeft class="size-5" />
     </div>
 
     <div
@@ -48,7 +48,7 @@ const pages = computed(() =>
           : 'hover:bg-gray-100',
       ]"
     >
-      <RightFill class="size-4" />
+      <ChevronRight class="size-5" />
     </div>
   </div>
 </template>

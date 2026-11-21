@@ -18,9 +18,6 @@ import {
   useTemplateRef,
   watch,
 } from "vue";
-import Delete from "@/components/icons/Delete.vue";
-import FitView from "@/components/icons/FitView.vue";
-import PlusBox from "@/components/icons/PlusBox.vue";
 import Redo from "@/components/icons/Redo.vue";
 import Swap from "@/components/icons/Swap.vue";
 import Undo from "@/components/icons/Undo.vue";
@@ -34,6 +31,12 @@ import { useHoverMenu } from "@/utils/toolbarMenu";
 import { exportImage } from "@/utils/exportImage";
 import { countWords } from "@/utils/text";
 import Pencil from "@/components/icons/Pencil.vue";
+import Plus from "@/components/icons/Plus.vue";
+import Focus from "@/components/icons/Focus.vue";
+import Aiming from "@/components/icons/Aiming.vue";
+import ZoomIn from "@/components/icons/ZoomIn.vue";
+import ZoomOut from "@/components/icons/ZoomOut.vue";
+import Download from "@/components/icons/Download.vue";
 
 const props = defineProps<{ content: string }>();
 
@@ -188,11 +191,6 @@ const replaceShape = (kind: ShapeKind) => {
   syncState();
 };
 
-const removeSelected = () => {
-  flowchart.value?.deleteSelected();
-  syncState();
-};
-
 const fitView = () => flowchart.value?.fit();
 const centerView = () => flowchart.value?.center();
 
@@ -248,9 +246,9 @@ watch(hasSelection, (has) => {
 // 工具栏统一样式：动作按钮点击立即执行用 pointer；悬浮菜单触发器主交互是
 // hover 展开（菜单栏惯例），用 default 光标，避免 pointer 承诺「点击即执行」
 const btnClass =
-  "size-7 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
+  "size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 const triggerClass =
-  "size-7 grid place-items-center rounded-md cursor-default text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
+  "size-8 grid place-items-center rounded-md cursor-default text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 // 形状菜单：大图标网格（每行 4 个自动换行），无文字标签，悬停/原始 tooltip 提示名称
 const shapesMenuClass =
   "absolute top-[calc(100%+10px)] left-0 z-10 grid grid-cols-4 gap-1 w-60 p-1.5 bg-white rounded-xl shadow-lg shadow-black/10 ring-1 ring-black/10 before:content-[''] before:absolute before:-top-2 before:left-0 before:right-0 before:h-2";
@@ -313,10 +311,10 @@ onBeforeUnmount(() => {
       <canvas ref="canvasRef" class="block h-full w-full bg-white"></canvas>
     </div>
 
-    <!-- 文档标题：左上角浮动 chip，样式与工具条一致（同为 36px 高：py-1 + 按钮区 h-7）；
+    <!-- 文档标题：左上角浮动 chip，样式与工具条一致（同为 44px 高：h-11）；
          默认只读展示，点铅笔进入编辑 -->
     <div
-      class="absolute top-2 left-2 z-10 flex items-center h-9 px-2.5 gap-1.5 bg-white/90 backdrop-blur-md rounded-xl shadow-md shadow-black/5 ring-1 ring-black/10"
+      class="absolute top-2 left-2 z-10 flex items-center h-11 px-1.5 gap-1.5 bg-white rounded-xl shadow-md ring-1 ring-neutral-50"
     >
       <input
         v-if="titleEditing"
@@ -338,25 +336,25 @@ onBeforeUnmount(() => {
           {{ editorStore.title || "未命名标题" }}
         </span>
         <button
-          class="size-6 grid place-items-center rounded-md cursor-pointer text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+          class="size-8 grid place-items-center rounded-md cursor-pointer text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
           title="编辑标题"
           @click="startTitleEdit"
         >
-          <Pencil class="size-3" />
+          <Pencil class="size-5" />
         </button>
       </template>
     </div>
 
     <!-- 顶部悬浮工具条：全图标化 + hover intent 悬浮面板（参照 .examples/flowchart） -->
     <div
-      class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-0.5 px-1.5 py-1 bg-white/90 backdrop-blur-md rounded-xl shadow-md shadow-black/5 ring-1 ring-black/10 text-gray-600"
+      class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-1.5 h-11 bg-white rounded-xl shadow-md ring-1 ring-neutral-50 text-gray-600"
     >
       <!-- 历史 -->
       <button :class="btnClass" :disabled="!canUndo" title="撤销" @click="undo">
-        <Undo class="size-4" />
+        <Undo class="size-5" />
       </button>
       <button :class="btnClass" :disabled="!canRedo" title="重做" @click="redo">
-        <Redo class="size-4" />
+        <Redo class="size-5" />
       </button>
 
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
@@ -376,7 +374,7 @@ onBeforeUnmount(() => {
           title="添加形状"
           @click="toggleMenu('add')"
         >
-          <PlusBox class="size-4" />
+          <Plus class="size-5" />
         </button>
         <div v-show="openMenu === 'add'" :class="shapesMenuClass">
           <button
@@ -412,7 +410,7 @@ onBeforeUnmount(() => {
           title="替换选中形状"
           @click="hasSelection && toggleMenu('replace')"
         >
-          <Swap class="size-4" />
+          <Swap class="size-5" />
         </button>
         <div v-show="openMenu === 'replace'" :class="shapesMenuClass">
           <button
@@ -432,32 +430,13 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <button
-        :class="btnClass"
-        :disabled="!hasSelection"
-        title="删除选中"
-        @click="removeSelected"
-      >
-        <Delete class="size-4" />
-      </button>
-
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
 
       <button :class="btnClass" title="适应视图" @click="fitView">
-        <FitView class="size-4" />
+        <Focus class="size-5" />
       </button>
       <button :class="btnClass" title="居中" @click="centerView">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          class="size-4"
-        >
-          <circle cx="12" cy="12" r="3" />
-          <path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" />
-        </svg>
+        <Aiming class="size-5" />
       </button>
 
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
@@ -465,16 +444,7 @@ onBeforeUnmount(() => {
       <!-- 缩放：± 步进快捷微调；百分比点击展开滑块（交互控件不走 hover 触发，避免误弹挡画布） -->
       <div ref="zoomMenuRef" class="relative flex items-center gap-0.5">
         <button :class="btnClass" title="缩小" @click="zoomOut">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.7"
-            stroke-linecap="round"
-            class="size-4"
-          >
-            <path d="M5 12h14" />
-          </svg>
+          <ZoomOut class="size-5" />
         </button>
         <button
           class="h-7 px-1 flex items-center justify-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
@@ -487,16 +457,7 @@ onBeforeUnmount(() => {
           >
         </button>
         <button :class="btnClass" title="放大" @click="zoomIn">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.7"
-            stroke-linecap="round"
-            class="size-4"
-          >
-            <path d="M12 5v14M5 12h14" />
-          </svg>
+          <ZoomIn class="size-5" />
         </button>
         <div
           v-show="openMenu === 'zoom'"
@@ -518,19 +479,7 @@ onBeforeUnmount(() => {
       <div class="flex-1"></div>
 
       <button :class="btnClass" title="导出 PNG" @click="exportPng">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.7"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="size-4"
-        >
-          <path d="M12 3v12" />
-          <path d="m7 10 5 5 5-5" />
-          <path d="M4 21h16" />
-        </svg>
+        <Download class="size-5" />
       </button>
     </div>
   </div>

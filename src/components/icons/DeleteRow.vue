@@ -1,4 +1,4 @@
-<!-- 自绘：mingcute和lucide没有 -->
+<!-- 自绘：lucide没有 -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"

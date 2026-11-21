@@ -131,11 +131,11 @@ const action = useArchiveAction();
       >
         <div
           ref="target"
-          class="size-7 grid place-items-center rounded-md relative"
+          class="size-8 grid place-items-center rounded-md relative"
           :class="openedKey === itemKey ? 'bg-gray-200' : 'hover:bg-gray-200'"
           @click.stop="handleClickBtn"
         >
-          <More class="size-4" />
+          <More class="size-5" />
         </div>
       </div>
       <!-- popover -->
@@ -152,7 +152,7 @@ const action = useArchiveAction();
             :class="i.class"
             @click.stop="i.action"
           >
-            <component :is="i.icon" class="size-4" />
+            <component :is="i.icon" class="size-5" />
             <span>{{ i.text }}</span>
           </div>
         </div>

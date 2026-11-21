@@ -48,10 +48,10 @@ const close = () => {
         设置
         <div
           @click="close"
-          class="size-7 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-red-50 hover:text-red-500"
+          class="size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-red-50 hover:text-red-500"
         >
           <!-- 关闭按钮统一规格：hover 图标变红 + 浅红底；16 网格像素图标按整数倍缩放 -->
-          <Close class="size-4" />
+          <Close class="size-5" />
         </div>
       </div>
       <div class="flex-1 flex">
