@@ -10,6 +10,7 @@ import { FlowChart, type FlowData, type ShapeKind } from "silkio-flowchart";
 import { onClickOutside } from "@vueuse/core";
 import {
   computed,
+  type Component,
   nextTick,
   onBeforeUnmount,
   onMounted,
@@ -21,7 +22,6 @@ import {
 import Redo from "@/components/icons/Redo.vue";
 import Swap from "@/components/icons/Swap.vue";
 import Undo from "@/components/icons/Undo.vue";
-import ShapeIcon from "./ShapeIcon.vue";
 import { noteShapes } from "./noteShape";
 import { useEditorAction } from "@/actions/editorAction";
 import { flowChartAIGenerate } from "@/actions/aiAction";
@@ -37,6 +37,13 @@ import Aiming from "@/components/icons/Aiming.vue";
 import ZoomIn from "@/components/icons/ZoomIn.vue";
 import ZoomOut from "@/components/icons/ZoomOut.vue";
 import Download from "@/components/icons/Download.vue";
+import Rect from "@/components/icons/Rect.vue";
+import Diamond from "@/components/icons/Diamond.vue";
+import Ellipse from "@/components/icons/Ellipse.vue";
+import Parallelogram from "@/components/icons/Parallelogram.vue";
+import Hexagon from "@/components/icons/Hexagon.vue";
+import Cylinder from "@/components/icons/Cylinder.vue";
+import Memo from "@/components/icons/Memo.vue";
 
 const props = defineProps<{ content: string }>();
 
@@ -135,6 +142,17 @@ const parseDoc = (raw: string): FlowData => {
     // 回退空画布
   }
   return { nodes: [], edges: [] };
+};
+
+// 形状 → 菜单图标的映射（database 对应圆柱图标，note 对应便签图标）
+const SHAPE_ICONS: Record<ShapeKind, Component> = {
+  rect: Rect,
+  diamond: Diamond,
+  ellipse: Ellipse,
+  parallelogram: Parallelogram,
+  hexagon: Hexagon,
+  database: Cylinder,
+  note: Memo,
 };
 
 const save = () => {
@@ -253,7 +271,7 @@ const triggerClass =
 const shapesMenuClass =
   "absolute top-[calc(100%+10px)] left-0 z-10 grid grid-cols-4 gap-1 w-60 p-1.5 bg-white rounded-xl shadow-lg shadow-black/10 ring-1 ring-black/10 before:content-[''] before:absolute before:-top-2 before:left-0 before:right-0 before:h-2";
 const shapeItemClass =
-  "w-14 h-14 flex flex-col items-center justify-center gap-1 rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-violet-600 transition-colors";
+  "w-14 h-14 grid place-items-center gap-1 rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-violet-600 transition-colors";
 
 let offSelection: (() => void) | null = null;
 let offViewport: (() => void) | null = null;
@@ -388,8 +406,7 @@ onBeforeUnmount(() => {
               closeMenu();
             "
           >
-            <ShapeIcon :kind="s.kind" class="w-9 h-5" />
-            <span class="text-[10px] leading-none">{{ s.short }}</span>
+            <component :is="SHAPE_ICONS[s.kind]" class="size-12" />
           </button>
         </div>
       </div>
@@ -424,8 +441,7 @@ onBeforeUnmount(() => {
               closeMenu();
             "
           >
-            <ShapeIcon :kind="s.kind" class="w-9 h-5" />
-            <span class="text-[10px] leading-none">{{ s.short }}</span>
+            <component :is="SHAPE_ICONS[s.kind]" class="size-12" />
           </button>
         </div>
       </div>

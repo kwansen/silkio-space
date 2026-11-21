@@ -5,10 +5,18 @@ import type { Plugin, ShapeOptions, ShapeStyle } from "silkio-flowchart";
 
 class NoteShape extends Shape {
   constructor(options: ShapeOptions = {}) {
-    super("note", { width: 160, height: 99 }, {
-      ...options,
-      style: { fill: "#fef9c3", stroke: "#ca8a04", ...options.style } as Partial<ShapeStyle>,
-    });
+    super(
+      "note",
+      { width: 160, height: 99 },
+      {
+        ...options,
+        style: {
+          fill: "#fef9c3",
+          stroke: "#ca8a04",
+          ...options.style,
+        } as Partial<ShapeStyle>,
+      },
+    );
   }
 
   // 内接矩形近似（折角只占右上角一小块）
