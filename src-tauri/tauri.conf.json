@@ -13,8 +13,8 @@
     "windows": [
       {
         "label": "main",
-        "width": 1200,
-        "height": 800,
+        "width": 1024,
+        "height": 640,
         "center": true,
         "minWidth": 760,
         "minHeight": 600,
@@ -24,8 +24,8 @@
       },
       {
         "label": "editor",
-        "width": 1200,
-        "height": 800,
+        "width": 1024,
+        "height": 640,
         "center": true,
         "minWidth": 760,
         "minHeight": 600,

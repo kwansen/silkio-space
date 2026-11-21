@@ -25,7 +25,9 @@ const { currentPage, totalPages } = storeToRefs(store);
       @click="store.goToSortedPage(page)"
       class="w-9 h-9 rounded-md cursor-pointer grid place-items-center"
       :class="[
-        page === store.currentPage ? 'bg-purple-200' : 'hover:bg-gray-100',
+        page === store.currentPage
+          ? 'font-medium text-violet-600'
+          : 'hover:bg-gray-100',
       ]"
     >
       {{ page }}
