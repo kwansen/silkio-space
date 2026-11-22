@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS folders (
     sort_order INTEGER NOT NULL,
     viewed_at INTEGER NOT NULL,
     created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
 );
 CREATE INDEX IF NOT EXISTS idx_folders_parent_id ON folders(parent_id);
 

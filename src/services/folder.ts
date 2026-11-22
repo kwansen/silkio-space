@@ -52,13 +52,64 @@ export const useFdSvc = () => {
   };
   //#endregion
 
-  //#region CKECKED：删除文件夹
+  //#region CKECKED：删除文件夹（软删除）
   /***
-   * @param params.id - 必须，级联删除其全部后代文件夹及关联的folder_document行，文档本体保留
+   * 仅标记 deleted_at，后代随之在树查询中不可达，folder_document 关联保留（恢复后成员关系原地回归）；
+   * 文档本体与文档的其他归档关联均不受影响
+   * @param params.id - 必须，待删除文件夹 id
    ***/
   const deleteFolder = async (params: { id: string }): Promise<void> => {
     const db = getDb();
     return folderDb.remove(db, params.id);
+  };
+  //#endregion
+
+  //#region CKECKED：恢复软删除文件夹
+  /***
+   * 清除 deleted_at 标记，其子树与归档成员关系随之恢复可见
+   * @param params.id - 必须，待恢复文件夹 id
+   ***/
+  const restoreFolder = async (params: { id: string }): Promise<void> => {
+    const db = getDb();
+    return folderDb.restore(db, params.id);
+  };
+  //#endregion
+
+  //#region CKECKED：彻底删除文件夹（物理删除）
+  /***
+   * 物理删除该文件夹及其子树（含已软删的后代），folder_document 关联由 v1 trigger 级联清理；
+   * 文档本体保留。软删除超过保留期（90 天）的归档由此 GC
+   * @param params.id - 必须，待彻底删除文件夹 id
+   ***/
+  const purgeFolder = async (params: { id: string }): Promise<void> => {
+    const db = getDb();
+    return folderDb.purge(db, params.id);
+  };
+  //#endregion
+
+  //#region CKECKED：获取回收站文件夹
+  /***
+   * 全部软删除文件夹，按删除时间倒序
+   ***/
+  const getTrashedFolders = async (): Promise<Folder[]> => {
+    const db = getDb();
+    return folderDb.getTrashed(db);
+  };
+  //#endregion
+
+  //#region CKECKED：自动清理过期的软删除文件夹（回收站 90 天保留期）
+  /***
+   * 物理删除软删除超过保留期的文件夹（连同其子树，trigger 级联清关联）。
+   * 注意：未来接入同步后，墓碑 GC 需升级为「所有设备确认收到删除」后才清除（同文档）
+   * @param retentionDays 可选，保留天数，默认 90
+   ***/
+  const purgeExpiredFolders = async (retentionDays = 90): Promise<void> => {
+    const db = getDb();
+    const cutoff = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
+    const ids = await folderDb.getExpiredIds(db, cutoff);
+    for (const id of ids) {
+      await folderDb.purge(db, id);
+    }
   };
   //#endregion
 
@@ -470,6 +521,10 @@ export const useFdSvc = () => {
   return {
     createFolder,
     deleteFolder,
+    restoreFolder,
+    purgeFolder,
+    getTrashedFolders,
+    purgeExpiredFolders,
     renameFolder,
     updateFolderViewedAt,
     update,

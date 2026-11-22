@@ -76,8 +76,16 @@ export const useDocSvc = () => {
     await searchApi.deleteIndex(id);
   };
 
+  // 元函数：批量物理删除文档（永久清除本体与归档关联，v1 trigger 级联）并批量移除索引，供清空回收站
+  const purgeMany = async (ids: string[] = []): Promise<void> => {
+    await docDb.purgeMany(db, ids);
+    await searchApi.deleteIndexBatch(ids);
+  };
+
+  // 元函数：查询回收站列表（软删除文档，按删除时间倒序）
+  const getTrashed = (): Promise<Doc[]> => docDb.getTrashed(db);
+
   // 元函数：自动清理软删除超过保留期的过期文档（回收站 90 天自动清除）。
-  // 注意：未来接入同步后，墓碑 GC 需升级为「所有设备确认收到删除」后才清除，
   // 不能仅按时间强删，否则离线过久的设备将永远收不到该删除
   const purgeExpired = async (retentionDays = 90): Promise<void> => {
     const cutoff = Date.now() - retentionDays * 24 * 60 * 60 * 1000;
@@ -138,6 +146,8 @@ export const useDocSvc = () => {
     removeMany,
     restore,
     purge,
+    purgeMany,
+    getTrashed,
     purgeExpired,
     update,
     updateMany,

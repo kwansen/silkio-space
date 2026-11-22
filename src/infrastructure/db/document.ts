@@ -239,6 +239,12 @@ export const useDocDb = () => {
   const getAllContents = (db: Database): Promise<{ content: string | null }[]> =>
     db.select<{ content: string | null }[]>("SELECT content FROM documents");
 
+  // 元函数：查询回收站（全部软删除文档，按删除时间倒序），供回收站页面展示
+  const getTrashed = (db: Database): Promise<Doc[]> =>
+    db.select<Doc[]>(
+      "SELECT * FROM documents WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC",
+    );
+
   // 元函数：查询已过期（软删除超过保留期）的文档 id 列表，供启动时自动清理
   const getExpiredIds = async (
     db: Database,
@@ -265,6 +271,7 @@ export const useDocDb = () => {
     getCount,
     getAllForIndex,
     getSorted,
+    getTrashed,
     getExpiredIds,
     getAllContents,
   };

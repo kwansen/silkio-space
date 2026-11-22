@@ -84,21 +84,21 @@ export const useFolderDocumentDb = () => {
     return rows.map((r) => r.folder_id);
   };
 
-  // 元函数：查询归档下全部文档（按加入顺序 sort_order 升序）
+  // 元函数：查询归档下全部文档（按加入顺序 sort_order 升序；排除软删除文档）
   const getDocsByFolder = async (
     db: Database,
     folderId: string,
   ): Promise<Doc[]> => {
     return db.select<Doc[]>(
       `SELECT d.* FROM folder_document fd
-       JOIN documents d ON d.id = fd.document_id
+       JOIN documents d ON d.id = fd.document_id AND d.deleted_at IS NULL
        WHERE fd.folder_id = $1
        ORDER BY fd.sort_order ASC`,
       [folderId],
     );
   };
 
-  // 元函数：查询归档下全部文档条目（目录用，不含 content/plain_text，按加入顺序 sort_order 升序）
+  // 元函数：查询归档下全部文档条目（目录用，不含 content/plain_text，按加入顺序 sort_order 升序；排除软删除文档）
   const getDocEntriesByFolder = async (
     db: Database,
     folderId: string,
@@ -106,7 +106,7 @@ export const useFolderDocumentDb = () => {
     return db.select<DocEntry[]>(
       `SELECT d.id, d.title, d.doc_type, d.word_count, d.viewed_at, d.created_at, d.updated_at
        FROM folder_document fd
-       JOIN documents d ON d.id = fd.document_id
+       JOIN documents d ON d.id = fd.document_id AND d.deleted_at IS NULL
        WHERE fd.folder_id = $1
        ORDER BY fd.sort_order ASC`,
       [folderId],

@@ -6,6 +6,7 @@ import i18n from "./i18n";
 import { initDb } from "./infrastructure/db/index.ts";
 import { ensureIndexConsistency, useDocSvc } from "./services/document.ts";
 import { gcOrphanImages } from "./services/imageGc.ts";
+import { useFdSvc } from "./services/folder.ts";
 import "@/assets/main.css";
 
 const app = createApp(App);
@@ -23,6 +24,11 @@ if (getCurrentWindow().label === "main") {
       await useDocSvc().purgeExpired();
     } catch (e) {
       console.error("回收站过期清理失败", e);
+    }
+    try {
+      await useFdSvc().purgeExpiredFolders();
+    } catch (e) {
+      console.error("回收站过期归档清理失败", e);
     }
     try {
       await gcOrphanImages();

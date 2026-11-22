@@ -3,7 +3,12 @@ type AppModeOption = "document" | "snippet";
 // 用于切换导航或大纲
 type LeftBarOption = "docEntries" | "toc";
 // 用于切换document的TAB
-type DocTabOption = "docSort" | "docSearch" | "archiveSort" | "archiveSearch";
+type DocTabOption =
+  | "docSort"
+  | "docSearch"
+  | "archiveSort"
+  | "archiveSearch"
+  | "trash";
 // 用于文档排序的方法
 type DocSortOption = "viewedAt" | "updatedAt" | "createdAt" | "wordCount";
 // 用于归档排序的方法

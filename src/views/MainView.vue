@@ -6,6 +6,7 @@ import ArchiveSort from "@/components/sections/ArchiveSort/ArchiveSort.vue";
 import DocSearch from "@/components/sections/DocSearch/DocSearch.vue";
 import DocSort from "@/components/sections/DocSort/DocSort.vue";
 import DocTabs from "@/components/sections/DocTabs/DocTabs.vue";
+import Trash from "@/components/sections/Trash/Trash.vue";
 import ArchivePickerDialog from "@/components/shared/ArchivePickerDialog.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
 import { useUiStore } from "@/stores/uiStore";
@@ -75,6 +76,7 @@ onUnmounted(() => {
             <DocSearch v-if="tab === 'docSearch'" />
             <ArchiveSort v-if="tab === 'archiveSort'" />
             <ArchiveSearch v-if="tab === 'archiveSearch'" />
+            <Trash v-if="tab === 'trash'" />
           </div>
         </div>
       </ScrollArea>

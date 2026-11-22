@@ -116,13 +116,13 @@ export const useFolderDb = () => {
     return rows.map((r) => r.id);
   };
 
-  // 元函数：查询单个归档的直接子文件夹（按 sort_order 升序，同名次序按创建时间）
+  // 元函数：查询单个归档的直接子文件夹（排除软删除，按 sort_order 升序，同名次序按创建时间）
   const getChildren = async (
     db: Database,
     parentId: string,
   ): Promise<Folder[]> => {
     return db.select<Folder[]>(
-      "SELECT * FROM folders WHERE parent_id = $1 ORDER BY sort_order ASC, created_at ASC",
+      "SELECT * FROM folders WHERE parent_id = $1 AND deleted_at IS NULL ORDER BY sort_order ASC, created_at ASC",
       [parentId],
     );
   };
@@ -168,9 +168,26 @@ export const useFolderDb = () => {
     ]);
   };
 
-  // 元函数：级联删除单个归档（连同其全部后代 folders 行，documents 表文档本体保留；
-  // folder_document 关联由 v1 trigger 随 folders 行删除级联清理，单条语句原子生效）
+  // 元函数：软删除单个归档（仅标记 deleted_at，后代不标记——树查询统一过滤不可达；
+  // folder_document 关联保留，恢复后归档成员关系原地回归。文档本体与文档关联均不受影响）
   const remove = async (db: Database, id: string): Promise<void> => {
+    await db.execute(
+      "UPDATE folders SET deleted_at = $1 WHERE id = $2",
+      [Date.now(), id],
+    );
+  };
+
+  // 元函数：恢复单个软删除归档（清除 deleted_at 标记，其子树随之重新可见）
+  const restore = async (db: Database, id: string): Promise<void> => {
+    await db.execute(
+      "UPDATE folders SET deleted_at = NULL WHERE id = $1",
+      [id],
+    );
+  };
+
+  // 元函数：物理删除单个归档及其子树（folder_document 关联由 v1 trigger 随本删除级联清理，
+  // 文档本体保留；getSubtreeIds 不做软删过滤，连同已软删的后代一并清除）
+  const purge = async (db: Database, id: string): Promise<void> => {
     const ids = await getSubtreeIds(db, id);
     if (ids.length === 0) return;
     const placeholders = ids.map((_, i) => `$${i + 1}`).join(", ");
@@ -300,7 +317,7 @@ export const useFolderDb = () => {
     }
   };
 
-  // 元函数：查询容器内全部子项（子文件夹 + 文档，统一 sort_order 升序穿插排列）
+  // 元函数：查询容器内全部子项（子文件夹 + 文档，统一 sort_order 升序穿插排列；排除软删除的文件夹与文档）
   // 历史数据两表 sort_order 独立编号可能同值，同值时文件夹排前；重排一次后编号即归一
   const getChildrenMerged = async (
     db: Database,
@@ -311,7 +328,7 @@ export const useFolderDb = () => {
       db.select<(Doc & { container_order: number })[]>(
         `SELECT d.*, fd.sort_order AS container_order
          FROM folder_document fd
-         JOIN documents d ON d.id = fd.document_id
+         JOIN documents d ON d.id = fd.document_id AND d.deleted_at IS NULL
          WHERE fd.folder_id = $1
          ORDER BY fd.sort_order ASC`,
         [parentId],
@@ -339,18 +356,18 @@ export const useFolderDb = () => {
   };
 
   // 元函数：按指定字段与方向查询排序后的全部根归档（主窗口归档列表，数量少，不分页）
-  // 仅根文件夹（parent_id 为空）可作为归档展示于主窗口
+  // 仅根文件夹（parent_id 为空）可作为归档展示于主窗口；排除软删除
   const getSorted = async (
     db: Database,
     orderBy: FolderSortField,
     direction: "ASC" | "DESC",
   ): Promise<Folder[]> => {
     return await db.select<Folder[]>(
-      `SELECT * FROM folders WHERE parent_id IS NULL ORDER BY ${orderByExpr[orderBy]} ${direction}`,
+      `SELECT * FROM folders WHERE parent_id IS NULL AND deleted_at IS NULL ORDER BY ${orderByExpr[orderBy]} ${direction}`,
     );
   };
 
-  // 元函数：查询归档子树内的全部子文件夹（不含根自身，按 sort_order 升序，同级按创建时间稳定次序）
+  // 元函数：查询归档子树内的全部子文件夹（不含根自身，排除软删除，按 sort_order 升序，同级按创建时间稳定次序）
   const getSubtreeFolders = async (
     db: Database,
     rootId: string,
@@ -359,7 +376,7 @@ export const useFolderDb = () => {
       `WITH RECURSIVE sub(id) AS (
          SELECT $1
          UNION ALL
-         SELECT f.id FROM folders f JOIN sub ON f.parent_id = sub.id
+         SELECT f.id FROM folders f JOIN sub ON f.parent_id = sub.id AND f.deleted_at IS NULL
        )
        SELECT * FROM folders
        WHERE id IN (SELECT id FROM sub) AND id != $1
@@ -368,7 +385,7 @@ export const useFolderDb = () => {
     );
   };
 
-  // 元函数：查询归档子树内的全部文档（含所属容器 folder_id 与容器内加入顺序）
+  // 元函数：查询归档子树内的全部文档（含所属容器 folder_id 与容器内加入顺序；排除软删除的文件夹与文档）
   const getSubtreeDocs = async (
     db: Database,
     rootId: string,
@@ -377,15 +394,33 @@ export const useFolderDb = () => {
       `WITH RECURSIVE sub(id) AS (
          SELECT $1
          UNION ALL
-         SELECT f.id FROM folders f JOIN sub ON f.parent_id = sub.id
+         SELECT f.id FROM folders f JOIN sub ON f.parent_id = sub.id AND f.deleted_at IS NULL
        )
        SELECT d.*, fd.folder_id AS container_id, fd.sort_order AS container_order
        FROM folder_document fd
-       JOIN documents d ON d.id = fd.document_id
+       JOIN documents d ON d.id = fd.document_id AND d.deleted_at IS NULL
        WHERE fd.folder_id IN (SELECT id FROM sub)
        ORDER BY fd.folder_id, fd.sort_order ASC`,
       [rootId],
     );
+  };
+
+  // 元函数：查询回收站（全部软删除归档，按删除时间倒序），供回收站页面展示
+  const getTrashed = (db: Database): Promise<Folder[]> =>
+    db.select<Folder[]>(
+      "SELECT * FROM folders WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC",
+    );
+
+  // 元函数：查询已过期（软删除超过保留期）的归档 id 列表，供启动时自动清理
+  const getExpiredIds = async (
+    db: Database,
+    cutoff: number,
+  ): Promise<string[]> => {
+    const rows = await db.select<{ id: string }[]>(
+      "SELECT id FROM folders WHERE deleted_at IS NOT NULL AND deleted_at < $1",
+      [cutoff],
+    );
+    return rows.map((r) => r.id);
   };
 
   return {
@@ -396,6 +431,10 @@ export const useFolderDb = () => {
     update,
     getById,
     getSorted,
+    getTrashed,
+    getExpiredIds,
+    restore,
+    purge,
     reorder,
     getChildren,
     getDescendantIds,
