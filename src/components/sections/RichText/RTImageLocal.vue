@@ -3,7 +3,7 @@ import ImagePlus from "@/components/icons/ImagePlus.vue";
 import Close from "@/components/icons/Close.vue";
 import { ref, shallowRef } from "vue";
 import { useTemplateRef } from "vue";
-import { writeFile, BaseDirectory } from "@tauri-apps/plugin-fs";
+import { writeFile, mkdir, BaseDirectory } from "@tauri-apps/plugin-fs";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { Editor } from "@tiptap/vue-3";
@@ -52,9 +52,11 @@ const handleConfirm = async () => {
   const bytes = data.value;
   if (!bytes) return;
 
-  // 写入：用枚举作为 baseDir
+  // 写入独立的 images 子目录（与 keyflow.db 等数据文件隔离，便于未来孤儿图片 GC）；
+  // hash 命名 + 直接覆盖写入天然幂等，同内容图片磁盘上永远只有一份
   try {
-    await writeFile(fileName.value, bytes, {
+    await mkdir("images", { baseDir: BaseDirectory.AppData, recursive: true });
+    await writeFile(`images/${fileName.value}`, bytes, {
       baseDir: BaseDirectory.AppData,
     });
   } catch {
@@ -63,7 +65,7 @@ const handleConfirm = async () => {
 
   // 预览：用绝对路径字符串
   const baseDir = await appDataDir();
-  const dir = await join(baseDir, fileName.value);
+  const dir = await join(baseDir, "images", fileName.value);
   console.log(dir);
   const url = convertFileSrc(dir);
   props.editor

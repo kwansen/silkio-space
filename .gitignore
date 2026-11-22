@@ -18,6 +18,7 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .old/*
+.trae-html-share-packages/
 .DS_Store
 *.suo
 *.ntvs*

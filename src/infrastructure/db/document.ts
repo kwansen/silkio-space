@@ -235,6 +235,22 @@ export const useDocDb = () => {
     return { list: rows, total: count };
   };
 
+  // 元函数：查询全部文档的 content（含软删除——软删期间图片必须视为仍被引用，保证恢复不裂图），供孤儿图片 GC 扫描引用
+  const getAllContents = (db: Database): Promise<{ content: string | null }[]> =>
+    db.select<{ content: string | null }[]>("SELECT content FROM documents");
+
+  // 元函数：查询已过期（软删除超过保留期）的文档 id 列表，供启动时自动清理
+  const getExpiredIds = async (
+    db: Database,
+    cutoff: number,
+  ): Promise<string[]> => {
+    const rows = await db.select<{ id: string }[]>(
+      "SELECT id FROM documents WHERE deleted_at IS NOT NULL AND deleted_at < $1",
+      [cutoff],
+    );
+    return rows.map((r) => r.id);
+  };
+
   return {
     create,
     createMany,
@@ -249,5 +265,7 @@ export const useDocDb = () => {
     getCount,
     getAllForIndex,
     getSorted,
+    getExpiredIds,
+    getAllContents,
   };
 };
