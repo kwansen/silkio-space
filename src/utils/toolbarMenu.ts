@@ -1,32 +1,29 @@
 import { onUnmounted, ref } from "vue";
 
-// 工具栏悬浮面板（hover intent）：悬浮 200ms 延迟展开，移出立即收起；
-// 点击触发器即时切换。纯 CSS group-hover 过于灵敏，鼠标划过工具条即弹面板易误触。
-// 参照 .examples/mindmap 与 .examples/flowchart 的工具栏实现。
-export function useHoverMenu() {
+// 工具栏点击菜单：点击触发器开合，同一时间只允许一个面板打开；
+// 点击外部（onClickOutside）或 Esc 关闭。
+// 曾用 hover intent 展开，但画布编辑中鼠标大幅移动易误弹面板遮挡画布，
+// 且按钮与面板间缝隙会导致移入面板前菜单提前收起，故改为纯点击交互。
+export function useToolbarMenu() {
   const openMenu = ref<string | null>(null);
-  let timer: ReturnType<typeof setTimeout> | null = null;
-
-  const scheduleMenu = (id: string) => {
-    if (timer) clearTimeout(timer);
-    timer = setTimeout(() => (openMenu.value = id), 200);
-  };
 
   const closeMenu = () => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
     openMenu.value = null;
   };
 
   const toggleMenu = (id: string) => {
-    const wasOpen = openMenu.value === id;
-    closeMenu();
-    if (!wasOpen) openMenu.value = id;
+    openMenu.value = openMenu.value === id ? null : id;
   };
 
-  onUnmounted(closeMenu);
+  const onKeydown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") closeMenu();
+  };
+  window.addEventListener("keydown", onKeydown);
 
-  return { openMenu, scheduleMenu, closeMenu, toggleMenu };
+  onUnmounted(() => {
+    window.removeEventListener("keydown", onKeydown);
+    closeMenu();
+  });
+
+  return { openMenu, closeMenu, toggleMenu };
 }

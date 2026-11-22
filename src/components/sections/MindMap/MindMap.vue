@@ -30,7 +30,7 @@ import EdgeOrthogonalRounded from "@/components/icons/EdgeOrthogonalRounded.vue"
 import { useEditorAction } from "@/actions/editorAction";
 import { mindMapAIGenerate } from "@/actions/aiAction";
 import { setMindMapInstance } from "@/actions/canvasRegistry";
-import { useHoverMenu } from "@/utils/toolbarMenu";
+import { useToolbarMenu } from "@/utils/toolbarMenu";
 import { exportImage } from "@/utils/exportImage";
 import { countWords } from "@/utils/text";
 import ChevronsDownUp from "@/components/icons/ChevronsDownUp.vue";
@@ -350,8 +350,8 @@ const exportPng = async () => {
   }
 };
 
-// 悬浮面板（hover intent）：延迟展开/移出即收/点击切换；外点关闭兜底
-const { openMenu, scheduleMenu, closeMenu, toggleMenu } = useHoverMenu();
+// 点击菜单：点击开合，外点/Esc 关闭兜底
+const { openMenu, closeMenu, toggleMenu } = useToolbarMenu();
 const directionMenuRef = useTemplateRef<HTMLDivElement>("directionMenuRef");
 const edgeMenuRef = useTemplateRef<HTMLDivElement>("edgeMenuRef");
 const zoomMenuRef = useTemplateRef<HTMLDivElement>("zoomMenuRef");
@@ -359,12 +359,12 @@ onClickOutside(directionMenuRef, closeMenu);
 onClickOutside(edgeMenuRef, closeMenu);
 onClickOutside(zoomMenuRef, closeMenu);
 
-// 工具栏统一样式：动作按钮点击立即执行用 pointer；悬浮菜单触发器主交互是
-// hover 展开（菜单栏惯例），用 default 光标，避免 pointer 承诺「点击即执行」
+// 工具栏统一样式：动作按钮点击立即执行用 pointer；菜单触发器主交互是
+// 点击展开面板，用 default 光标，避免 pointer 承诺「点击即执行」
 const btnClass =
   "size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 const triggerClass =
-  "size-8 grid place-items-center rounded-md cursor-default text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
+  "size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 const tileClass =
   "w-16 flex flex-col items-center gap-1 py-2 rounded-md cursor-pointer transition-colors";
 // 方向/连线选项面板：图标磁贴竖排（参照 .examples/mindmap）
@@ -440,12 +440,7 @@ onBeforeUnmount(() => {
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
 
       <!-- 布局方向：触发器随当前方向变化，面板为图标磁贴 -->
-      <div
-        ref="directionMenuRef"
-        class="relative"
-        @mouseenter="scheduleMenu('layout')"
-        @mouseleave="closeMenu"
-      >
+      <div ref="directionMenuRef" class="relative">
         <button
           :class="[
             triggerClass,
@@ -473,18 +468,12 @@ onBeforeUnmount(() => {
             "
           >
             <component :is="d.icon" class="size-8" />
-            <span class="text-[10px] leading-none">{{ d.short }}</span>
           </button>
         </div>
       </div>
 
       <!-- 连线样式：触发器随当前线型变化 -->
-      <div
-        ref="edgeMenuRef"
-        class="relative"
-        @mouseenter="scheduleMenu('edge')"
-        @mouseleave="closeMenu"
-      >
+      <div ref="edgeMenuRef" class="relative">
         <button
           :class="[
             triggerClass,
@@ -512,7 +501,6 @@ onBeforeUnmount(() => {
             "
           >
             <component :is="e.icon" class="size-8" />
-            <span class="text-[10px] leading-none">{{ e.short }}</span>
           </button>
         </div>
       </div>

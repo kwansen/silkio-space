@@ -27,7 +27,7 @@ import { useEditorAction } from "@/actions/editorAction";
 import { flowChartAIGenerate } from "@/actions/aiAction";
 import { setFlowChartInstance } from "@/actions/canvasRegistry";
 import { useEditorStore } from "@/stores/editorStore";
-import { useHoverMenu } from "@/utils/toolbarMenu";
+import { useToolbarMenu } from "@/utils/toolbarMenu";
 import { exportImage } from "@/utils/exportImage";
 import { countWords } from "@/utils/text";
 import Pencil from "@/components/icons/Pencil.vue";
@@ -247,8 +247,8 @@ const exportPng = async () => {
   }
 };
 
-// 悬浮面板（hover intent）：延迟展开/移出即收/点击切换；外点关闭兜底
-const { openMenu, scheduleMenu, closeMenu, toggleMenu } = useHoverMenu();
+// 点击菜单：点击开合，外点/Esc 关闭兜底
+const { openMenu, closeMenu, toggleMenu } = useToolbarMenu();
 const shapeMenuRef = useTemplateRef<HTMLDivElement>("shapeMenuRef");
 const replaceMenuRef = useTemplateRef<HTMLDivElement>("replaceMenuRef");
 const zoomMenuRef = useTemplateRef<HTMLDivElement>("zoomMenuRef");
@@ -261,12 +261,12 @@ watch(hasSelection, (has) => {
   if (!has) closeMenu();
 });
 
-// 工具栏统一样式：动作按钮点击立即执行用 pointer；悬浮菜单触发器主交互是
-// hover 展开（菜单栏惯例），用 default 光标，避免 pointer 承诺「点击即执行」
+// 工具栏统一样式：动作按钮点击立即执行用 pointer；菜单触发器主交互是
+// 点击展开面板，用 default 光标，避免 pointer 承诺「点击即执行」
 const btnClass =
   "size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 const triggerClass =
-  "size-8 grid place-items-center rounded-md cursor-default text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
+  "size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 // 形状菜单：大图标网格（每行 4 个自动换行），无文字标签，悬停/原始 tooltip 提示名称
 const shapesMenuClass =
   "absolute top-[calc(100%+10px)] left-0 z-10 grid grid-cols-4 gap-1 w-60 p-1.5 bg-white rounded-xl shadow-lg shadow-black/10 ring-1 ring-black/10 before:content-[''] before:absolute before:-top-2 before:left-0 before:right-0 before:h-2";
@@ -378,12 +378,7 @@ onBeforeUnmount(() => {
       <div class="w-px h-4 bg-gray-200 mx-1"></div>
 
       <!-- 添加形状：图标触发 + 形状图标网格（每行 4 个自动换行，悬停 tooltip 提示名称） -->
-      <div
-        ref="shapeMenuRef"
-        class="relative"
-        @mouseenter="scheduleMenu('add')"
-        @mouseleave="closeMenu"
-      >
+      <div ref="shapeMenuRef" class="relative">
         <button
           :class="[
             triggerClass,
@@ -412,12 +407,7 @@ onBeforeUnmount(() => {
       </div>
 
       <!-- 替换选中形状：无选中时禁用；选中清空时面板自动收起 -->
-      <div
-        ref="replaceMenuRef"
-        class="relative"
-        @mouseenter="hasSelection && scheduleMenu('replace')"
-        @mouseleave="closeMenu"
-      >
+      <div ref="replaceMenuRef" class="relative">
         <button
           :class="[
             triggerClass,

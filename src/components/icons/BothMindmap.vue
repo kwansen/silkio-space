@@ -1,4 +1,3 @@
-<!-- 自绘：lucide没有 -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -6,17 +5,51 @@
     height="1em"
     viewBox="0 0 24 24"
   >
-    <path
-      d="M2 4 C2 2.895 2.895 2 4 2 C4.74 2 5.387 2.402 5.732 3 L8 3 C9.105 3 10 3.895 10 5 C10 5 10 5.001 10 5.001 L10 12 L10 19 C10 19 10 19 10 19.001 L10 19.001 C10 19.001 10 19.001 10 19.001 L10 19.001 C9.999 20.105 9.104 21 8 21 L5.732 21 C5.387 21.598 4.74 22 4 22 C2.895 22 2 21.105 2 20 C2 18.895 2.895 18 4 18 C4.74 18 5.387 18.402 5.732 19 L6 19 L8 19 L8 17 L8 13 L5.732 13 C5.387 13.598 4.74 14 4 14 C2.895 14 2 13.105 2 12 C2 10.895 2.895 10 4 10 C4.74 10 5.387 10.402 5.732 11 L8 11 L8 7 L8 5 L6 5 L5.732 5 C5.387 5.598 4.74 6 4 6 C2.895 6 2 5.105 2 4 Z"
-      fill="currentColor"
-    />
-    <path
-      d="M10 12 C10 10.895 10.895 10 12 10 C13.105 10 14 10.895 14 12 C14 13.105 13.105 14 12 14 C10.895 14 10 13.105 10 12 Z"
-      fill="currentColor"
-    />
-    <path
-      d="M18.268 3 C18.613 2.402 19.26 2 20 2 C21.105 2 22 2.895 22 4 C22 5.105 21.105 6 20 6 C19.26 6 18.613 5.598 18.268 5 L18 5 L16 5 L16 7 L16 11 L18.268 11 C18.613 10.402 19.26 10 20 10 C21.105 10 22 10.895 22 12 C22 13.105 21.105 14 20 14 C19.26 14 18.613 13.598 18.268 13 L16 13 L16 17 L16 17 L16 17 L16 19 L18 19 L18.268 19 C18.613 18.402 19.26 18 20 18 C21.105 18 22 18.895 22 20 C22 21.105 21.105 22 20 22 C19.26 22 18.613 21.598 18.268 21 L16 21 C14.895 21 14 20.105 14 19 L14 13 L14 12 L14 11 L14 5 C14 3.895 14.895 3 16 3 L16 3 Z"
-      fill="currentColor"
-    />
+    <path d="M7 12 L10 12" :style="st1" />
+    <path d="M14 6 L14 18" :style="st1" />
+    <path d="M16 4 C14.895 4 14 4.895 14 6" :style="st1" />
+    <path d="M16 20 C14.895 20 14 19.105 14 18" :style="st1" />
+    <path d="M2 4 L4 4" :style="st2" />
+    <path d="M2 20 L4 20" :style="st2" />
+    <path d="M2 12 L4 12" :style="st2" />
+    <path d="M10 6 L10 18" :style="st1" />
+    <path d="M8 4 C9.105 4 10 4.895 10 6" :style="st1" />
+    <path d="M8 20 C9.105 20 10 19.105 10 18" :style="st1" />
+    <path d="M20 4 L22 4" :style="st2" />
+    <path d="M20 20 L22 20" :style="st2" />
+    <path d="M20 12 L22 12" :style="st2" />
+    <path d="M14 12 L17 12" :style="st1" />
+    <path d="M11 12 L13 12" :style="st3" />
+    <path d="M7 4 L8 4" :style="st1" />
+    <path d="M7 20 L8 20" :style="st1" />
+    <path d="M16 20 L17 20" :style="st1" />
+    <path d="M16 4 L17 4" :style="st1" />
   </svg>
 </template>
+
+<script setup>
+const st1 = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.5,
+  strokeLinecap: "round",
+  strokeMiterlimit: 10,
+};
+
+const st2 = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeMiterlimit: 10,
+  opacity: 0.5,
+};
+
+const st3 = {
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 3,
+  strokeLinecap: "round",
+  strokeMiterlimit: 10,
+};
+</script>
