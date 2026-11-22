@@ -7,7 +7,8 @@ import DocSearch from "@/components/icons/DocSearch.vue";
 import DocSearchFill from "@/components/icons/DocSearchFill.vue";
 import ArchiveSearch from "@/components/icons/ArchiveSearch.vue";
 import ArchiveSearchFill from "@/components/icons/ArchiveSearchFill.vue";
-import Delete from "@/components/icons/Delete.vue";
+import Trash from "@/components/icons/Trash.vue";
+import TrashFill from "@/components/icons/TrashFill.vue";
 import { useUiStore } from "@/stores/uiStore.ts";
 import { storeToRefs } from "pinia";
 import type { Component } from "vue";
@@ -41,7 +42,7 @@ const options: {
     activeIcon: ArchiveSearchFill,
     pop: "归档搜索",
   },
-  { key: "trash", icon: Delete, activeIcon: Delete, pop: "回收站" },
+  { key: "trash", icon: Trash, activeIcon: TrashFill, pop: "回收站" },
 ];
 </script>
 

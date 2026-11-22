@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, type Component } from "vue";
+import { onKeyStroke } from "@vueuse/core";
+import { FocusScope } from "@zhencai/vue-focus-scope";
 import { listen } from "@tauri-apps/api/event";
 import { useDocSvc } from "@/services/document";
 import { useFdSvc } from "@/services/folder";
@@ -14,7 +16,6 @@ import Undo from "@/components/icons/Undo.vue";
 import Broom from "@/components/icons/Broom.vue";
 import Delete from "@/components/icons/Delete.vue";
 import EmptyHint from "@/components/shared/EmptyHint.vue";
-import ScrollArea from "@/components/shared/ScrollArea.vue";
 
 const docSvc = useDocSvc();
 const fdSvc = useFdSvc();
@@ -113,8 +114,12 @@ const purgeItem = async (item: TrashItem) => {
   await reload();
 };
 
+// 清空回收站需二次确认：点按钮先弹确认框，确认后才真正执行
+const showPurgeConfirm = ref(false);
+
 // 清空回收站：批量物理删除全部软删文档与归档（均不可恢复）
-const purgeAll = async () => {
+const doPurgeAll = async () => {
+  showPurgeConfirm.value = false;
   await docSvc.purgeMany(
     items.value.filter((i) => i.kind === "doc").map((i) => i.id),
   );
@@ -123,6 +128,14 @@ const purgeAll = async () => {
   }
   await reload();
 };
+
+// 确认框打开时才响应 ESC（取消）与回车（确认）
+onKeyStroke("Escape", () => {
+  if (showPurgeConfirm.value) showPurgeConfirm.value = false;
+});
+onKeyStroke("Enter", () => {
+  if (showPurgeConfirm.value) doPurgeAll();
+});
 </script>
 
 <template>
@@ -139,7 +152,7 @@ const purgeAll = async () => {
         v-if="!isEmpty"
         title="清空回收站"
         class="size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:text-red-600 hover:bg-red-50"
-        @click="purgeAll"
+        @click="showPurgeConfirm = true"
       >
         <Broom class="size-5" />
       </button>
@@ -150,7 +163,7 @@ const purgeAll = async () => {
     >
       回收站是空的
     </EmptyHint>
-    <ScrollArea v-else class="max-h-128">
+    <template v-else>
       <div
         v-for="item in items"
         :key="item.kind + item.id"
@@ -167,8 +180,9 @@ const purgeAll = async () => {
             {{ dtf.format(new Date(item.deletedAt)) }} 删除
           </div>
         </div>
+        <!-- pr-5 使右侧按钮（size-8）与头部清空按钮（px-5）同轴：中心均在距右缘 36px 处 -->
         <div
-          class="px-4 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          class="pr-5 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity"
         >
           <button
             class="size-8 grid place-items-center rounded-md text-gray-500 hover:bg-gray-100 cursor-pointer"
@@ -186,6 +200,33 @@ const purgeAll = async () => {
           </button>
         </div>
       </div>
-    </ScrollArea>
+    </template>
+
+    <!-- 清空确认框：风格与 ArchivePickerDialog 一致 -->
+    <div v-if="showPurgeConfirm" class="fixed inset-0 grid place-items-center bg-black/10">
+      <FocusScope
+        class="w-96 bg-white rounded-2xl px-6 pt-6 pb-4 select-none"
+        autofocus
+      >
+        <div class="text-sm font-medium">清空回收站</div>
+        <div class="mt-2 text-xs text-neutral-400">
+          将彻底删除全部 {{ items.length }} 项，此操作不可恢复。
+        </div>
+        <div class="mt-6 flex justify-end gap-2">
+          <button
+            class="h-9 bg-gray-100 px-4 rounded-md cursor-pointer"
+            @click="showPurgeConfirm = false"
+          >
+            取消
+          </button>
+          <button
+            class="h-9 bg-red-500 px-4 rounded-md text-white cursor-pointer hover:bg-red-600"
+            @click="doPurgeAll"
+          >
+            清空
+          </button>
+        </div>
+      </FocusScope>
+    </div>
   </div>
 </template>
