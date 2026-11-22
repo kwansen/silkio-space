@@ -12,6 +12,7 @@ import { computed, nextTick, useTemplateRef, watch } from "vue";
 import Sparkles from "@/components/icons/Sparkles.vue";
 import Stop from "@/components/icons/Stop.vue";
 import ChevronUp from "@/components/icons/ChevronUp.vue";
+import Broom from "@/components/icons/Broom.vue";
 
 const aiStore = useAiStore();
 const { messages, pending, busy, prompt, ready } = storeToRefs(aiStore);
@@ -55,11 +56,12 @@ const onKeydown = (event: KeyboardEvent) => {
         <div class="font-medium">AI 助手</div>
         <div class="flex-1"></div>
         <button
-          class="text-xs text-gray-400 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-50"
+          title="清空"
+          class="text-xs text-gray-400 enabled:hover:text-gray-600 cursor-pointer disabled:cursor-default disabled:opacity-50"
           :disabled="busy || !messages.length"
           @click="clear"
         >
-          清空
+          <Broom class="size-4" />
         </button>
       </div>
 
@@ -81,7 +83,7 @@ const onKeydown = (event: KeyboardEvent) => {
             <!-- 用户指令 -->
             <div v-if="m.role === 'user'" class="flex justify-end">
               <div
-                class="max-w-[85%] rounded-xl rounded-br-sm bg-violet-500 px-3 py-2 text-xs leading-5 text-white whitespace-pre-wrap wrap-break-word"
+                class="max-w-[85%] rounded-xl rounded-br-sm bg-violet-100 px-3 py-2 text-xs leading-5 text-gray-700 whitespace-pre-wrap wrap-break-word"
               >
                 {{ m.text }}
               </div>
@@ -180,8 +182,8 @@ const onKeydown = (event: KeyboardEvent) => {
           @keydown="onKeydown"
         />
         <button
-          class="size-9 shrink-0 grid place-items-center rounded-lg text-white hover:bg-violet-600 disabled:cursor-not-allowed disabled:opacity-50"
-          :class="busy ? 'bg-gray-900 hover:bg-gray-700' : 'bg-violet-500'"
+          class="size-9 shrink-0 grid place-items-center rounded-lg text-white enabled:hover:bg-violet-600 disabled:cursor-default disabled:opacity-50"
+          :class="busy ? 'bg-gray-900 enabled:hover:bg-gray-700' : 'bg-violet-500'"
           :disabled="!busy && !prompt.trim()"
           :title="busy ? '停止生成' : '发送'"
           @click="busy ? stop() : send()"

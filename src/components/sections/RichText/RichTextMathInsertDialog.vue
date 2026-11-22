@@ -57,20 +57,23 @@ onKeyStroke("Enter", () => {
         />
       </div>
       <div class="h-6"></div>
-      <div class="flex justify-end">
-        <button class="h-9 bg-gray-100 px-4 rounded-l-md" @click="close">
+      <div class="flex justify-end gap-2">
+        <button
+          class="h-9 bg-gray-100 px-4 rounded-md cursor-pointer"
+          @click="close"
+        >
           取消
         </button>
         <button
           :disabled="!latex"
-          class="h-9 bg-blue-500 px-4 text-white disabled:bg-blue-200 disabled:cursor-not-allowed"
+          class="h-9 bg-white px-4 rounded-md text-purple-600 border border-purple-300 cursor-pointer disabled:border-gray-200 disabled:text-gray-300 disabled:cursor-default"
           @click="handleClick(false)"
         >
           行内插入
         </button>
         <button
           :disabled="!latex"
-          class="h-9 bg-purple-500 px-4 text-white rounded-r-md disabled:bg-purple-200 disabled:cursor-not-allowed"
+          class="h-9 bg-purple-500 px-4 rounded-md text-white cursor-pointer disabled:bg-purple-200 disabled:cursor-default"
           @click="handleClick(true)"
         >
           块级插入

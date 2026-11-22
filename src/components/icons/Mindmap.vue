@@ -1,3 +1,4 @@
+<!-- lucide -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -6,9 +7,19 @@
     viewBox="0 0 24 24"
   >
     <path d="M0 0h24v24H0z" fill="none" />
-    <path
-      fill="currentColor"
-      d="M15 20v-2h-4v-5H9v2H2V9h7v2h2V6h4V4h7v6h-7V8h-2v8h2v-2h7v6zm2-2h3v-2h-3zM4 13h3v-2H4zm13-5h3V6h-3zm0 10v-2zM7 13v-2zm10-5V6z"
-    />
+    <g
+      fill="none"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+    >
+      <path
+        d="M8 12h.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 0 3.5 3.5h.5m-7.5-7A3.5 3.5 0 0 0 12 8.5A3.5 3.5 0 0 1 15.5 5h.5"
+      />
+      <rect width="6" height="6" x="16" y="16" rx="1" />
+      <rect width="6" height="6" x="16" y="2" rx="1" />
+      <rect width="6" height="6" x="2" y="9" rx="1" />
+    </g>
   </svg>
 </template>

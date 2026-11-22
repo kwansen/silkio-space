@@ -18,8 +18,9 @@
     sans-serif;
 }
 
+/* 选区用蓝色：与主题紫色（AI 气泡、搜索高亮）区分，且符合「选中」的通用认知 */
 * ::selection {
-  background-color: rgba(255, 0, 255, 0.1);
+  background-color: rgba(59, 130, 246, 0.25);
 }
 
 .desktop-draggable {

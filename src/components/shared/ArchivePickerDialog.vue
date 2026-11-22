@@ -70,12 +70,16 @@ onKeyStroke("Enter", () => {
         </ScrollArea>
       </div>
 
-      <div class="flex p-4">
-        <button class="h-9 w-1/2 bg-gray-100 rounded-l-md" @click="close">
+      <div class="flex justify-end gap-2 p-4">
+        <button
+          class="h-9 bg-gray-100 px-4 rounded-md cursor-pointer"
+          @click="close"
+        >
           取消
         </button>
         <button
-          class="h-9 w-1/2 bg-purple-500 text-white rounded-r-md disabled:bg-purple-200 disabled:cursor-not-allowed"
+          :disabled="!archives.some((a) => a.checked)"
+          class="h-9 bg-purple-500 px-4 rounded-md text-white cursor-pointer disabled:bg-purple-200 disabled:cursor-default"
           @click="handleClick"
         >
           确认

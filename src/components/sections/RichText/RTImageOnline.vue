@@ -43,13 +43,16 @@ onKeyStroke("Enter", () => {
     />
   </div>
   <div class="h-6"></div>
-  <div class="flex justify-end">
-    <button class="h-9 bg-gray-100 px-4 rounded-l-md" @click="close">
+  <div class="flex justify-end gap-2">
+    <button
+      class="h-9 bg-gray-100 px-4 rounded-md cursor-pointer"
+      @click="close"
+    >
       取消
     </button>
     <button
       :disabled="!url"
-      class="h-9 bg-purple-500 px-4 text-white rounded-r-md disabled:bg-purple-200 disabled:cursor-not-allowed"
+      class="h-9 bg-purple-500 px-4 rounded-md text-white cursor-pointer disabled:bg-purple-200 disabled:cursor-default"
       @click="handleConfirm"
     >
       确认

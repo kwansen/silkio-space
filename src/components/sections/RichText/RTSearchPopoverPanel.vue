@@ -76,72 +76,77 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <div class="bg-white p-4 rounded-lg shadow-2xl select-none relative">
+  <div class="bg-white p-4 rounded-lg shadow-2xl select-none relative w-80">
     <FocusScope autofocus>
-      <div class="space-y-4">
-        <div class="flex justify-end">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="text-sm font-medium text-gray-700">搜索与替换</div>
           <div
             @click="emit('close')"
-            class="grid place-items-center size-5 bg-gray-200 rounded-md cursor-pointer text-gray-500 hover:bg-red-50 hover:text-red-500"
+            class="grid place-items-center size-6 rounded-md cursor-pointer text-gray-400 hover:bg-gray-100 hover:text-gray-600"
           >
-            <Close class="size-5" />
+            <Close class="size-4" />
           </div>
         </div>
 
         <div
-          class="flex rounded-md items-center px-1 bg-gray-100 focus-within:ring focus-within:ring-purple-300"
+          class="flex rounded-md items-center px-1.5 gap-1 bg-gray-100 focus-within:ring-1 focus-within:ring-purple-300"
         >
           <input
             type="text"
-            class="w-40 h-9 bg-gray-100 outline-none pl-1"
+            placeholder="搜索"
+            class="flex-1 h-9 bg-gray-100 outline-none text-sm"
             v-model="searchTerm"
           />
-          <div class="w-1"></div>
           <div
             v-for="item in list"
             @click="item.action"
-            class="size-5 grid place-items-center mr-1 rounded-xs"
-            :class="item.state() ? 'bg-purple-200' : 'hover:bg-gray-200'"
+            class="size-7 grid place-items-center rounded-md cursor-pointer"
+            :class="
+              item.state()
+                ? 'bg-purple-100 text-purple-600'
+                : 'text-gray-400 hover:bg-gray-200 hover:text-gray-600'
+            "
           >
-            <component :is="item.icon" class="size-5" />
+            <component :is="item.icon" class="size-4" />
           </div>
         </div>
         <div
-          class="px-1 focus-within:ring focus-within:ring-purple-300 rounded-md bg-gray-100"
+          class="px-1.5 focus-within:ring-1 focus-within:ring-purple-300 rounded-md bg-gray-100"
         >
           <input
             v-model="replaceTerm"
             type="text"
-            class="w-full h-9 px-1 outline-none"
+            placeholder="替换为"
+            class="w-full h-9 outline-none text-sm"
           />
         </div>
-        <div class="flex">
-          <div
-            class="w-20 bg-purple-200 rounded-l-md text-center py-1"
+        <div class="flex items-center gap-2 pt-1">
+          <button
+            class="h-8 px-3 bg-white rounded-md border border-purple-300 text-purple-600 text-xs cursor-pointer hover:bg-purple-50"
             @click="editor?.commands.replace()"
           >
             替换
-          </div>
-          <div
-            class="w-20 bg-purple-400 rounded-r-md text-white text-center py-1"
+          </button>
+          <button
+            class="h-8 px-3 bg-purple-500 rounded-md text-white text-xs cursor-pointer hover:bg-purple-400"
             @click="editor?.commands.replaceAll()"
           >
             全部替换
-          </div>
+          </button>
           <div class="flex-1"></div>
-          <div
-            class="size-8 grid place-items-center hover:bg-gray-100 mr-2 rounded-md"
+          <button
+            class="size-8 grid place-items-center rounded-md text-gray-500 cursor-pointer hover:bg-gray-100 hover:text-gray-700"
             @click="editor?.commands.goToPreviousResult()"
           >
             <ChevronUp class="size-5" />
-          </div>
-
-          <div
-            class="size-8 grid place-items-center hover:bg-gray-100 rounded-md"
+          </button>
+          <button
+            class="size-8 grid place-items-center rounded-md text-gray-500 cursor-pointer hover:bg-gray-100 hover:text-gray-700"
             @click="editor?.commands.goToNextResult()"
           >
             <ChevronDown class="size-5" />
-          </div>
+          </button>
         </div>
       </div>
     </FocusScope>

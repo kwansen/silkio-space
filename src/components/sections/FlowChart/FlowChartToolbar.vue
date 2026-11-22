@@ -49,25 +49,25 @@ const SHAPE_OPTIONS: {
   label: string;
   text: string;
 }[] = [
-  { kind: "rect", label: "矩形 · 步骤", text: "新步骤" },
-  { kind: "diamond", label: "菱形 · 判断", text: "新判断" },
-  { kind: "ellipse", label: "椭圆 · 起止", text: "新端点" },
+  { kind: "rect", label: "矩形 · 步骤", text: "" },
+  { kind: "diamond", label: "菱形 · 判断", text: "" },
+  { kind: "ellipse", label: "椭圆 · 起止", text: "" },
   {
     kind: "parallelogram",
     label: "平行四边形 · 输入输出",
-    text: "输入数据",
+    text: "",
   },
   {
     kind: "hexagon",
     label: "六边形 · 准备",
-    text: "准备阶段",
+    text: "",
   },
   {
     kind: "database",
-    label: "数据库 · 存储",
-    text: "存储数据",
+    label: "数据库",
+    text: "",
   },
-  { kind: "note", label: "便签 · 自定义形状", text: "便签" },
+  { kind: "note", label: "便签", text: "" },
 ];
 
 // 形状 → 菜单图标的映射（database 对应圆柱图标，note 对应便签图标）

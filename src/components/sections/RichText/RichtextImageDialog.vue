@@ -20,14 +20,14 @@ const isOnline = ref(false);
   >
     <div class="w-lg px-10 pt-10 pb-4 bg-white rounded-lg">
       <div class="flex gap-4 select-none">
-        <div @click="isOnline = false">
+        <div class="cursor-pointer" @click="isOnline = false">
           本地图片
           <div
             class="h-1 rounded-full"
             :class="isOnline ? '' : 'bg-purple-200'"
           ></div>
         </div>
-        <div @click="isOnline = true">
+        <div class="cursor-pointer" @click="isOnline = true">
           在线图片
           <div
             class="h-1 rounded-full"
