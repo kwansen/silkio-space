@@ -6,9 +6,31 @@
     height="1em"
     viewBox="0 0 24 24"
   >
+    <path d="M12 9 L12 12 L12 12 L12 15" :style="st1" />
+    <path d="M2 12 L12 12" :style="st1" />
     <path
-      d="M18.268 5.5 C18.613 4.902 19.26 4.5 20 4.5 C21.105 4.5 22 5.395 22 6.5 C22 7.414 21.387 8.185 20.55 8.423 C20.375 8.473 20.191 8.5 20 8.5 C19.26 8.5 18.613 8.098 18.268 7.5 L16 7.5 L16 7.5 C14.343 7.5 13 8.843 13 10.5 C13 10.5 13 10.501 13 10.501 L13 14.5 L13 16.5 L13 17.5 L13 18.5 L5.732 18.5 C5.387 19.098 4.74 19.5 4 19.5 C2.895 19.5 2 18.605 2 17.5 C2 16.395 2.895 15.5 4 15.5 C4.74 15.5 5.387 15.902 5.732 16.5 L11 16.5 L11 10.5 C11 9.374 11.372 8.336 12 7.5 C12.284 7.121 12.621 6.784 13 6.5 C13.836 5.872 14.875 5.5 16 5.5 Z"
-      fill="currentColor"
+      d="M22 3 L18 3 C14.686 3 12 5.686 12 9 L12 15 C12 18.314 14.686 21 18 21 L22 21"
+      :style="st1"
     />
   </svg>
 </template>
+
+<script setup lang="ts">
+import { computed, type CSSProperties } from "vue";
+
+// fixedStroke：是否固定描边宽度（不随 width/height 缩放），默认跟随缩放
+const props = defineProps<{ fixedStroke?: boolean }>();
+
+const ve = computed<CSSProperties>(() =>
+  props.fixedStroke ? { vectorEffect: "non-scaling-stroke" } : {},
+);
+
+const st1 = computed<CSSProperties>(() => ({
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeMiterlimit: 10,
+  ...ve.value,
+}));
+</script>

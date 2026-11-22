@@ -2,18 +2,31 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
+    width="1em"
+    height="1em"
     viewBox="0 0 24 24"
-    width="16"
-    height="16"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
   >
-    <!-- <path d="M5 18C11 18 13 6 19 6" /> -->
-    <path d="M5 18C11 22 13 2 19 6" />
-    <circle cx="5" cy="18" r="2" fill="currentColor" stroke="none" />
-    <circle cx="19" cy="6" r="2" fill="currentColor" stroke="none" />
+    <path d="M2 12 C12 12 12 3 22 3" :style="st1" />
+    <path d="M2 12 C12 12 12 21 22 21" :style="st1" />
   </svg>
 </template>
+
+<script setup lang="ts">
+import { computed, type CSSProperties } from "vue";
+
+// fixedStroke：是否固定描边宽度（不随 width/height 缩放），默认跟随缩放
+const props = defineProps<{ fixedStroke?: boolean }>();
+
+const ve = computed<CSSProperties>(() =>
+  props.fixedStroke ? { vectorEffect: "non-scaling-stroke" } : {},
+);
+
+const st1 = computed<CSSProperties>(() => ({
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 2,
+  strokeLinecap: "round",
+  strokeMiterlimit: 10,
+  ...ve.value,
+}));
+</script>

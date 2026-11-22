@@ -1,3 +1,4 @@
+<!-- 自绘：因为lucide风格无法适配both，所以只能自绘 -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -20,29 +21,41 @@
   </svg>
 </template>
 
-<script setup>
-const st1 = {
+<script setup lang="ts">
+import { computed, type CSSProperties } from "vue";
+
+// fixedStroke：是否固定描边宽度（不随 width/height 缩放），默认跟随缩放
+const props = defineProps<{ fixedStroke?: boolean }>();
+
+const ve = computed<CSSProperties>(() =>
+  props.fixedStroke ? { vectorEffect: "non-scaling-stroke" } : {},
+);
+
+const st1 = computed<CSSProperties>(() => ({
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
   strokeLinecap: "round",
   strokeMiterlimit: 10,
-};
+  ...ve.value,
+}));
 
-const st2 = {
+const st2 = computed<CSSProperties>(() => ({
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 2,
   strokeLinecap: "round",
   strokeMiterlimit: 10,
   opacity: 0.5,
-};
+  ...ve.value,
+}));
 
-const st3 = {
+const st3 = computed<CSSProperties>(() => ({
   fill: "currentColor",
   stroke: "currentColor",
   strokeWidth: 2,
   strokeLinecap: "round",
   strokeMiterlimit: 10,
-};
+  ...ve.value,
+}));
 </script>

@@ -1,3 +1,4 @@
+<!-- 自绘：因为lucide风格无法适配both，所以只能自绘 -->
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -23,32 +24,44 @@
   </svg>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed, type CSSProperties } from "vue";
+
+// fixedStroke：是否固定描边宽度（不随 width/height 缩放），默认跟随缩放
+const props = defineProps<{ fixedStroke?: boolean }>();
+
+const ve = computed<CSSProperties>(() =>
+  props.fixedStroke ? { vectorEffect: "non-scaling-stroke" } : {},
+);
+
 // st1：折线主体 + 短竖线，1.5 描边
-const st1 = {
+const st1 = computed<CSSProperties>(() => ({
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 1.5,
   strokeLinecap: "round",
   strokeMiterlimit: 10,
-};
+  ...ve.value,
+}));
 
 // st2：顶部小圆点，实心填充，2 描边
-const st2 = {
+const st2 = computed<CSSProperties>(() => ({
   fill: "currentColor",
   stroke: "currentColor",
   strokeWidth: 2,
   strokeLinecap: "round",
   strokeMiterlimit: 10,
-};
+  ...ve.value,
+}));
 
 // st3：底部 6 条短横线，半透明描边
-const st3 = {
+const st3 = computed<CSSProperties>(() => ({
   fill: "none",
   stroke: "currentColor",
   strokeWidth: 2,
   strokeLinecap: "round",
   strokeMiterlimit: 10,
   opacity: 0.5,
-};
+  ...ve.value,
+}));
 </script>
