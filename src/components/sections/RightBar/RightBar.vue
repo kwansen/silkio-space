@@ -72,8 +72,7 @@ const onKeydown = (event: KeyboardEvent) => {
             v-if="!messages.length && !pending"
             class="mt-8 text-center text-xs leading-[1.9] text-gray-400"
           >
-            询问当前文档内容，或输入任意问题
-            <br />思维导图/流程图支持 AI 直接改图，如"补充三个子节点"
+            与AI对话
             <template v-if="!ready">
               <br />尚未配置 AI 服务，请在主页窗口的设置中配置
             </template>
@@ -183,7 +182,9 @@ const onKeydown = (event: KeyboardEvent) => {
         />
         <button
           class="size-9 shrink-0 grid place-items-center rounded-lg text-white enabled:hover:bg-violet-600 disabled:cursor-default disabled:opacity-50"
-          :class="busy ? 'bg-gray-900 enabled:hover:bg-gray-700' : 'bg-violet-500'"
+          :class="
+            busy ? 'bg-gray-900 enabled:hover:bg-gray-700' : 'bg-violet-500'
+          "
           :disabled="!busy && !prompt.trim()"
           :title="busy ? '停止生成' : '发送'"
           @click="busy ? stop() : send()"

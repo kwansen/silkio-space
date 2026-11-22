@@ -169,7 +169,7 @@ export const useFolderDb = () => {
   };
 
   // 元函数：级联删除单个归档（连同其全部后代 folders 行，documents 表文档本体保留；
-  // folder_document 关联由 v2 trigger 随 folders 行删除级联清理，单条语句原子生效）
+  // folder_document 关联由 v1 trigger 随 folders 行删除级联清理，单条语句原子生效）
   const remove = async (db: Database, id: string): Promise<void> => {
     const ids = await getSubtreeIds(db, id);
     if (ids.length === 0) return;

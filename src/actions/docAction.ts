@@ -50,7 +50,7 @@ export const useDocAction = () => {
   const createMindmap = () => createTyped("mindMap");
   const createFlowchart = () => createTyped("flowChart");
 
-  // 删除文档动了两个域：本体删除广播 doc:changed，级联清理归档关联广播 archive:changed
+  // 删除文档：软删除（标记 deleted_at），归档关联保留以便恢复；广播 doc:changed 刷新列表
   const remove = async (id: string) => {
     await svc.remove(id);
     notifyDocChanged();

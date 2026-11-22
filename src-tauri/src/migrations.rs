@@ -10,11 +10,5 @@ pub fn get_migrations() -> Vec<Migration> {
             sql: include_str!("../migrations/0001.sql"),
             kind: MigrationKind::Up,
         },
-        Migration {
-            version: 2,
-            description: "add_delete_cascade_triggers",
-            sql: include_str!("../migrations/0002.sql"),
-            kind: MigrationKind::Up,
-        },
     ]
 }

@@ -51,16 +51,29 @@ export const useDocSvc = () => {
     return ids;
   };
 
-  // 元函数：删除文档并同步删除索引
+  // 元函数：软删除文档（标记 deleted_at）并同步移除索引（保持 db 非删除数与索引数一致）
   const remove = async (id: string): Promise<void> => {
     await docDb.remove(db, id);
     await searchApi.deleteIndex(id);
   };
 
-  // 元函数：批量删除文档并同步批量删除索引
+  // 元函数：批量软删除文档并同步批量移除索引
   const removeMany = async (ids: string[] = []): Promise<void> => {
     await docDb.removeMany(db, ids);
     await searchApi.deleteIndexBatch(ids);
+  };
+
+  // 元函数：恢复软删除文档（清除标记）并重建索引
+  const restore = async (id: string): Promise<void> => {
+    await docDb.restore(db, id);
+    const doc = await docDb.getById(db, id);
+    if (doc) await searchApi.createDocIndex(toIndexInput(doc));
+  };
+
+  // 元函数：物理删除文档（永久清除本体与归档关联，v1 trigger 级联）并移除索引，供回收站 GC/清空
+  const purge = async (id: string): Promise<void> => {
+    await docDb.purge(db, id);
+    await searchApi.deleteIndex(id);
   };
 
   // 元函数：更新文档，仅当 title/content 变化时同步重建索引（单次提交内先删后加，原子生效）
@@ -112,6 +125,8 @@ export const useDocSvc = () => {
     createMany,
     remove,
     removeMany,
+    restore,
+    purge,
     update,
     updateMany,
     getById,
