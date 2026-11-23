@@ -1,7 +1,7 @@
 [package]
 name = "silkio-space-desktop"
 version = "0.1.0"
-description = "A Tauri App"
+description = "Silkio Space"
 authors = ["you"]
 edition = "2021"
 

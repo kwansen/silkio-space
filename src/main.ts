@@ -10,6 +10,17 @@ import { useFdSvc } from "./services/folder.ts";
 import "@/assets/main.css";
 
 const app = createApp(App);
+
+// 任务管理器中 WebView2 子进程显示的是 document.title（而非窗口 title），
+// 四个窗口共用同一 index.html，故按窗口 label 在入口处区分命名
+const WINDOW_TITLES: Record<string, string> = {
+  main: "Silkio Space - 主窗口",
+  editor: "Silkio Space - 编辑",
+  tool: "Silkio Space - 创建",
+  search: "Silkio Space - 搜索",
+};
+document.title = WINDOW_TITLES[getCurrentWindow().label] ?? "Silkio Space";
+
 app.use(createPinia());
 app.use(i18n);
 // 挂载前初始化数据库，保证组件 setup 阶段 DB 已可用

@@ -45,6 +45,7 @@ pub fn create_search_window(app: &mut tauri::App) -> tauri::Result<()> {
         .transparent(true)
         .visible(false)
         .skip_taskbar(true)
+        .title("Silkio Space - 搜索")
         .position(final_x, final_y) // 直接传入计算好的逻辑坐标
         .inner_size(window_width_logical, window_height_logical) // 设置逻辑尺寸
         .build()?;
