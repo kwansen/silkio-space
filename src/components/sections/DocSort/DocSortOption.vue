@@ -11,9 +11,7 @@ import { storeToRefs } from "pinia";
 import { type Component, computed, ref, useTemplateRef } from "vue";
 
 const sortStore = useDocSortStore();
-const { docSort: sort, sortedDocs, loaded } = storeToRefs(sortStore);
-// 列表为空时隐藏紫色分隔线，由空态提示行自带 neutral 分隔线
-const isEmpty = computed(() => loaded.value && sortedDocs.value.length === 0);
+const { docSort: sort } = storeToRefs(sortStore);
 const { setDocSort } = sortStore;
 const list: { key: DocSortOption; show: string }[] = [
   { key: "viewedAt", show: "最近浏览" },
