@@ -37,6 +37,8 @@
 .tiptap ul[data-type="taskList"] > li {
   display: flex;
   gap: 0.4em;
+  /* 勾选框对齐第一行而非整条垂直居中 */
+  align-items: flex-start;
 }
 
 /* 嵌套的任务列表（任意层级）不额外增加上下间距，保持与其他列表一致 */
@@ -48,10 +50,15 @@
 .tiptap ul[data-type="taskList"] > li > label {
   display: grid;
   place-items: center;
+  flex: 0 0 auto;
+  /* 抵消首行段落的 0.25rem 上边距 + 行高差，让勾选框与第一行文字对齐 */
+  margin-top: 0.45rem;
 }
 
 .tiptap ul[data-type="taskList"] > li > div {
   flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .tiptap li[data-checked="true"] {
