@@ -1,6 +1,6 @@
 import { getDb } from "@/infrastructure/db/index.ts";
 import { useDocDb } from "@/infrastructure/db/document.ts";
-import { readDir, remove, BaseDirectory } from "@tauri-apps/plugin-fs";
+import { exists, readDir, remove, BaseDirectory } from "@tauri-apps/plugin-fs";
 
 // 孤儿图片 GC：图片采用内容 hash 命名（方案 C，不维护引用表/计数），
 // 引用关系派生自文档 content 中的图片 URL，GC 时刻全量重算引用集即可永不失真。
@@ -14,6 +14,8 @@ const IMAGE_REF_RE = /[0-9a-f]{64}\.[A-Za-z0-9]{1,8}/g;
 export const gcOrphanImages = async (): Promise<void> => {
   const db = getDb();
   const docDb = useDocDb();
+  // images/ 目录由 RTImageLocal 首次写入图片时懒创建，全新环境不存在则无需 GC
+  if (!(await exists("images", { baseDir: BaseDirectory.AppData }))) return;
   const files = await readDir("images", { baseDir: BaseDirectory.AppData });
   if (files.length === 0) return;
   const docs = await docDb.getAllContents(db);
