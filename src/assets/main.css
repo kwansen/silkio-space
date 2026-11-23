@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* OverlayScrollbars 样式必须在此引入（不要放回 .vue 组件的 script 里），
+   统一走 CSS @import，避免构建差异导致样式丢失 */
+@import "overlayscrollbars/overlayscrollbars.css";
 @import "./scrollbar.css";
 @import "./ghost.css";
 
