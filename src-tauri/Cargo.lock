@@ -2534,26 +2534,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "keyflow-desktop"
-version = "0.1.0"
-dependencies = [
- "once_cell",
- "serde",
- "serde_json",
- "tantivy",
- "tantivy-jieba",
- "tauri",
- "tauri-build",
- "tauri-plugin-autostart",
- "tauri-plugin-dialog",
- "tauri-plugin-fs",
- "tauri-plugin-global-shortcut",
- "tauri-plugin-http",
- "tauri-plugin-opener",
- "tauri-plugin-sql",
-]
-
-[[package]]
 name = "lazy_static"
 version = "1.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4498,6 +4478,26 @@ checksum = "77549399552de45a898a580c1b41d445bf730df867cc44e6c0233bbc4b8329de"
 dependencies = [
  "digest",
  "rand_core 0.6.4",
+]
+
+[[package]]
+name = "silkio-space-desktop"
+version = "0.1.0"
+dependencies = [
+ "once_cell",
+ "serde",
+ "serde_json",
+ "tantivy",
+ "tantivy-jieba",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-autostart",
+ "tauri-plugin-dialog",
+ "tauri-plugin-fs",
+ "tauri-plugin-global-shortcut",
+ "tauri-plugin-http",
+ "tauri-plugin-opener",
+ "tauri-plugin-sql",
 ]
 
 [[package]]

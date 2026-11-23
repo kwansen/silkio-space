@@ -6,7 +6,7 @@ let db: Database | null = null;
 //#region checked：初始化数据库
 // 开发版与正式版的数据根目录不同（identifier 隔离），无需再用文件名区分环境
 export async function initDb() {
-  db = await Database.load("sqlite:keyflow.db");
+  db = await Database.load("sqlite:silkio-space.db");
 }
 //#endregion
 

@@ -130,9 +130,9 @@ export const useAiAction = () => {
   const buildMessages = (): AIMessage[] => {
     const context = buildContext();
     const system = context
-      ? "你是 keyflow 桌面笔记应用的 AI 助手。以下是用户当前打开的文档，回答时优先基于文档内容；用户提问与文档无关时按通用助手回答。用简体中文回答，输出 Markdown。\n\n" +
+      ? "你是 silkio-space 桌面笔记应用的 AI 助手。以下是用户当前打开的文档，回答时优先基于文档内容；用户提问与文档无关时按通用助手回答。用简体中文回答，输出 Markdown。\n\n" +
         context
-      : "你是 keyflow 桌面笔记应用的 AI 助手。用简体中文回答，输出 Markdown。";
+      : "你是 silkio-space 桌面笔记应用的 AI 助手。用简体中文回答，输出 Markdown。";
     // 对话历史（不含 error 轮）
     const history: AIMessage[] = aiStore.messages
       .filter((m) => m.role !== "error")

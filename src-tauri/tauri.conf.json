@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "keyflow-desktop",
+  "productName": "silkio-space-desktop",
   "version": "0.1.0",
-  "identifier": "KeyFlow",
+  "identifier": "cn.silkio.space",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -60,7 +60,7 @@
   },
   "plugins": {
     "sql": {
-      "preload": ["sqlite:keyflow.db"]
+      "preload": ["sqlite:silkio-space.db"]
     }
   },
   "bundle": {

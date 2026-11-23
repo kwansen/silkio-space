@@ -52,7 +52,7 @@ const handleConfirm = async () => {
   const bytes = data.value;
   if (!bytes) return;
 
-  // 写入独立的 images 子目录（与 keyflow.db 等数据文件隔离，便于未来孤儿图片 GC）；
+  // 写入独立的 images 子目录；
   // hash 命名 + 直接覆盖写入天然幂等，同内容图片磁盘上永远只有一份
   try {
     await mkdir("images", { baseDir: BaseDirectory.AppData, recursive: true });

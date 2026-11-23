@@ -13,7 +13,7 @@ pub fn setup_tray(app: &mut tauri::App) -> tauri::Result<()> {
 
     // 创建系统托盘（默认左右键均显示菜单）
     tauri::tray::TrayIconBuilder::with_id("main-tray")
-        .tooltip("KeyFlow")
+        .tooltip("Silkio Space")
         .icon(app.default_window_icon().unwrap().clone())
         .menu(&menu)
         .show_menu_on_left_click(false)

@@ -2,5 +2,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
-    keyflow_desktop_lib::run()
+    silkio_space_desktop_lib::run()
 }

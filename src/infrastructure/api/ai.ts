@@ -26,7 +26,7 @@ export interface AIDelta {
   content?: string;
 }
 
-export const AI_CONFIG_KEY = "keyflow-ai-config";
+export const AI_CONFIG_KEY = "silkio-space-ai-config";
 
 export function loadAIConfig(): AIConfig {
   const empty: AIConfig = {
@@ -252,7 +252,8 @@ async function fetchAnthropicStream(
 // 网络层瞬时失败（如连接池旧连接被服务端关闭后 POST 不会被 reqwest 自动重试，
 // 表现为「第一次成功、第二次发送失败」）在尚未收到任何流式增量时自动重试一次；
 // 已有增量则不重试，避免内容重复。
-const RETRYABLE = /error sending request|error trying to connect|timed out|connection/i;
+const RETRYABLE =
+  /error sending request|error trying to connect|timed out|connection/i;
 
 export async function fetchAIStream(
   cfg: AIConfig,

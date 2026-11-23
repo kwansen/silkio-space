@@ -11,7 +11,9 @@ import { storeToRefs } from "pinia";
 import { type Component, computed, ref, useTemplateRef } from "vue";
 
 const sortStore = useDocSortStore();
-const { docSort: sort } = storeToRefs(sortStore);
+const { docSort: sort, sortedDocs, loaded } = storeToRefs(sortStore);
+// 列表为空时隐藏紫色分隔线，由空态提示行自带 neutral 分隔线
+const isEmpty = computed(() => loaded.value && sortedDocs.value.length === 0);
 const { setDocSort } = sortStore;
 const list: { key: DocSortOption; show: string }[] = [
   { key: "viewedAt", show: "最近浏览" },
@@ -84,7 +86,10 @@ const handleClickBtn = () => {
 </script>
 
 <template>
-  <div class="flex items-center h-16 px-5 gap-4 border-b border-purple-300">
+  <div
+    class="flex items-center h-16 px-5 gap-4 border-b"
+    :class="isEmpty ? 'border-transparent' : 'border-purple-300'"
+  >
     <div
       v-for="i in list"
       class="select-none relative cursor-pointer"
