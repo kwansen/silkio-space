@@ -52,9 +52,6 @@ const pickFormat = (value: "openai" | "anthropic") => {
         >
           <span>
             {{ formats.find((f) => f.value === config.format)?.label }}
-            <span class="text-gray-400 text-xs">
-              {{ formats.find((f) => f.value === config.format)?.hint }}
-            </span>
           </span>
           <ChevronDown
             class="size-4 text-gray-400 transition-transform"
@@ -77,7 +74,6 @@ const pickFormat = (value: "openai" | "anthropic") => {
             @click="pickFormat(f.value)"
           >
             {{ f.label }}
-            <span class="text-gray-400 text-xs">{{ f.hint }}</span>
           </div>
         </div>
       </div>
@@ -101,7 +97,7 @@ const pickFormat = (value: "openai" | "anthropic") => {
       <input
         v-model="config.apiKey"
         type="password"
-        placeholder="sk-..."
+        placeholder="如 sk-..."
         :class="fieldClass"
       />
     </div>
@@ -110,11 +106,7 @@ const pickFormat = (value: "openai" | "anthropic") => {
       <label class="w-20 shrink-0 text-sm text-gray-500">模型名</label>
       <input
         v-model="config.model"
-        :placeholder="
-          config.format === 'anthropic'
-            ? '如 claude-sonnet-4-5'
-            : '如 deepseek-chat'
-        "
+        placeholder="如 deepseek-flash"
         :class="fieldClass"
       />
     </div>

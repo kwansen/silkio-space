@@ -86,10 +86,7 @@ const handleClickBtn = () => {
 </script>
 
 <template>
-  <div
-    class="flex items-center h-16 px-5 gap-4 border-b"
-    :class="isEmpty ? 'border-transparent' : 'border-purple-300'"
-  >
+  <div class="flex items-center h-16 px-5 gap-4 border-b border-purple-300">
     <div
       v-for="i in list"
       class="select-none relative cursor-pointer"

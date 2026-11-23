@@ -5,7 +5,10 @@ import { FocusScope } from "@zhencai/vue-focus-scope";
 import { listen } from "@tauri-apps/api/event";
 import { useDocSvc } from "@/services/document";
 import { useFdSvc } from "@/services/folder";
-import { notifyArchiveChanged, notifyDocChanged } from "@/infrastructure/api/windowEvent";
+import {
+  notifyArchiveChanged,
+  notifyDocChanged,
+} from "@/infrastructure/api/windowEvent";
 import { Doc, DocType } from "@/types/doc";
 import { Folder } from "@/types/archive";
 import DocIcon from "@/components/icons/Doc.vue";
@@ -114,8 +117,17 @@ const purgeItem = async (item: TrashItem) => {
   await reload();
 };
 
+// 单项彻底删除：先弹确认框，确认后才执行
+const doPurgeItem = async () => {
+  const item = pendingPurgeItem.value;
+  pendingPurgeItem.value = null;
+  if (item) await purgeItem(item);
+};
+
 // 清空回收站需二次确认：点按钮先弹确认框，确认后才真正执行
 const showPurgeConfirm = ref(false);
+// 单项彻底删除同样需二次确认：记录待删除项，确认后执行
+const pendingPurgeItem = ref<TrashItem | null>(null);
 
 // 清空回收站：批量物理删除全部软删文档与归档（均不可恢复）
 const doPurgeAll = async () => {
@@ -132,9 +144,11 @@ const doPurgeAll = async () => {
 // 确认框打开时才响应 ESC（取消）与回车（确认）
 onKeyStroke("Escape", () => {
   if (showPurgeConfirm.value) showPurgeConfirm.value = false;
+  if (pendingPurgeItem.value) pendingPurgeItem.value = null;
 });
 onKeyStroke("Enter", () => {
   if (showPurgeConfirm.value) doPurgeAll();
+  else if (pendingPurgeItem.value) doPurgeItem();
 });
 </script>
 
@@ -145,9 +159,7 @@ onKeyStroke("Enter", () => {
       class="h-16 shrink-0 flex items-center px-5 gap-4 border-b border-purple-300"
     >
       <span class="flex-1 text-sm font-medium">回收站</span>
-      <span class="text-xs text-neutral-400">
-        {{ items.length }} 项
-      </span>
+      <span class="text-xs text-neutral-400"> {{ items.length }} 项 </span>
       <button
         v-if="!isEmpty"
         title="清空回收站"
@@ -159,9 +171,9 @@ onKeyStroke("Enter", () => {
     </div>
     <EmptyHint
       v-if="!loading && isEmpty"
-      class="h-15 border-b border-neutral-100"
+      class="h-16 border-b border-neutral-100"
     >
-      回收站是空的
+      空空如也
     </EmptyHint>
     <template v-else>
       <div
@@ -194,7 +206,7 @@ onKeyStroke("Enter", () => {
           <button
             class="size-8 grid place-items-center rounded-md text-gray-500 hover:bg-red-100 hover:text-red-600 cursor-pointer"
             title="彻底删除"
-            @click="purgeItem(item)"
+            @click="pendingPurgeItem = item"
           >
             <Delete class="size-5" />
           </button>
@@ -202,8 +214,41 @@ onKeyStroke("Enter", () => {
       </div>
     </template>
 
+    <!-- 单项删除确认框：风格与清空确认框一致 -->
+    <div
+      v-if="pendingPurgeItem"
+      class="fixed inset-0 grid place-items-center bg-black/10"
+    >
+      <FocusScope
+        class="w-96 bg-white rounded-2xl px-6 pt-6 pb-4 select-none"
+        autofocus
+      >
+        <div class="text-sm font-medium">彻底删除</div>
+        <div class="mt-2 text-xs text-neutral-400">
+          将彻底删除「{{ pendingPurgeItem.name }}」，此操作不可恢复。
+        </div>
+        <div class="mt-6 flex justify-end gap-2">
+          <button
+            class="h-9 bg-gray-100 px-4 rounded-md cursor-pointer"
+            @click="pendingPurgeItem = null"
+          >
+            取消
+          </button>
+          <button
+            class="h-9 bg-red-500 px-4 rounded-md text-white cursor-pointer hover:bg-red-600"
+            @click="doPurgeItem"
+          >
+            删除
+          </button>
+        </div>
+      </FocusScope>
+    </div>
+
     <!-- 清空确认框：风格与 ArchivePickerDialog 一致 -->
-    <div v-if="showPurgeConfirm" class="fixed inset-0 grid place-items-center bg-black/10">
+    <div
+      v-if="showPurgeConfirm"
+      class="fixed inset-0 grid place-items-center bg-black/10"
+    >
       <FocusScope
         class="w-96 bg-white rounded-2xl px-6 pt-6 pb-4 select-none"
         autofocus
