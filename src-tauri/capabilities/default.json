@@ -22,6 +22,7 @@
     "fs:allow-write-file",
     "fs:allow-read-file",
     "autostart:default",
+    "log:default",
     "global-shortcut:allow-unregister-all",
     "global-shortcut:allow-register-all",
     "global-shortcut:allow-register",
