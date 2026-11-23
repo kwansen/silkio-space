@@ -2,11 +2,14 @@
 // AI 助手右侧栏（移植自 .examples demo 的 AISidebar，适配本应用栅格与
 // 图标体系）：对话历史 / 流式思考 / Markdown 回答。
 // 状态与网络逻辑在 aiStore + aiAction；服务配置在设置对话框的「AI 服务」页签。
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import AIMarkdown from "./AIMarkdown.vue";
 import ScrollArea from "@/components/shared/ScrollArea.vue";
 import { isOpsStream } from "@/infrastructure/api/ai";
 import { useAiAction } from "@/actions/aiAction";
 import { useAiStore } from "@/stores/aiStore";
+import { useUiStore } from "@/stores/uiStore";
+import { notifyOpenSetting } from "@/infrastructure/api/windowEvent";
 import { storeToRefs } from "pinia";
 import { computed, nextTick, useTemplateRef, watch } from "vue";
 import Sparkles from "@/components/icons/Sparkles.vue";
@@ -17,6 +20,7 @@ import Broom from "@/components/icons/Broom.vue";
 const aiStore = useAiStore();
 const { messages, pending, busy, prompt, ready } = storeToRefs(aiStore);
 const { send, stop, clear } = useAiAction();
+const uiStore = useUiStore();
 
 const pendingStatus = computed(() => {
   const p = pending.value;
@@ -43,6 +47,17 @@ watch(
 const onKeydown = (event: KeyboardEvent) => {
   if (event.key === "Enter" && !event.isComposing) send();
 };
+
+// 未配置提示可点击：直达设置对话框「AI 服务」页签。
+// 设置对话框仅 main 窗口渲染，其他窗口发指令让 main 显示并打开
+const openAiSetting = () => {
+  if (getCurrentWindow().label === "main") {
+    uiStore.setSettingNav("ai");
+    uiStore.setSettingDialogShow(true);
+  } else {
+    notifyOpenSetting("ai");
+  }
+};
 </script>
 
 <template>
@@ -51,7 +66,9 @@ const onKeydown = (event: KeyboardEvent) => {
       class="flex-1 min-h-0 bg-white rounded-lg overflow-hidden flex flex-col"
     >
       <!-- 头部 -->
-      <div class="h-10 shrink-0 flex items-center px-3 gap-1.5">
+      <div
+        class="h-11 shrink-0 flex items-center px-3 gap-1.5 border-b border-gray-50"
+      >
         <Sparkles class="size-5 text-violet-500" />
         <div class="font-medium">AI 助手</div>
         <div class="flex-1"></div>
@@ -74,7 +91,12 @@ const onKeydown = (event: KeyboardEvent) => {
           >
             与AI对话
             <template v-if="!ready">
-              <br />尚未配置 AI 服务，请在主页窗口的设置中配置
+              <br />尚未配置 AI 服务，点此<button
+                class="cursor-pointer text-violet-500 enabled:hover:text-violet-600"
+                @click="openAiSetting"
+              >
+                去配置
+              </button>
             </template>
           </div>
 

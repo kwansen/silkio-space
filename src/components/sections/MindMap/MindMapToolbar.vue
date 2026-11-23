@@ -108,13 +108,13 @@ const tileClass =
   "w-16 flex flex-col items-center gap-1 py-2 rounded-md cursor-pointer transition-colors";
 // 方向/连线选项面板：图标磁贴竖排（参照 .examples/mindmap）
 const optionMenuClass =
-  "absolute top-[calc(100%+10px)] left-0 z-10 flex flex-col items-center gap-1 p-1.5 bg-white rounded-xl shadow-md ring-1 ring-neutral-50 before:content-[''] before:absolute before:-top-2 before:left-0 before:right-0 before:h-2";
+  "absolute top-[calc(100%+10px)] left-0 z-10 flex flex-col items-center gap-1 p-1.5 bg-white rounded-xl shadow-md ring-1 ring-gray-50 before:content-[''] before:absolute before:-top-2 before:left-0 before:right-0 before:h-2";
 </script>
 
 <template>
   <!-- 顶部悬浮工具条 -->
   <div
-    class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-1.5 h-11 bg-white rounded-xl shadow-md ring-1 ring-neutral-50"
+    class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-1.5 h-11 bg-white rounded-xl shadow-md ring-1 ring-gray-50"
   >
     <!-- 历史 -->
     <button

@@ -21,6 +21,22 @@ export const onEditorOpen = (
   return listen<EditorOpenPayload>("open", (event) => handler(event.payload));
 };
 
+// UI 指令：请求 main 窗口显示自身并打开设置对话框（nav 指定直达页签）。
+// 设置对话框仅 main 窗口渲染，editor 等窗口需要跳转配置时走此指令
+export type OpenSettingPayload = { nav?: string };
+
+export const notifyOpenSetting = (nav?: string) => {
+  return emitTo("main", "open-setting", { nav } satisfies OpenSettingPayload);
+};
+
+export const onOpenSetting = (
+  handler: (payload: OpenSettingPayload) => void | Promise<void>,
+) => {
+  return listen<OpenSettingPayload>("open-setting", (event) =>
+    handler(event.payload),
+  );
+};
+
 // 数据事实：文档本体变化（创建/删除/标题/内容/最近打开时间）
 export const notifyDocChanged = () => emit("doc:changed");
 

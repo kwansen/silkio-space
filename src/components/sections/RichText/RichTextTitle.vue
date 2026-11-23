@@ -41,6 +41,7 @@ const focusFirstLineStart = () => {
 <template>
   <TitleArea
     ref="titleAreaRef"
+    class="px-2"
     v-model="store.title"
     placeholder="请输入标题"
     @on-enter="insertAtFirst"

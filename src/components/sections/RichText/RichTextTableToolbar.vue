@@ -158,7 +158,7 @@ const btnList: SelfBtn[] = [
 <template>
   <div
     ref="rootRef"
-    class="absolute left-1/2 -translate-x-1/2 w-fit flex items-center gap-2.5 p-1.5 bg-white rounded-lg shadow-md ring ring-neutral-100 text-gray-500"
+    class="absolute left-1/2 -translate-x-1/2 w-fit flex items-center gap-2.5 p-1.5 bg-white rounded-lg shadow-md ring ring-gray-100 text-gray-500"
     :style="{ top: `${y}px` }"
   >
     <div

@@ -169,10 +169,7 @@ onKeyStroke("Enter", () => {
         <Broom class="size-5" />
       </button>
     </div>
-    <EmptyHint
-      v-if="!loading && isEmpty"
-      class="h-16 border-b border-neutral-100"
-    >
+    <EmptyHint v-if="!loading && isEmpty" class="h-16 border-b border-gray-100">
       空空如也
     </EmptyHint>
     <template v-else>

@@ -46,7 +46,7 @@ const onTitleKeydown = (e: KeyboardEvent) => {
 
 <template>
   <div
-    class="absolute top-2 left-2 z-10 flex items-center h-11 px-1.5 gap-1.5 bg-white rounded-xl shadow-md ring-1 ring-neutral-50"
+    class="absolute top-2 left-2 z-10 flex items-center h-11 px-1.5 gap-1.5 bg-white rounded-xl shadow-md ring-1 ring-gray-50"
   >
     <input
       v-if="titleEditing"

@@ -4,6 +4,7 @@ import WindowControl from "./components/sections/WindowControl/WindowControl.vue
 import SettingDialog from "./components/sections/SettingDialog/SettingDialog.vue";
 import { onMounted, onUnmounted } from "vue";
 import { useUiStore } from "@/stores/uiStore";
+import { onOpenSetting } from "@/infrastructure/api/windowEvent";
 import MainView from "./views/MainView.vue";
 import EditorView from "./views/EditorView.vue";
 import SearchView from "./views/SearchView.vue";
@@ -13,6 +14,7 @@ const label = getCurrentWindow().label;
 const uiStore = useUiStore();
 
 let stopOnClose: (() => void) | null = null;
+let stopOnOpenSetting: (() => void) | null = null;
 
 // 窗口尺寸变化同步进 uiStore，驱动侧栏自适应隐藏（leftbarFits/rightbarFits）
 const onWindowResize = () => uiStore.setWindowWidth(window.innerWidth);
@@ -29,12 +31,27 @@ onMounted(async () => {
   } catch (e) {
     console.error(e);
   }
+  // main 窗口响应其他窗口的设置直达指令：显示窗口（关闭即隐藏）并打开设置对话框
+  if (label === "main") {
+    try {
+      stopOnOpenSetting = await onOpenSetting(async ({ nav }) => {
+        const win = getCurrentWindow();
+        await win.show();
+        await win.setFocus();
+        if (nav) uiStore.setSettingNav(nav);
+        uiStore.setSettingDialogShow(true);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
 });
 
 // 元函数：卸载时取消关闭拦截与尺寸监听
 onUnmounted(() => {
   window.removeEventListener("resize", onWindowResize);
   stopOnClose?.();
+  stopOnOpenSetting?.();
 });
 </script>
 

@@ -118,7 +118,7 @@ const triggerClass =
   "size-8 grid place-items-center rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors disabled:opacity-30 disabled:pointer-events-none";
 // 形状菜单：大图标网格（每行 4 个自动换行），无文字标签，悬停/原始 tooltip 提示名称
 const shapesMenuClass =
-  "absolute top-[calc(100%+10px)] left-0 z-10 grid grid-cols-4 gap-1 w-60 p-1.5 bg-white rounded-xl shadow-md ring-1 ring-neutral-50 before:content-[''] before:absolute before:-top-2 before:left-0 before:right-0 before:h-2";
+  "absolute top-[calc(100%+10px)] left-0 z-10 grid grid-cols-4 gap-1 w-60 p-1.5 bg-white rounded-xl shadow-md ring-1 ring-gray-50 before:content-[''] before:absolute before:-top-2 before:left-0 before:right-0 before:h-2";
 const shapeItemClass =
   "w-14 h-14 grid place-items-center gap-1 rounded-md cursor-pointer text-gray-500 hover:bg-gray-100 hover:text-violet-600 transition-colors";
 </script>
@@ -126,7 +126,7 @@ const shapeItemClass =
 <template>
   <!-- 顶部悬浮工具条 -->
   <div
-    class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-1.5 h-11 bg-white rounded-xl shadow-md ring-1 ring-neutral-50 text-gray-600"
+    class="absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 px-1.5 h-11 bg-white rounded-xl shadow-md ring-1 ring-gray-50 text-gray-600"
   >
     <!-- 历史 -->
     <button
