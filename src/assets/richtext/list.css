@@ -1,15 +1,24 @@
-/* 有序列表 */
-.tiptap > ol {
+/* 有序列表：基础样式用后代选择器（列表可能不是 .tiptap 的直接子元素），
+嵌套层级去掉外边距，由列表项自身行距决定，保证各层级间距一致 */
+.tiptap ol {
   list-style-type: decimal;
   margin: 0.8rem 0;
   padding-left: 1.5em;
 }
 
-/* 无序列表 */
-.tiptap > ul:not([data-type="taskList"]) {
+.tiptap ol ol {
+  margin: 0;
+}
+
+/* 无序列表（含嵌套层级，统一使用 disc 标记） */
+.tiptap ul:not([data-type="taskList"]) {
   list-style-type: disc;
   margin: 0.8rem 0;
   padding-left: 1.5em;
+}
+
+.tiptap ul:not([data-type="taskList"]) ul {
+  margin: 0;
 }
 
 /*
@@ -20,21 +29,37 @@
 第四个是选中文字颜色变灰
 */
 
-.tiptap > ul[data-type="taskList"] {
+.tiptap ul[data-type="taskList"] {
   padding-left: 0.3em;
   margin: 0.8rem 0;
 }
 
-.tiptap > ul[data-type="taskList"] > li {
+.tiptap ul[data-type="taskList"] > li {
   display: flex;
   gap: 0.4em;
 }
 
-.tiptap > ul[data-type="taskList"] > li > label {
+/* 嵌套的任务列表（任意层级）不额外增加上下间距，保持与其他列表一致 */
+.tiptap ul ul[data-type="taskList"],
+.tiptap ol ul[data-type="taskList"] {
+  margin: 0;
+}
+
+.tiptap ul[data-type="taskList"] > li > label {
   display: grid;
   place-items: center;
 }
 
-.tiptap > ul > li[data-checked="true"] {
+.tiptap ul[data-type="taskList"] > li > div {
+  flex: 1;
+}
+
+.tiptap li[data-checked="true"] {
   color: var(--color-neutral-400);
 }
+
+/* 列表项内段落：上下留一点呼吸感，小于顶层段落的 0.8rem，保证层级间行距一致 */
+.tiptap li > p {
+  margin: 0.25rem 0;
+}
+
