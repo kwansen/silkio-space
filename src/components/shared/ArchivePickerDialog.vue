@@ -54,6 +54,13 @@ onKeyStroke("Enter", () => {
     >
       <div class="flex-1 min-h-0">
         <ScrollArea class="py-2">
+          <!-- 无归档时的空提示 -->
+          <div
+            v-if="!archives.length"
+            class="mt-20 text-center text-xs text-gray-400"
+          >
+            暂无归档，请先在主页创建
+          </div>
           <div v-for="a in archives" class="px-2 h-10">
             <div
               class="h-10 hover:bg-gray-100 rounded-md flex px-2 gap-2 items-center cursor-pointer"
